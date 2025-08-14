@@ -3,60 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Admin Panel - v.1.1</title>
+    <title>Game Admin Panel v.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Global Styles */
         :root {
-            --primary-color: #6a1b9a; /* Deep Purple */
-            --secondary-color: #ab47bc; /* Lighter Purple */
-            --accent-color: #ffab00; /* Amber */
-            --background-color: #1a1a2e; /* Dark Blue/Purple */
-            --card-background: #2a2a3e; /* Slightly lighter dark */
-            --text-color: #e0e0e0;
-            --text-color-secondary: #b0b0b0;
-            --border-color: #444;
-            --success-color: #4caf50;
-            --danger-color: #f44336;
-            --warning-color: #ff9800; /* Orange */
+            --primary-color: #2ecc71; /* Vibrant Green */
+            --secondary-color: #3498db; /* Bright Blue */
+            --accent-color: #f39c12; /* Orange */
+            --background-dark: #1a1a2e;
+            --background-medium: #2a2a3e;
+            --background-light: #3a3a5e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #4a4a7e;
+            --card-background: #202030;
+            --input-background: #303040;
+            --button-hover-bg: rgba(46, 204, 113, 0.8);
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             min-height: 100vh;
-            box-sizing: border-box;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         .admin-container {
             display: flex;
             width: 100%;
-            max-width: 1500px;
-            margin: 0 auto;
-            gap: 25px;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
         }
 
+        /* Sidebar */
         .sidebar {
             width: 250px;
-            background-color: var(--card-background);
+            background-color: var(--background-medium);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            flex-shrink: 0; /* Prevent shrinking */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            position: fixed; /* Fixed sidebar */
+            height: 100%;
+            overflow-y: auto; /* Scrollable sidebar */
         }
 
-        .sidebar h2 {
-            color: var(--accent-color);
+        .sidebar h1 {
+            color: var(--primary-color);
+            font-family: 'Orbitron', sans-serif;
             text-align: center;
             margin-bottom: 30px;
             font-size: 1.8em;
-            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
         }
 
         .sidebar ul {
@@ -70,112 +74,104 @@
         }
 
         .sidebar a {
-            color: var(--text-color-secondary);
+            color: var(--text-secondary);
             text-decoration: none;
             font-size: 1.1em;
-            padding: 10px 15px;
-            display: block;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, color 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background-color: var(--background-light);
+            color: var(--primary-color);
         }
 
         .sidebar a i {
-            font-size: 1.2em;
+            margin-right: 15px;
+            font-size: 1.3em;
         }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-        }
-
+        /* Main Content */
         .main-content {
-            flex-grow: 1; /* Take up remaining space */
-            background-color: var(--card-background);
+            margin-left: 250px; /* Space for the fixed sidebar */
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            width: calc(100% - 250px); /* Full width minus sidebar */
+            flex-grow: 1; /* Allow main content to grow */
         }
 
-        .main-content h1 {
-            color: var(--secondary-color);
-            margin-top: 0;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 15px;
+        .main-content h2 {
+            color: var(--primary-color);
+            font-family: 'Orbitron', sans-serif;
             margin-bottom: 25px;
             font-size: 2em;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
         }
 
-        /* Section Styling */
-        .content-section {
-            display: none; /* Hidden by default */
-            animation: fadeIn 0.5s ease;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Dashboard Stats */
-        .dashboard-stats {
+        /* Dashboard Overview */
+        .dashboard-overview {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
             margin-bottom: 30px;
         }
 
-        .stat-card {
-            background-color: var(--primary-color);
+        .overview-card {
+            background-color: var(--card-background);
             padding: 20px;
             border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            border-left: 5px solid var(--secondary-color);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .stat-card:hover {
+        .overview-card:hover {
             transform: translateY(-5px);
-            background-color: var(--secondary-color);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
         }
 
-        .stat-card .count {
+        .overview-card i {
+            font-size: 2.5em;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .overview-card .count {
             font-size: 2.5em;
             font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--accent-color);
+            color: var(--primary-color);
+            font-family: 'Orbitron', sans-serif;
         }
 
-        .stat-card .label {
+        .overview-card .label {
             font-size: 1.1em;
-            color: var(--text-color-secondary);
-            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Forms Styling */
-        .form-container {
+        /* Section Styles */
+        .section {
             background-color: var(--card-background);
             padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             margin-bottom: 30px;
         }
 
-        .form-container h3 {
+        .section h3 {
             color: var(--secondary-color);
-            margin-top: 0;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            font-family: 'Orbitron', sans-serif;
             margin-bottom: 20px;
+            font-size: 1.6em;
+            border-bottom: 2px dashed var(--accent-color);
+            padding-bottom: 8px;
         }
 
+        /* Form Styles */
         .form-group {
             margin-bottom: 20px;
         }
@@ -183,1214 +179,1299 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-color-secondary);
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 0.95em;
         }
 
         .form-group input[type="text"],
         .form-group input[type="url"],
-        .form-group input[type="number"],
-        .form-group input[type="datetime-local"],
-        .form-group select,
-        .form-group textarea {
-            width: calc(100% - 24px); /* Account for padding */
-            padding: 12px;
+        .form-group textarea,
+        .form-group select {
+            width: calc(100% - 20px); /* Account for padding */
+            padding: 12px 10px;
+            background-color: var(--input-background);
             border: 1px solid var(--border-color);
-            background-color: var(--background-color);
-            color: var(--text-color);
             border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
+            color: var(--text-primary);
+            font-family: 'Roboto Mono', monospace;
             font-size: 1em;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .form-group input[type="text"]:focus,
         .form-group input[type="url"]:focus,
-        .form-group input[type="number"]:focus,
-        .form-group input[type="datetime-local"]:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
+        .form-group textarea:focus,
+        .form-group select:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+            outline: none;
         }
 
         .form-group textarea {
-            min-height: 100px;
             resize: vertical;
+            min-height: 100px;
         }
 
-        .form-group .optional-label {
-            font-style: italic;
-            font-size: 0.9em;
-            color: var(--text-color-secondary);
-        }
-
-        .form-actions {
-            text-align: right;
-            margin-top: 30px;
-        }
-
+        /* Button Styles */
         .btn {
-            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            padding: 12px 25px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1em;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-left: 10px;
+            font-size: 1.1em;
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.2s;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
         }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
+        .btn:hover {
+            background-color: var(--button-hover-bg);
             transform: translateY(-2px);
         }
 
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: var(--text-color);
+        .btn.delete {
+            background-color: #e74c3c; /* Red */
+        }
+        .btn.delete:hover {
+            background-color: #c0392b;
         }
 
-        .btn-danger:hover {
-            background-color: #e53935;
-            transform: translateY(-2px);
+        .btn.edit {
+            background-color: var(--accent-color);
+            margin-right: 5px;
+        }
+        .btn.edit:hover {
+            background-color: #e67e22;
         }
 
-        .btn-success {
-            background-color: var(--success-color);
-            color: var(--text-color);
-        }
-
-        .btn-success:hover {
-            background-color: #388e3c;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .btn-warning {
-            background-color: var(--warning-color);
-            color: var(--background-color);
-        }
-        .btn-warning:hover {
-            background-color: #f57c00;
-            transform: translateY(-2px);
-        }
-
-        /* Tables Styling */
+        /* Table Styles */
         .table-container {
-            overflow-x: auto; /* For small screens */
+            overflow-x: auto; /* For responsiveness on smaller screens */
         }
 
-        table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background-color: var(--card-background);
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
 
-        th, td {
+        .data-table th, .data-table td {
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
 
-        th {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            font-weight: 600;
-            font-size: 1.1em;
+        .data-table th {
+            background-color: var(--background-light);
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9em;
         }
 
-        td {
-            color: var(--text-color-secondary);
-            font-size: 0.95em;
+        .data-table tbody tr:hover {
+            background-color: var(--background-light);
         }
 
-        tr:hover {
-            background-color: var(--background-color); /* Slightly darker than card background */
-        }
-
-        .action-buttons button {
-            margin-right: 5px;
-            padding: 5px 10px;
-            font-size: 0.85em;
-            cursor: pointer;
-            border-radius: 3px;
+        .data-table .actions button {
+            background-color: transparent;
             border: none;
-            transition: background-color 0.3s ease;
-        }
-
-        .action-buttons .edit-btn {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        .action-buttons .edit-btn:hover {
-            background-color: var(--primary-color);
-        }
-
-        .action-buttons .delete-btn {
-            background-color: var(--danger-color);
-            color: white;
-        }
-        .action-buttons .delete-btn:hover {
-            background-color: #e53935;
-        }
-
-        .action-buttons .view-btn {
-            background-color: var(--accent-color);
-            color: var(--background-color);
-        }
-        .action-buttons .view-btn:hover {
-            background-color: #ffc107;
-        }
-
-        .no-data-message {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-color-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
             font-size: 1.2em;
+            margin-right: 8px;
+            transition: color 0.3s;
         }
 
-        /* Task Verification Specific Styles */
-        .verification-timer {
-            font-weight: bold;
-            color: var(--warning-color);
-        }
-        .verification-timer.expired {
-            color: var(--danger-color);
+        .data-table .actions button:hover {
+            color: var(--primary-color);
         }
 
-        .verification-status.approved {
-            color: var(--success-color);
-            font-weight: bold;
+        .data-table .actions .edit-btn { color: var(--accent-color); }
+        .data-table .actions .delete-btn { color: #e74c3c; }
+        .data-table .actions .edit-btn:hover { color: #e67e22; }
+        .data-table .actions .delete-btn:hover { color: #c0392b; }
+
+        /* Task Verification Section Specifics */
+        .task-verify-item {
+            background-color: var(--card-background);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
         }
-        .verification-status.rejected {
-            color: var(--danger-color);
-            font-weight: bold;
+
+        .task-verify-item .details {
+            flex-grow: 1;
+            margin-right: 15px;
         }
-        .verification-status.pending {
-            color: var(--warning-color);
-            font-weight: bold;
+
+        .task-verify-item .details strong {
+            color: var(--primary-color);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .task-verify-item .actions button {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .task-verify-item .actions button:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .task-verify-item .actions .verify-btn {
+            background-color: var(--secondary-color);
+        }
+        .task-verify-item .actions .verify-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .task-verify-item .actions .claim-btn {
+             background-color: var(--accent-color);
+        }
+        .task-verify-item .actions .claim-btn:hover {
+             background-color: #e67e22;
         }
 
 
-        /* Mobile Responsiveness */
+        /* Loader */
+        .loader {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: var(--primary-color);
+        }
+
+        .loader::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 5px solid var(--background-light);
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            .admin-container {
-                flex-direction: column;
-                gap: 15px;
-            }
             .sidebar {
-                width: 100%;
-                max-width: none;
-                padding: 15px;
+                width: 80px; /* Collapsed sidebar */
+                padding: 10px 5px;
+                text-align: center;
             }
-            .sidebar h2 {
-                font-size: 1.5em;
-            }
-            .sidebar a {
-                font-size: 1em;
-            }
-            .main-content {
-                padding: 15px;
-            }
-            .main-content h1 {
-                font-size: 1.6em;
-                padding-bottom: 10px;
+            .sidebar h1 {
+                font-size: 1.2em;
                 margin-bottom: 15px;
             }
-            .stat-card .count {
-                font-size: 2em;
+            .sidebar a {
+                padding: 8px 10px;
+                justify-content: center;
             }
-            .stat-card .label {
-                font-size: 0.9em;
+            .sidebar a i {
+                margin-right: 0;
+                font-size: 1.5em;
             }
-            table, th, td {
-                font-size: 0.85em;
+            .sidebar span {
+                display: none; /* Hide text in collapsed sidebar */
             }
-            th, td {
-                padding: 10px 12px;
+
+            .main-content {
+                margin-left: 80px; /* Adjust for collapsed sidebar */
+                padding: 20px;
             }
-            .action-buttons button {
-                font-size: 0.75em;
-                padding: 4px 8px;
+
+            .main-content h2 {
+                font-size: 1.6em;
+            }
+
+            .dashboard-overview {
+                grid-template-columns: 1fr; /* Stack cards on small screens */
+            }
+
+            .data-table th, .data-table td {
+                padding: 8px 10px;
+                font-size: 0.8em;
+            }
+            .data-table .actions button {
+                font-size: 1em;
+            }
+            .task-verify-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .task-verify-item .actions {
+                margin-top: 10px;
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+            .task-verify-item .actions button {
+                width: auto; /* Allow buttons to size naturally */
             }
         }
     </style>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body>
-    <div class="admin-container">
-        <aside class="sidebar">
-            <h2>Admin Panel</h2>
-            <ul>
-                <li><a href="#" data-section="dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="#" data-section="users"><i class="fas fa-users"></i> Users</a></li>
-                <li><a href="#" data-section="categories"><i class="fas fa-list-alt"></i> Categories</a></li>
-                <li><a href="#" data-section="tasks"><i class="fas fa-tasks"></i> Tasks</a></li>
-                <li><a href="#" data-section="earnings"><i class="fas fa-coins"></i> Earnings</a></li>
-                <li><a href="#" data-section="lucky-codes"><i class="fas fa-gift"></i> Lucky Codes</a></li>
-                <!-- NEW: Task Verification Link -->
-                <li><a href="#" data-section="verification"><i class="fas fa-check-double"></i> Task Verification</a></li>
-                <li><a href="#" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
-            </ul>
-        </aside>
+    <div class="loader" id="loader">Loading Admin Panel...</div>
 
-        <main class="main-content">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="content-section active">
-                <h1>Dashboard Overview</h1>
-                <div class="dashboard-stats">
-                    <div class="stat-card">
-                        <div class="count" id="totalUsersStat">--</div>
-                        <div class="label">Total Users</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="count" id="activeTasksStat">--</div>
-                        <div class="label">Active Tasks</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="count" id="totalEarningsStat">--</div>
-                        <div class="label">Total Earnings (Coins)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="count" id="activeCategoriesStat">--</div>
-                        <div class="label">Active Categories</div>
-                    </div>
-                    <!-- NEW: Stat for pending verification -->
-                     <div class="stat-card">
-                        <div class="count" id="pendingVerificationStat">--</div>
-                        <div class="label">Pending Verifications</div>
-                    </div>
-                </div>
-                <!-- Add more dashboard widgets as needed -->
-            </section>
+    <div class="sidebar">
+        <h1><i class="fas fa-gamepad"></i> PixelFrog<br>Admin</h1>
+        <ul>
+            <li><a href="#dashboard" id="nav-dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <li><a href="#tasks" id="nav-tasks"><i class="fas fa-tasks"></i> <span>Tasks</span></a></li>
+            <li><a href="#task-verification" id="nav-verification"><i class="fas fa-check-circle"></i> <span>Task Verification</span></a></li>
+            <li><a href="#earnings" id="nav-earnings"><i class="fas fa-coins"></i> <span>Earnings</span></a></li>
+            <li><a href="#users" id="nav-users"><i class="fas fa-users"></i> <span>Users</span></a></li>
+            <li><a href="#settings" id="nav-settings"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+            <li><a href="#daily-codes" id="nav-daily-codes"><i class="fas fa-key"></i> <span>Daily Codes</span></a></li>
+        </ul>
+    </div>
 
-            <!-- Users Section -->
-            <section id="users" class="content-section">
-                <h1>User Management</h1>
-                <div class="form-container">
-                    <h3>Add New User (Example: Manual Addition)</h3>
-                    <form id="addUserForm">
-                        <div class="form-group">
-                            <label for="userName">Username</label>
-                            <input type="text" id="userName" name="userName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="userEmail">Email (Optional)</label>
-                            <input type="text" id="userEmail" name="userEmail">
-                        </div>
-                         <div class="form-group">
-                            <label for="userPoints">Initial Points</label>
-                            <input type="number" id="userPoints" name="userPoints" value="0" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add User</button>
-                        </div>
-                    </form>
+    <div class="main-content">
+        <div id="dashboard">
+            <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+            <div class="dashboard-overview">
+                <div class="overview-card">
+                    <i class="fas fa-users"></i>
+                    <div class="count" id="total-users-count">0</div>
+                    <div class="label">Total Users</div>
                 </div>
+                <div class="overview-card">
+                    <i class="fas fa-tasks"></i>
+                    <div class="count" id="total-tasks-count">0</div>
+                    <div class="label">Total Tasks Created</div>
+                </div>
+                <div class="overview-card">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <div class="count" id="total-earnings-count">0</div>
+                    <div class="label">Total Coins Earned</div>
+                </div>
+                <div class="overview-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="count" id="active-sessions-count">0</div>
+                    <div class="label">Active Sessions</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><i class="fas fa-chart-bar"></i> Recent Activity</h3>
+                <p><em>(Placeholder for charts or recent activity logs)</em></p>
+                <p>Latest user signup: <strong id="latest-user-signup">N/A</strong></p>
+                <p>Last task completed: <strong id="last-task-completion">N/A</strong></p>
+            </div>
+        </div>
+
+        <!-- Tasks Section -->
+        <div id="tasks" style="display: none;">
+            <h2><i class="fas fa-tasks"></i> Manage Tasks</h2>
+
+            <div class="section">
+                <h3><i class="fas fa-plus-circle"></i> Add New Task</h3>
+                <form id="add-task-form">
+                    <div class="form-group">
+                        <label for="task-title">Task Title:</label>
+                        <input type="text" id="task-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-description">Task Description:</label>
+                        <textarea id="task-description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-icon-url">Task Icon URL:</label>
+                        <input type="url" id="task-icon-url" placeholder="https://example.com/icon.png" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-url">Task URL (for external links):</label>
+                        <input type="url" id="task-url" placeholder="https://example.com/task-link">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-completion-time">Task Completion Time (minutes):</label>
+                        <input type="number" id="task-completion-time" min="1" placeholder="e.g., 5">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-category">Task Category:</label>
+                        <input type="text" id="task-category" required placeholder="e.g., Social, Game, Promotion">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-reward-points">Reward Points:</label>
+                        <input type="number" id="task-reward-points" min="0" required placeholder="e.g., 100">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-id">Task ID (unique):</label>
+                        <input type="text" id="task-id" required placeholder="e.g., task_001">
+                    </div>
+                    <div class="form-group">
+                        <label for="is-permanent-task">Permanent Task:</label>
+                        <select id="is-permanent-task">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="code-verification-required">Code Verification Required:</label>
+                        <select id="code-verification-required">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-code">Optional Task Code:</label>
+                        <input type="text" id="task-code" placeholder="e.g., PIXELFROG50">
+                    </div>
+
+                    <button type="submit" class="btn"><i class="fas fa-plus"></i> Add Task</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h3><i class="fas fa-list-alt"></i> All Tasks</h3>
                 <div class="table-container">
-                    <h3>Current Users</h3>
-                    <table id="usersTable">
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Points</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- User data will be loaded here by JS -->
-                            <tr>
-                                <td colspan="5" class="no-data-message">Loading users...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Categories Section -->
-            <section id="categories" class="content-section">
-                <h1>Category Management</h1>
-                <div class="form-container">
-                    <h3>Add New Category</h3>
-                    <form id="addCategoryForm">
-                        <div class="form-group">
-                            <label for="categoryTitle">Category Title</label>
-                            <input type="text" id="categoryTitle" name="categoryTitle" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoryImageUrl">Category Image URL</label>
-                            <input type="url" id="categoryImageUrl" name="categoryImageUrl" placeholder="https://example.com/image.png" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoryActive">Status</label>
-                            <select id="categoryActive" name="categoryActive" required>
-                                <option value="true">Active</option>
-                                <option value="false">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Category</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="table-container">
-                    <h3>Current Categories</h3>
-                    <table id="categoriesTable">
-                        <thead>
-                            <tr>
-                                <th>Category ID</th>
-                                <th>Title</th>
-                                <th>Image URL</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Category data will be loaded here by JS -->
-                            <tr>
-                                <td colspan="5" class="no-data-message">Loading categories...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Tasks Section -->
-            <section id="tasks" class="content-section">
-                <h1>Task Management</h1>
-                <div class="form-container">
-                    <h3>Add New Task</h3>
-                    <form id="addTaskForm">
-                        <div class="form-group">
-                            <label for="taskTitle">Task Title</label>
-                            <input type="text" id="taskTitle" name="taskTitle" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskDescription">Task Description</label>
-                            <textarea id="taskDescription" name="taskDescription" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskIconUrl">Task Icon URL</label>
-                            <input type="url" id="taskIconUrl" name="taskIconUrl" placeholder="https://example.com/icon.png" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskUrl">Task URL / Deep Link</label>
-                            <input type="url" id="taskUrl" name="taskUrl" placeholder="https://game.com/task/xyz" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskCompleteTime">Estimated Completion Time (Minutes)</label>
-                            <input type="number" id="taskCompleteTime" name="taskCompleteTime" value="5" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskCategory">Category</label>
-                            <select id="taskCategory" name="taskCategory" required>
-                                <option value="">-- Select Category --</option>
-                                <!-- Categories will be loaded here -->
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskPoints">Points Awarded</label>
-                            <input type="number" id="taskPoints" name="taskPoints" value="10" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskTotalCompletions">Max Completions (Optional, 0 for unlimited)</label>
-                            <input type="number" id="taskTotalCompletions" name="taskTotalCompletions" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="taskIsPermanent">Permanent Task?</label>
-                            <select id="taskIsPermanent" name="taskIsPermanent">
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskCode">Unique Task Code (Optional)</label>
-                            <input type="text" id="taskCode" name="taskCode">
-                            <span class="optional-label">Used for specific unlock conditions or verification.</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskCodeVerification">Code Verification Required?</label>
-                            <select id="taskCodeVerification" name="taskCodeVerification">
-                                <option value="false">No</option>
-                                <option value="true">Yes</option>
-                            </select>
-                        </div>
-                         <div class="form-group">
-                            <label for="taskStatus">Task Status</label>
-                            <select id="taskStatus" name="taskStatus" required>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                                <option value="paused">Paused</option>
-                            </select>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Task</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="table-container">
-                    <h3>Current Tasks</h3>
-                    <table id="tasksTable">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Title</th>
                                 <th>Category</th>
-                                <th>Points</th>
-                                <th>Status</th>
+                                <th>Reward</th>
+                                <th>Code Req</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Task data will be loaded here by JS -->
-                            <tr>
-                                <td colspan="6" class="no-data-message">Loading tasks...</td>
-                            </tr>
+                        <tbody id="tasks-table-body">
+                            <!-- Task rows will be loaded here by JavaScript -->
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <!-- Earnings Section -->
-            <section id="earnings" class="content-section">
-                <h1>Earning Management</h1>
-                <div class="form-container">
-                    <h3>Record New Earning Event</h3>
-                    <form id="addEarningForm">
-                        <div class="form-group">
-                            <label for="earningUserId">User ID</label>
-                            <input type="text" id="earningUserId" name="earningUserId" placeholder="Enter User ID" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="earningStartTime">Start Time</label>
-                            <input type="datetime-local" id="earningStartTime" name="earningStartTime" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="earningEndTime">End Time</label>
-                            <input type="datetime-local" id="earningEndTime" name="earningEndTime" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="earningCoinsPerMinute">Coins per Minute</label>
-                            <input type="number" id="earningCoinsPerMinute" name="earningCoinsPerMinute" value="5" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="earningTotalUserAttendant">Total User Attendant (Optional)</label>
-                            <input type="number" id="earningTotalUserAttendant" name="earningTotalUserAttendant" placeholder="e.g., number of players">
-                        </div>
-                         <div class="form-group">
-                            <label for="earningDescription">Description (Optional)</label>
-                            <input type="text" id="earningDescription" name="earningDescription" placeholder="e.g., 'Daily Login Bonus'">
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Record Earning</button>
-                        </div>
-                    </form>
-                </div>
+        <!-- Task Verification Section -->
+        <div id="task-verification" style="display: none;">
+            <h2><i class="fas fa-check-circle"></i> Task Verification Queue</h2>
+            <p>Users have submitted tasks for verification.</p>
+            <div id="verification-queue">
+                <!-- Verification items will be loaded here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Earnings Section -->
+        <div id="earnings" style="display: none;">
+            <h2><i class="fas fa-coins"></i> Earnings Management</h2>
+
+            <div class="section">
+                <h3><i class="fas fa-plus-circle"></i> Add Earning Record</h3>
+                <form id="add-earning-form">
+                    <div class="form-group">
+                        <label for="earning-user-id">User ID:</label>
+                        <input type="text" id="earning-user-id" placeholder="Enter Telegram User ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="earning-type">Earning Type:</label>
+                        <select id="earning-type">
+                            <option value="task_completion">Task Completion</option>
+                            <option value="referral">Referral Bonus</option>
+                            <option value="daily_login">Daily Login</option>
+                            <option value="lucky_code">Lucky Code</option>
+                            <option value="manual_add">Manual Addition</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="earning-amount">Amount (PXF Coins):</label>
+                        <input type="number" id="earning-amount" min="0" required placeholder="e.g., 100">
+                    </div>
+                    <div class="form-group">
+                        <label for="earning-description">Description (Optional):</label>
+                        <input type="text" id="earning-description" placeholder="e.g., Completed Task: 'Visit Website'">
+                    </div>
+                    <div class="form-group">
+                        <label for="earning-start-time">Start Time (Optional):</label>
+                        <input type="datetime-local" id="earning-start-time">
+                    </div>
+                    <div class="form-group">
+                        <label for="earning-end-time">End Time (Optional):</label>
+                        <input type="datetime-local" id="earning-end-time">
+                    </div>
+
+                    <button type="submit" class="btn"><i class="fas fa-plus"></i> Add Earning</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h3><i class="fas fa-list-alt"></i> Earning History</h3>
                 <div class="table-container">
-                    <h3>Earning Logs</h3>
-                    <table id="earningsTable">
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Log ID</th>
                                 <th>User ID</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Coins Earned</th>
-                                <th>Coins/Min</th>
-                                <th>Attendant Count</th>
+                                <th>Type</th>
+                                <th>Amount (PXF)</th>
                                 <th>Description</th>
+                                <th>Timestamp</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Earning data will be loaded here by JS -->
-                            <tr>
-                                <td colspan="9" class="no-data-message">Loading earning logs...</td>
-                            </tr>
+                        <tbody id="earnings-table-body">
+                            <!-- Earning history rows will be loaded here -->
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
+        </div>
 
-             <!-- Daily Lucky Code Section -->
-            <section id="lucky-codes" class="content-section">
-                <h1>Daily Lucky Code</h1>
-                <div class="form-container">
-                    <h3>Add/Update Daily Lucky Code</h3>
-                    <form id="addLuckyCodeForm">
-                        <div class="form-group">
-                            <label for="luckyCodeTitle">Code Title</label>
-                            <input type="text" id="luckyCodeTitle" name="luckyCodeTitle" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="luckyCodeDescription">Description</label>
-                            <textarea id="luckyCodeDescription" name="luckyCodeDescription" required></textarea>
-                        </div>
-                         <div class="form-group">
-                            <label for="luckyCode">Lucky Code</label>
-                            <input type="text" id="luckyCode" name="luckyCode" required placeholder="e.g., SPRING2024">
-                        </div>
-                        <div class="form-group">
-                            <label for="luckyCodePoints">Points Awarded</label>
-                            <input type="number" id="luckyCodePoints" name="luckyCodePoints" value="50" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="luckyCodeType">Reward Type</label>
-                            <select id="luckyCodeType" name="luckyCodeType" required>
-                                <option value="points">Points</option>
-                                <option value="item">Item</option>
-                                <option value="gems">Gems</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="luckyCodeExpiry">Expiry Date/Time</label>
-                            <input type="datetime-local" id="luckyCodeExpiry" name="luckyCodeExpiry">
-                             <span class="optional-label">Leave blank for no expiry.</span>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Lucky Code</button>
-                        </div>
-                    </form>
+        <!-- Users Section -->
+        <div id="users" style="display: none;">
+            <h2><i class="fas fa-users"></i> User Management</h2>
+            <div class="section">
+                <h3><i class="fas fa-list-alt"></i> All Users</h3>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Telegram ID</th>
+                                <th>Username</th>
+                                <th>Referral Code</th>
+                                <th>Total Coins</th>
+                                <th>Joined At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- User rows will be loaded here -->
+                        </tbody>
+                    </table>
                 </div>
-                 <div class="table-container">
-                    <h3>Current Lucky Codes (Only latest active shown)</h3>
-                    <table id="luckyCodesTable">
+            </div>
+        </div>
+
+        <!-- Daily Lucky Code Section -->
+        <div id="daily-codes" style="display: none;">
+            <h2><i class="fas fa-key"></i> Daily Lucky Codes</h2>
+
+            <div class="section">
+                <h3><i class="fas fa-plus-circle"></i> Add New Daily Code</h3>
+                <form id="add-daily-code-form">
+                    <div class="form-group">
+                        <label for="daily-code-title">Code Title:</label>
+                        <input type="text" id="daily-code-title" required placeholder="e.g., Monday Madness">
+                    </div>
+                    <div class="form-group">
+                        <label for="daily-code-description">Description:</label>
+                        <textarea id="daily-code-description" required placeholder="e.g., Enter this code for bonus points!"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="daily-code-value">The Code:</label>
+                        <input type="text" id="daily-code-value" required placeholder="e.g., LUCKYMON100">
+                    </div>
+                    <div class="form-group">
+                        <label for="daily-code-points">Points Awarded:</label>
+                        <input type="number" id="daily-code-points" min="0" required placeholder="e.g., 100">
+                    </div>
+                    <div class="form-group">
+                        <label for="daily-code-expiry">Expiry Date:</label>
+                        <input type="datetime-local" id="daily-code-expiry" required>
+                    </div>
+
+                    <button type="submit" class="btn"><i class="fas fa-plus"></i> Add Code</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h3><i class="fas fa-list-alt"></i> Existing Daily Codes</h3>
+                <div class="table-container">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Title</th>
                                 <th>Code</th>
                                 <th>Points</th>
-                                <th>Reward Type</th>
-                                <th>Expiry</th>
+                                <th>Expires</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Lucky Code data will be loaded here by JS -->
-                            <tr>
-                                <td colspan="6" class="no-data-message">Loading lucky code data...</td>
-                            </tr>
+                        <tbody id="daily-codes-table-body">
+                            <!-- Daily code rows will be loaded here -->
                         </tbody>
                     </table>
                 </div>
-            </section>
-
-            <!-- NEW: Task Verification Section -->
-            <section id="verification" class="content-section">
-                <h1>Task Verification Queue</h1>
-                <div class="table-container">
-                    <h3>Pending Verifications</h3>
-                    <table id="verificationTable">
-                        <thead>
-                            <tr>
-                                <th>Task ID</th>
-                                <th>User ID</th>
-                                <th>Submitted Code</th>
-                                <th>Submitted At</th>
-                                <th>Task Title</th>
-                                <th>Verification Time Limit</th>
-                                <th>Time Remaining</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Verification data will be loaded here by JS -->
-                            <tr>
-                                <td colspan="8" class="no-data-message">Loading verification requests...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Settings Section -->
-            <section id="settings" class="content-section">
-                <h1>Game Settings</h1>
-                <div class="form-container">
-                    <h3>General Game Settings</h3>
-                    <form id="gameSettingsForm">
-                        <div class="form-group">
-                            <label for="settingMaxConcurrentTasks">Max Concurrent Tasks per User</label>
-                            <input type="number" id="settingMaxConcurrentTasks" name="settingMaxConcurrentTasks" value="3" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="settingDailyLoginBonusPoints">Daily Login Bonus (Points)</label>
-                            <input type="number" id="settingDailyLoginBonusPoints" name="settingDailyLoginBonusPoints" value="5" required>
-                        </div>
-                         <div class="form-group">
-                            <label for="settingReferralBonusPoints">Referral Bonus (Points)</label>
-                            <input type="number" id="settingReferralBonusPoints" name="settingReferralBonusPoints" value="20" required>
-                        </div>
-                         <div class="form-group">
-                            <label for="settingRegistrationBonusPoints">Registration Bonus (Points)</label>
-                            <input type="number" id="settingRegistrationBonusPoints" name="settingRegistrationBonusPoints" value="10" required>
-                        </div>
-                         <div class="form-group">
-                            <label for="settingAppName">App/Game Name</label>
-                            <input type="text" id="settingAppName" name="settingAppName" value="My Awesome Game" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Settings</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Confirmation Modal for Deletion -->
-    <div id="confirmationModal" class="modal">
-        <div class="modal-content">
-            <h4>Confirm Action</h4>
-            <p id="modalMessage">Are you sure you want to delete this item? This action cannot be undone.</p>
-            <div class="modal-actions">
-                <button id="confirmActionBtn" class="btn">Confirm</button>
-                <button id="cancelActionBtn" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
+
+        <!-- Settings Section (Placeholder) -->
+        <div id="settings" style="display: none;">
+            <h2><i class="fas fa-cog"></i> Game Settings</h2>
+            <div class="section">
+                <h3><i class="fas fa-tools"></i> General Settings</h3>
+                <p><em>(This section would contain site-wide settings, like referral percentages, bot status, etc.)</em></p>
+                <div class="form-group">
+                    <label for="referral-percentage">Referral Earning Percentage (%):</label>
+                    <input type="number" id="referral-percentage" min="0" max="100" value="10" required>
+                    <button class="btn btn-sm" onclick="saveSetting('referral-percentage')">Save</button>
+                </div>
+                 <div class="form-group">
+                    <label for="coin-image-url">Coin Image URL:</label>
+                    <input type="url" id="coin-image-url" value="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" required>
+                     <button class="btn btn-sm" onclick="saveSetting('coin-image-url')">Save</button>
+                </div>
+                 <div class="form-group">
+                    <label for="referral-reward-points">Per Referral Reward (PXF):</label>
+                    <input type="number" id="referral-reward-points" min="0" value="100" required>
+                     <button class="btn btn-sm" onclick="saveSetting('referral-reward-points')">Save</button>
+                </div>
+                 <div class="form-group">
+                    <label for="bot-status">Bot Status:</label>
+                    <select id="bot-status">
+                        <option value="active">Active</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                     <button class="btn btn-sm" onclick="saveSetting('bot-status')">Save</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <style>
-        /* Modal Styles */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
-            backdrop-filter: blur(5px); /* Blur effect */
-        }
-
-        .modal-content {
-            background-color: var(--card-background);
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            width: 80%; /* Could be more or less, depending on screen size */
-            max-width: 500px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-
-        .modal-content h4 {
-            color: var(--accent-color);
-            margin-top: 0;
-            font-size: 1.6em;
-            margin-bottom: 20px;
-        }
-
-        .modal-content p {
-            color: var(--text-color-secondary);
-            font-size: 1.1em;
-            margin-bottom: 30px;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .modal-actions .btn {
-            padding: 10px 25px;
-            font-size: 1em;
-        }
-    </style>
-
+    <!-- Firebase Configuration -->
     <script>
-        // --- Firebase Configuration ---
         const firebaseConfig = {
-            apiKey: "AIzaSyBCBnT2enEoLaf7IhaSnMmlZbsZfoPjgrE", // REPLACE WITH YOUR ACTUAL API KEY
+            apiKey: "AIzaSyBCBnT2enEoLaf7IhaSnMmlZbsZfoPjgrE",
             authDomain: "abs-grow.firebaseapp.com",
-            databaseURL: "https://abs-grow-default-rtdb.firebaseio.com", // REPLACE WITH YOUR ACTUAL DB URL
+            databaseURL: "https://abs-grow-default-rtdb.firebaseio.com",
             projectId: "abs-grow",
             storageBucket: "abs-grow.firebasestorage.app",
             messagingSenderId: "426717629538",
             appId: "1:426717629538:web:7a6a35674112c04835553b"
         };
+    </script>
+    <!-- Firebase App and Realtime Database SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         // --- Global Variables ---
-        const sidebarLinks = document.querySelectorAll('.sidebar a');
-        const contentSections = document.querySelectorAll('.content-section');
-        const verificationTableBody = document.querySelector('#verificationTable tbody');
-        const activeTimers = {}; // Store active timers to clear them later
+        let currentUser = null; // To store Telegram user info
+        let currentSection = 'dashboard'; // Track current visible section
 
-        // --- Navigation Logic ---
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const sectionId = this.getAttribute('data-section');
+        // --- Utility Functions ---
+        function showLoader(message = "Loading...") {
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader').textContent = message;
+        }
 
-                // Remove active class from all sidebar links
-                sidebarLinks.forEach(l => l.classList.remove('active'));
-                // Add active class to the clicked link
-                this.classList.add('active');
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
 
-                // Hide all content sections
-                contentSections.forEach(section => section.classList.remove('active'));
-                // Show the target section
-                document.getElementById(sectionId).classList.add('active');
-
-                // Load data when a section is shown
-                loadSectionData(sectionId);
+        function navigateTo(sectionId, navLinkId) {
+            // Hide all sections
+            document.querySelectorAll('.main-content > div').forEach(section => {
+                section.style.display = 'none';
             });
-        });
 
-        // --- Data Loading ---
-        function loadSectionData(sectionId) {
-            switch (sectionId) {
-                case 'dashboard':
-                    loadDashboardStats();
-                    break;
-                case 'users':
-                    loadUsers();
-                    break;
-                case 'categories':
-                    loadCategories();
-                    break;
-                case 'tasks':
-                    loadTasks();
-                    loadCategoriesForTaskForm(); // Load categories into task form select
-                    break;
-                case 'earnings':
-                    loadEarnings();
-                    break;
-                case 'lucky-codes':
-                    loadLuckyCodes();
-                    break;
-                case 'verification':
-                    loadPendingVerifications();
-                    break; // Load verification data
-                case 'settings':
-                    loadSettings();
-                    break;
+            // Show the target section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active navigation link
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(navLinkId).classList.add('active');
+
+            currentSection = sectionId; // Update current section
+        }
+
+        function getCurrentUser() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+                if (tgUser) {
+                    return {
+                        id: tgUser.id,
+                        username: tgUser.username || 'N/A',
+                        firstName: tgUser.first_name,
+                        lastName: tgUser.last_name,
+                        photoUrl: tgUser.photo_url
+                    };
+                }
+            }
+            return null; // Fallback if not in Telegram Web App or no user data
+        }
+
+        // Helper to format dates
+        function formatDateTime(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = new Date(timestamp);
+            return date.toLocaleString();
+        }
+
+        // Function to get a unique task ID
+        function generateTaskId() {
+            return `task_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+        }
+
+        // Function to get a unique user referral code
+        function generateReferralCode() {
+            return `REF_${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+        }
+
+        // --- Section Specific Functions ---
+
+        // Dashboard Data Fetching
+        async function fetchDashboardData() {
+            try {
+                const [usersSnapshot, tasksSnapshot, earningsSnapshot] = await Promise.all([
+                    database.ref('users').once('value'),
+                    database.ref('tasks').once('value'),
+                    database.ref('earnings').once('value')
+                ]);
+
+                const usersCount = usersSnapshot.numChildren();
+                const tasksCount = tasksSnapshot.numChildren();
+                let totalCoins = 0;
+                earningsSnapshot.forEach(child => {
+                    totalCoins += child.val().amount || 0;
+                });
+
+                document.getElementById('total-users-count').textContent = usersCount;
+                document.getElementById('total-tasks-count').textContent = tasksCount;
+                document.getElementById('total-earnings-count').textContent = totalCoins.toLocaleString(); // Format with commas
+                // Placeholder for active sessions and last activity
+                document.getElementById('active-sessions-count').textContent = '0';
+                document.getElementById('latest-user-signup').textContent = 'N/A'; // Populate from user data
+                document.getElementById('last-task-completion').textContent = 'N/A'; // Populate from task completion logs
+            } catch (error) {
+                console.error("Error fetching dashboard data:", error);
+                // Display error to user if needed
             }
         }
 
-        // --- Dashboard Stats Loading ---
-        function loadDashboardStats() {
-            Promise.all([
-                database.ref('users').once('value'),
-                database.ref('tasks').orderByChild('status').equalTo('active').once('value'),
-                database.ref('earnings').once('value'),
-                database.ref('categories').orderByChild('active').equalTo(true).once('value'),
-                database.ref('pendingVerifications').once('value') // Fetch pending verifications count
-            ]).then(snapshotArray => {
-                const usersSnapshot = snapshotArray[0];
-                const activeTasksSnapshot = snapshotArray[1];
-                const earningsSnapshot = snapshotArray[2];
-                const activeCategoriesSnapshot = snapshotArray[3];
-                const pendingVerificationsSnapshot = snapshotArray[4]; // Get pending verifications
+        // Tasks Management
+        async function fetchTasks() {
+            const tasksTableBody = document.getElementById('tasks-table-body');
+            tasksTableBody.innerHTML = ''; // Clear existing rows
+            showLoader('Fetching tasks...');
 
-                const totalUsers = usersSnapshot.numChildren();
-                const activeTasks = activeTasksSnapshot.numChildren();
-                let totalEarnings = 0;
-                if (earningsSnapshot.exists()) {
-                    earningsSnapshot.forEach(child => {
-                        const earningData = child.val();
-                        if (earningData.coinsEarned) {
-                            totalEarnings += earningData.coinsEarned;
-                        }
-                    });
-                }
-                const activeCategories = activeCategoriesSnapshot.numChildren();
-                const pendingVerificationsCount = pendingVerificationsSnapshot.numChildren(); // Count them
-
-                document.getElementById('totalUsersStat').textContent = totalUsers;
-                document.getElementById('activeTasksStat').textContent = activeTasks;
-                document.getElementById('totalEarningsStat').textContent = totalEarnings;
-                document.getElementById('activeCategoriesStat').textContent = activeCategories;
-                document.getElementById('pendingVerificationStat').textContent = pendingVerificationsCount; // Display the count
-            }).catch(error => {
-                console.error("Error loading dashboard stats: ", error);
-                document.getElementById('totalUsersStat').textContent = 'N/A';
-                document.getElementById('activeTasksStat').textContent = 'N/A';
-                document.getElementById('totalEarningsStat').textContent = 'N/A';
-                document.getElementById('activeCategoriesStat').textContent = 'N/A';
-                document.getElementById('pendingVerificationStat').textContent = 'N/A';
-            });
-        }
-
-        // --- User Management --- (Same as before)
-        function loadUsers() {
-            const usersTableBody = document.querySelector('#usersTable tbody');
-            usersTableBody.innerHTML = '<tr><td colspan="5" class="no-data-message">Loading users...</td></tr>';
-
-            database.ref('users').on('value', (snapshot) => {
-                usersTableBody.innerHTML = ''; // Clear existing rows
+            try {
+                const snapshot = await database.ref('tasks').once('value');
                 if (snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const user = child.val();
-                        const userId = child.key;
-                        const row = `
-                            <tr>
-                                <td>${userId}</td>
-                                <td>${user.username || 'N/A'}</td>
-                                <td>${user.email || 'N/A'}</td>
-                                <td>${user.points || 0}</td>
-                                <td class="action-buttons">
-                                    <button class="btn-secondary edit-btn" onclick="editUser('${userId}')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-danger delete-btn" onclick="confirmAction('delete', 'users', '${userId}')"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
+                    snapshot.forEach(child => {
+                        const task = child.val();
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${task.taskId || 'N/A'}</td>
+                            <td>${task.title}</td>
+                            <td>${task.category}</td>
+                            <td>${task.rewardPoints || 0}</td>
+                            <td>${task.codeVerificationRequired ? 'Yes' : 'No'}</td>
+                            <td class="actions">
+                                <button class="edit-btn" data-taskid="${task.taskId}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-taskid="${task.taskId}"><i class="fas fa-trash-alt"></i></button>
+                            </td>
                         `;
-                        usersTableBody.innerHTML += row;
+                        tasksTableBody.appendChild(row);
                     });
                 } else {
-                    usersTableBody.innerHTML = '<tr><td colspan="5" class="no-data-message">No users found.</td></tr>';
+                    tasksTableBody.innerHTML = '<tr><td colspan="6">No tasks found.</td></tr>';
                 }
-            }, (error) => {
-                console.error("Error loading users: ", error);
-                usersTableBody.innerHTML = `<tr><td colspan="5" class="no-data-message">Error loading users: ${error.message}</td></tr>`;
-            });
-        }
-        document.getElementById('addUserForm').addEventListener('submit', (e) => { /* ... same as before ... */ });
-        function editUser(userId) { alert('Editing user with ID: ' + userId + '. Implement edit form functionality.'); }
-
-        // --- Category Management --- (Same as before)
-        function loadCategories() { /* ... same as before ... */ }
-        document.getElementById('addCategoryForm').addEventListener('submit', (e) => { /* ... same as before ... */ });
-        function editCategory(categoryId) { alert('Editing category with ID: ' + categoryId + '. Implement edit form functionality.'); }
-
-        // --- Task Management --- (Same as before)
-        function loadCategoriesForTaskForm() { /* ... same as before ... */ }
-        function loadTasks() { /* ... same as before ... */ }
-        document.getElementById('addTaskForm').addEventListener('submit', (e) => { /* ... same as before ... */ });
-        function editTask(taskId) { alert('Editing task with ID: ' + taskId + '. Implement edit form functionality.'); }
-        function viewTaskDetails(taskId) { alert('Viewing details for task ID: ' + taskId + '. Implement a modal or separate view.'); }
-
-        // --- Earnings Management --- (Same as before)
-        function loadEarnings() { /* ... same as before ... */ }
-        document.getElementById('addEarningForm').addEventListener('submit', (e) => { /* ... same as before ... */ });
-        function updateUserPoints(userId, pointsToAdd) { /* ... same as before ... */ }
-
-        // --- Daily Lucky Code --- (Same as before)
-        function loadLuckyCodes() { /* ... same as before ... */ }
-        document.getElementById('addLuckyCodeForm').addEventListener('submit', (e) => { /* ... same as before ... */ });
-        function editLuckyCode(luckyCodeId) { alert('Editing lucky code with ID: ' + luckyCodeId + '. Implement edit form functionality.'); }
-
-        // --- NEW: Task Verification Logic ---
-
-        // Reference to tasks for fetching task details
-        const tasksRef = database.ref('tasks');
-        let activeVerificationTimers = {}; // Store timers per verification item
-
-        function loadPendingVerifications() {
-            const verificationTableBody = document.querySelector('#verificationTable tbody');
-            verificationTableBody.innerHTML = '<tr><td colspan="8" class="no-data-message">Loading verification requests...</td></tr>';
-
-            const query = database.ref('pendingVerifications').orderByChild('submittedAt');
-
-            query.on('value', (snapshot) => {
-                // Clear existing timers and table rows
-                Object.keys(activeVerificationTimers).forEach(key => clearInterval(activeVerificationTimers[key]));
-                activeVerificationTimers = {};
-                verificationTableBody.innerHTML = '';
-
-                if (snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const verificationData = child.val();
-                        const verificationId = child.key; // This is the key in pendingVerifications
-
-                        // Fetch task details to show task title and points
-                        tasksRef.child(verificationData.taskId).once('value', (taskSnapshot) => {
-                            const task = taskSnapshot.val();
-                            if (!task) return; // Task might have been deleted
-
-                            const taskTitle = task.title || 'Unknown Task';
-                            const taskPoints = task.points || 0;
-                            const verificationLimitMs = (task.estimatedCompletionTimeMinutes || 15) * 60 * 1000; // Default 15 mins if not set
-                            const submittedAt = new Date(verificationData.submittedAt);
-                            const submissionTimestamp = submittedAt.getTime();
-                            const verificationEndTime = submissionTimestamp + verificationLimitMs;
-                            const currentTime = Date.now();
-                            const timeRemainingMs = verificationEndTime - currentTime;
-
-                            const row = document.createElement('tr');
-                            row.id = `verification-row-${verificationId}`;
-                            row.innerHTML = `
-                                <td>${verificationData.taskId}</td>
-                                <td>${verificationData.userId}</td>
-                                <td>${verificationData.submittedCode}</td>
-                                <td>${new Date(verificationData.submittedAt).toLocaleString()}</td>
-                                <td>${taskTitle}</td>
-                                <td>${(verificationLimitMs / (1000 * 60)).toFixed(0)} min</td>
-                                <td id="timer-${verificationId}" class="verification-timer">${formatTime(timeRemainingMs)}</td>
-                                <td class="action-buttons">
-                                    <button class="btn-success approve-btn" onclick="approveVerification('${verificationId}', '${verificationData.userId}', '${verificationData.taskId}', ${taskPoints})"><i class="fas fa-check"></i></button>
-                                    <button class="btn-danger reject-btn" onclick="rejectVerification('${verificationId}', '${verificationData.userId}', '${verificationData.taskId}')"><i class="fas fa-times"></i></button>
-                                </td>
-                            `;
-                            verificationTableBody.appendChild(row);
-
-                            // Start the timer for this row
-                            if (timeRemainingMs > 0) {
-                                startVerificationTimer(verificationId, timeRemainingMs, verificationData.userId, verificationData.taskId, taskPoints);
-                            } else {
-                                // If already expired, visually mark it and remove action buttons
-                                document.getElementById(`timer-${verificationId}`).classList.add('expired');
-                                document.getElementById(`timer-${verificationId}`).textContent = 'Expired';
-                                row.querySelector('.action-buttons').innerHTML = '<span class="text-danger">Expired</span>';
-                                // Auto-reject expired items (optional, depends on desired behavior)
-                                // rejectVerification(verificationId, verificationData.userId, verificationData.taskId, true);
-                            }
-                        });
-                    });
-                } else {
-                    verificationTableBody.innerHTML = '<tr><td colspan="8" class="no-data-message">No pending verifications.</td></tr>';
-                }
-            }, (error) => {
-                console.error("Error loading pending verifications: ", error);
-                verificationTableBody.innerHTML = `<tr><td colspan="8" class="no-data-message">Error loading verifications: ${error.message}</td></tr>`;
-            });
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+                tasksTableBody.innerHTML = '<tr><td colspan="6">Error loading tasks.</td></tr>';
+            } finally {
+                hideLoader();
+            }
         }
 
-        function startVerificationTimer(verificationId, initialTimeMs, userId, taskId, taskPoints) {
-            let timeRemaining = initialTimeMs;
+        async function addTask(event) {
+            event.preventDefault();
+            showLoader('Adding task...');
 
-            const timerElement = document.getElementById(`timer-${verificationId}`);
-            if (!timerElement) return; // Element might have been removed already
+            const taskData = {
+                taskId: document.getElementById('task-id').value.trim() || generateTaskId(),
+                title: document.getElementById('task-title').value.trim(),
+                description: document.getElementById('task-description').value.trim(),
+                iconUrl: document.getElementById('task-icon-url').value.trim(),
+                taskUrl: document.getElementById('task-url').value.trim() || null,
+                completionTime: parseInt(document.getElementById('task-completion-time').value),
+                category: document.getElementById('task-category').value.trim(),
+                rewardPoints: parseInt(document.getElementById('task-reward-points').value),
+                isPermanent: document.getElementById('is-permanent-task').value === 'true',
+                codeVerificationRequired: document.getElementById('code-verification-required').value === 'true',
+                taskCode: document.getElementById('task-code').value.trim() || null,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            };
 
-            // Update immediately
-            timerElement.textContent = formatTime(timeRemaining);
-            if (timeRemaining <= 0) {
-                timerElement.classList.add('expired');
-                timerElement.textContent = 'Expired';
-                document.querySelector(`#verification-row-${verificationId} .action-buttons`).innerHTML = '<span class="text-danger">Expired</span>';
-                // Optionally, automatically reject expired items
-                // rejectVerification(verificationId, userId, taskId, true);
+            // Basic validation for required fields (already handled by HTML `required` but good to double check)
+            if (!taskData.title || !taskData.description || !taskData.iconUrl || !taskData.category || isNaN(taskData.rewardPoints) || !taskData.taskId) {
+                alert("Please fill in all required task details.");
+                hideLoader();
                 return;
             }
 
+            try {
+                await database.ref(`tasks/${taskData.taskId}`).set(taskData);
+                alert(`Task "${taskData.title}" added successfully!`);
+                document.getElementById('add-task-form').reset(); // Reset form
+                fetchTasks(); // Refresh the task list
+            } catch (error) {
+                console.error("Error adding task:", error);
+                alert(`Failed to add task: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
 
-            activeVerificationTimers[verificationId] = setInterval(() => {
-                timeRemaining -= 1000; // Decrease by 1 second
-                timerElement.textContent = formatTime(timeRemaining);
+        // Task Verification Queue
+        async function fetchVerificationQueue() {
+            const verificationQueueDiv = document.getElementById('verification-queue');
+            verificationQueueDiv.innerHTML = ''; // Clear existing items
+            showLoader('Fetching verification requests...');
 
-                if (timeRemaining <= 0) {
-                    clearInterval(activeVerificationTimers[verificationId]);
-                    timerElement.classList.add('expired');
-                    timerElement.textContent = 'Expired';
-                    document.querySelector(`#verification-row-${verificationId} .action-buttons`).innerHTML = '<span class="text-danger">Expired</span>';
-                    // Auto-reject expired items
-                    // rejectVerification(verificationId, userId, taskId, true);
+            try {
+                // Fetch all completed tasks that are awaiting verification
+                const snapshot = await database.ref('taskCompletions')
+                                            .orderByChild('status')
+                                            .equalTo('completed')
+                                            .once('value');
+
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const completion = child.val();
+                        const item = document.createElement('div');
+                        item.className = 'task-verify-item';
+                        item.innerHTML = `
+                            <div class="details">
+                                <strong>User:</strong> ${completion.userId} |
+                                <strong>Task:</strong> ${completion.taskId} |
+                                <strong>Submitted:</strong> ${formatDateTime(completion.timestamp)}
+                                ${completion.code ? `<br><strong>Code Entered:</strong> ${completion.code}` : ''}
+                                ${completion.screenshotUrl ? `<br><a href="${completion.screenshotUrl}" target="_blank">[View Screenshot]</a>` : ''}
+                            </div>
+                            <div class="actions">
+                                <button class="verify-btn" data-completion-id="${child.key}">Verify</button>
+                                <button class="delete-btn" data-completion-id="${child.key}">Reject</button>
+                            </div>
+                        `;
+                        verificationQueueDiv.appendChild(item);
+                    });
+                } else {
+                    verificationQueueDiv.innerHTML = '<p>No pending verification requests.</p>';
+                }
+            } catch (error) {
+                console.error("Error fetching verification queue:", error);
+                verificationQueueDiv.innerHTML = '<p>Error loading verification queue.</p>';
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function handleVerificationAction(completionId, action) {
+            const confirmationMessage = action === 'verify'
+                ? "Are you sure you want to verify this task completion? The user will receive their reward."
+                : "Are you sure you want to reject this submission? The user will not receive a reward.";
+
+            if (!confirm(confirmationMessage)) return;
+
+            showLoader(action === 'verify' ? 'Verifying...' : 'Rejecting...');
+
+            const completionRef = database.ref(`taskCompletions/${completionId}`);
+            const completionSnapshot = await completionRef.once('value');
+            const completionData = completionSnapshot.val();
+
+            if (!completionData) {
+                alert("Completion record not found!");
+                hideLoader();
+                return;
+            }
+
+            try {
+                if (action === 'verify') {
+                    // 1. Grant reward to user
+                    const taskRef = database.ref(`tasks/${completionData.taskId}`);
+                    const taskSnapshot = await taskRef.once('value');
+                    const task = taskSnapshot.val();
+
+                    if (task) {
+                        const userRef = database.ref(`users/${completionData.userId}/coins`);
+                        // Atomically increment user's coins
+                        await userRef.transaction(currentCoins => {
+                            return (currentCoins || 0) + task.rewardPoints;
+                        });
+
+                        // Log the earning
+                        await database.ref('earnings').push({
+                            userId: completionData.userId,
+                            type: 'task_completion',
+                            amount: task.rewardPoints,
+                            description: `Completed task: "${task.title}"`,
+                            taskId: completionData.taskId,
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+
+                        // Update completion status to 'verified'
+                        await completionRef.update({ status: 'verified', adminActionTimestamp: firebase.database.ServerValue.TIMESTAMP });
+                        alert(`Task completion verified. User ${completionData.userId} awarded ${task.rewardPoints} coins.`);
+                    } else {
+                        alert(`Task details not found for task ID: ${completionData.taskId}. Skipping reward.`);
+                        await completionRef.update({ status: 'verification_skipped_task_not_found', adminActionTimestamp: firebase.database.ServerValue.TIMESTAMP });
+                    }
+
+                } else if (action === 'reject') {
+                    // Update completion status to 'rejected'
+                    await completionRef.update({ status: 'rejected', adminActionTimestamp: firebase.database.ServerValue.TIMESTAMP });
+                    alert(`Task submission from user ${completionData.userId} rejected.`);
+                }
+
+                // Remove the item from the verification queue display
+                document.querySelector(`.task-verify-item [data-completion-id="${completionId}"]`).closest('.task-verify-item').remove();
+
+            } catch (error) {
+                console.error(`Error ${action}ing verification:`, error);
+                alert(`Failed to ${action}: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Earnings Management
+        async function fetchEarnings() {
+            const earningsTableBody = document.getElementById('earnings-table-body');
+            earningsTableBody.innerHTML = '';
+            showLoader('Fetching earnings history...');
+
+            try {
+                const snapshot = await database.ref('earnings').once('value');
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const earning = child.val();
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${earning.userId}</td>
+                            <td>${earning.type}</td>
+                            <td>${earning.amount.toLocaleString()}</td>
+                            <td>${earning.description || 'N/A'}</td>
+                            <td>${formatDateTime(earning.timestamp)}</td>
+                            <td class="actions">
+                                <button class="edit-btn" data-earningid="${child.key}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-earningid="${child.key}"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        `;
+                        earningsTableBody.appendChild(row);
+                    });
+                } else {
+                    earningsTableBody.innerHTML = '<tr><td colspan="6">No earning records found.</td></tr>';
+                }
+            } catch (error) {
+                console.error("Error fetching earnings:", error);
+                earningsTableBody.innerHTML = '<tr><td colspan="6">Error loading earnings.</td></tr>';
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function addEarning(event) {
+            event.preventDefault();
+            showLoader('Adding earning record...');
+
+            const earningData = {
+                userId: document.getElementById('earning-user-id').value.trim(),
+                type: document.getElementById('earning-type').value,
+                amount: parseInt(document.getElementById('earning-amount').value),
+                description: document.getElementById('earning-description').value.trim(),
+                startTime: document.getElementById('earning-start-time').value || null,
+                endTime: document.getElementById('earning-end-time').value || null,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            if (!earningData.userId || isNaN(earningData.amount)) {
+                alert("Please enter User ID and a valid Amount.");
+                hideLoader();
+                return;
+            }
+
+            // If it's a task completion, we might need to fetch task details to verify
+            // For simplicity here, we're directly adding based on admin input.
+            // A more robust system would validate task IDs and points.
+
+            try {
+                await database.ref('earnings').push(earningData);
+
+                // Update user's total coins if applicable (e.g., manual addition)
+                if (earningData.type === 'manual_add' || earningData.type === 'referral' || earningData.type === 'lucky_code') {
+                    const userRef = database.ref(`users/${earningData.userId}/coins`);
+                    await userRef.transaction(currentCoins => {
+                        return (currentCoins || 0) + earningData.amount;
+                    });
+                }
+
+
+                alert("Earning record added successfully!");
+                document.getElementById('add-earning-form').reset();
+                fetchEarnings();
+                fetchDashboardData(); // Refresh dashboard totals
+            } catch (error) {
+                console.error("Error adding earning:", error);
+                alert(`Failed to add earning: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // User Management
+        async function fetchUsers() {
+            const usersTableBody = document.getElementById('users-table-body');
+            usersTableBody.innerHTML = '';
+            showLoader('Fetching users...');
+
+            try {
+                const snapshot = await database.ref('users').once('value');
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const user = child.val();
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.id}</td>
+                            <td>${user.username || user.firstName || 'N/A'}</td>
+                            <td>${user.referralCode || 'N/A'}</td>
+                            <td>${(user.coins || 0).toLocaleString()}</td>
+                            <td>${formatDateTime(user.joinedAt)}</td>
+                            <td class="actions">
+                                <button class="edit-btn" data-userid="${user.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-userid="${user.id}"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        `;
+                        usersTableBody.appendChild(row);
+                    });
+                } else {
+                    usersTableBody.innerHTML = '<tr><td colspan="6">No users found.</td></tr>';
+                }
+            } catch (error) {
+                console.error("Error fetching users:", error);
+                usersTableBody.innerHTML = '<tr><td colspan="6">Error loading users.</td></tr>';
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Daily Codes Management
+        async function fetchDailyCodes() {
+            const codesTableBody = document.getElementById('daily-codes-table-body');
+            codesTableBody.innerHTML = '';
+            showLoader('Fetching daily codes...');
+
+            try {
+                const snapshot = await database.ref('dailyCodes').once('value');
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const code = child.val();
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${code.title}</td>
+                            <td><strong>${code.codeValue}</strong></td>
+                            <td>${code.points}</td>
+                            <td>${formatDateTime(code.expiry)}</td>
+                            <td class="actions">
+                                <button class="edit-btn" data-codeid="${child.key}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-codeid="${child.key}"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        `;
+                        codesTableBody.appendChild(row);
+                    });
+                } else {
+                    codesTableBody.innerHTML = '<tr><td colspan="5">No daily codes found.</td></tr>';
+                }
+            } catch (error) {
+                console.error("Error fetching daily codes:", error);
+                codesTableBody.innerHTML = '<tr><td colspan="5">Error loading daily codes.</td></tr>';
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function addDailyCode(event) {
+            event.preventDefault();
+            showLoader('Adding daily code...');
+
+            const codeData = {
+                title: document.getElementById('daily-code-title').value.trim(),
+                description: document.getElementById('daily-code-description').value.trim(),
+                codeValue: document.getElementById('daily-code-value').value.trim(),
+                points: parseInt(document.getElementById('daily-code-points').value),
+                expiry: document.getElementById('daily-code-expiry').value,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            if (!codeData.title || !codeData.codeValue || isNaN(codeData.points) || !codeData.expiry) {
+                alert("Please fill in all required daily code details.");
+                hideLoader();
+                return;
+            }
+
+            try {
+                await database.ref('dailyCodes').push(codeData);
+                alert(`Daily code "${codeData.title}" added successfully!`);
+                document.getElementById('add-daily-code-form').reset();
+                fetchDailyCodes();
+            } catch (error) {
+                console.error("Error adding daily code:", error);
+                alert(`Failed to add daily code: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Settings Management
+        function saveSetting(settingKey) {
+            const inputElement = document.getElementById(settingKey);
+            const value = inputElement.type === 'checkbox' ? inputElement.checked : inputElement.value;
+
+            if (inputElement.type === 'number') {
+                const numValue = parseFloat(value);
+                 if (isNaN(numValue)) {
+                    alert(`Invalid number for ${settingKey}.`);
                     return;
                 }
-            }, 1000);
-        }
-
-        function formatTime(ms) {
-            if (ms < 0) ms = 0;
-            const totalSeconds = Math.floor(ms / 1000);
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = totalSeconds % 60;
-            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-
-        function approveVerification(verificationId, userId, taskId, taskPoints) {
-            // 1. Remove from pendingVerifications
-            database.ref(`pendingVerifications/${verificationId}`).remove()
-            .then(() => {
-                // 2. Update user points and mark task as completed for user
-                const userRef = database.ref(`users/${userId}`);
-                userRef.once('value', (userSnapshot) => {
-                    if (userSnapshot.exists()) {
-                        const currentUserPoints = userSnapshot.val().points || 0;
-                        userRef.update({
-                            points: currentUserPoints + taskPoints
-                        })
-                        .then(() => {
-                            // 3. Mark task as completed for the user (optional, but good practice)
-                            // Assuming a structure like: /userTaskCompletions/{userId}/{taskId} = { status: 'completed', points: taskPoints }
-                            database.ref(`userTaskCompletions/${userId}/${taskId}`).set({
-                                status: 'completed',
-                                points: taskPoints,
-                                verifiedByAdmin: true, // Mark as admin verified
-                                verifiedAt: new Date().toISOString()
-                            })
-                            .then(() => {
-                                alert(`Verification approved! User ${userId} gained ${taskPoints} points.`);
-                                // The listener will automatically remove the row
-                                clearInterval(activeVerificationTimers[verificationId]); // Clear timer
-                                delete activeVerificationTimers[verificationId];
-                            })
-                            .catch(err => console.error("Error marking task completion: ", err));
-                        })
-                        .catch(err => console.error("Error updating user points: ", err));
-                    } else {
-                        alert(`User ${userId} not found. Verification approved, but points not added.`);
-                        // Still remove from pending
-                        clearInterval(activeVerificationTimers[verificationId]);
-                        delete activeVerificationTimers[verificationId];
-                    }
-                });
-                // Optionally notify user about approval
-            })
-            .catch(err => {
-                console.error("Error removing from pendingVerifications: ", err);
-                alert("Failed to approve verification. Please check console.");
-            });
-        }
-
-        function rejectVerification(verificationId, userId, taskId, isExpired = false) {
-            // 1. Remove from pendingVerifications
-            database.ref(`pendingVerifications/${verificationId}`).remove()
-            .then(() => {
-                // 2. Optionally, mark task as rejected for user or notify them
-                database.ref(`userTaskCompletions/${userId}/${taskId}`).set({
-                    status: 'rejected',
-                    reason: isExpired ? 'Verification time expired' : 'Incorrect code',
-                    rejectedByAdmin: true,
-                    rejectedAt: new Date().toISOString()
-                })
-                .then(() => {
-                    alert(`Verification rejected for user ${userId} on task ${taskId}.`);
-                    // Optionally send a message to the user explaining the rejection
-                    // e.g., push to a user notification system or a private message node
-                })
-                .catch(err => console.error("Error marking task rejection: ", err));
-
-                // Clear timer
-                clearInterval(activeVerificationTimers[verificationId]);
-                delete activeVerificationTimers[verificationId];
-
-            })
-            .catch(err => {
-                console.error("Error removing from pendingVerifications: ", err);
-                alert("Failed to reject verification. Please check console.");
-            });
-        }
-
-        // --- Settings Management --- (Same as before)
-        function loadSettings() { /* ... same as before ... */ }
-        document.getElementById('gameSettingsForm').addEventListener('submit', (e) => { /* ... same as before ... */ });
-
-
-        // --- Generic Action Confirmation ---
-        const confirmationModal = document.getElementById('confirmationModal');
-        const confirmActionBtn = document.getElementById('confirmActionBtn');
-        const cancelActionBtn = document.getElementById('cancelActionBtn');
-        const modalMessage = document.getElementById('modalMessage');
-
-        let currentAction = { type: null, targetType: null, targetId: null, taskId: null, userId: null, points: 0 };
-
-        function confirmAction(actionType, targetType, targetId, taskId = null, userId = null, points = 0) {
-            currentAction.type = actionType;
-            currentAction.targetType = targetType;
-            currentAction.targetId = targetId;
-            currentAction.taskId = taskId;
-            currentAction.userId = userId;
-            currentAction.points = points;
-
-            let message = '';
-            let confirmButtonText = 'Confirm';
-            let confirmButtonClass = 'btn-primary';
-
-            if (actionType === 'delete') {
-                message = `Are you sure you want to delete this ${targetType.slice(0, -1)}? This action cannot be undone.`;
-                confirmButtonText = 'Delete';
-                confirmButtonClass = 'btn-danger';
-            } else if (actionType === 'approve_verification') {
-                message = `Approve verification for User ${userId} on Task ${taskId} (${points} points)?`;
-                confirmButtonText = 'Approve';
-                confirmButtonClass = 'btn-success';
-            } else if (actionType === 'reject_verification') {
-                message = `Reject verification for User ${userId} on Task ${taskId}?`;
-                confirmButtonText = 'Reject';
-                confirmButtonClass = 'btn-danger';
-            }
-
-            modalMessage.textContent = message;
-            confirmActionBtn.textContent = confirmButtonText;
-            confirmActionBtn.className = `btn ${confirmButtonClass}`; // Reset classes and set new one
-
-            confirmationModal.style.display = 'block';
-        }
-
-        confirmActionBtn.addEventListener('click', () => {
-            if (!currentAction.type || !currentAction.targetType || !currentAction.targetId) {
-                // For verification approvals/rejections, targetId is verificationId
-                if (currentAction.type === 'approve_verification') {
-                    approveVerification(currentAction.targetId, currentAction.userId, currentAction.taskId, currentAction.points);
-                } else if (currentAction.type === 'reject_verification') {
-                    rejectVerification(currentAction.targetId, currentAction.userId, currentAction.taskId);
+                // Apply specific constraints if needed (e.g., percentage range)
+                if (settingKey === 'referral-percentage' && (numValue < 0 || numValue > 100)) {
+                    alert("Referral percentage must be between 0 and 100.");
+                    return;
                 }
-                 confirmationModal.style.display = 'none';
-                return;
             }
 
-            const itemRef = database.ref(`${currentAction.targetType}/${currentAction.targetId}`);
-            itemRef.remove()
+            showLoader(`Saving ${settingKey}...`);
+            database.ref(`settings/${settingKey}`).set(value)
                 .then(() => {
-                    alert(`${currentAction.targetType.charAt(0).toUpperCase() + currentAction.targetType.slice(1)} deleted successfully.`);
-                    confirmationModal.style.display = 'none';
-                    // Clear current action state
-                    currentAction = { type: null, targetType: null, targetId: null, taskId: null, userId: null, points: 0 };
-                    // The .on() listeners should automatically update the UI
+                    alert(`${settingKey} updated successfully!`);
                 })
-                .catch((error) => {
-                    console.error(`Error deleting ${currentAction.targetType}: `, error);
-                    alert(`Failed to delete ${currentAction.targetType}. Check console for details.`);
-                    confirmationModal.style.display = 'none';
+                .catch(error => {
+                    console.error(`Error saving ${settingKey}:`, error);
+                    alert(`Failed to update ${settingKey}: ${error.message}`);
+                })
+                .finally(() => {
+                    hideLoader();
                 });
-        });
+        }
 
-        cancelActionBtn.addEventListener('click', () => {
-            confirmationModal.style.display = 'none';
-            currentAction = { type: null, targetType: null, targetId: null, taskId: null, userId: null, points: 0 };
-        });
-
-        // Close modal if clicked outside content
-        confirmationModal.addEventListener('click', (event) => {
-            if (event.target === confirmationModal) {
-                confirmationModal.style.display = 'none';
-                currentAction = { type: null, targetType: null, targetId: null, taskId: null, userId: null, points: 0 };
+        async function loadSettings() {
+            showLoader('Loading settings...');
+            try {
+                const settingsSnapshot = await database.ref('settings').once('value');
+                if (settingsSnapshot.exists()) {
+                    const settings = settingsSnapshot.val();
+                    for (const key in settings) {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            if (element.type === 'checkbox') {
+                                element.checked = settings[key];
+                            } else if (element.tagName === 'SELECT') {
+                                element.value = settings[key];
+                            } else {
+                                element.value = settings[key];
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading settings:", error);
+            } finally {
+                hideLoader();
             }
-        });
+        }
 
 
-        // --- Initial Load ---
+        // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Load dashboard stats on initial page load
-            loadDashboardStats();
-            // Highlight the active link for dashboard
-            document.querySelector('.sidebar a[data-section="dashboard"]').classList.add('active');
+            // Initialize Telegram Web App
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand(); // Expand the app to full height
+                currentUser = getCurrentUser();
+                if (!currentUser) {
+                    // Fallback for testing outside Telegram
+                    console.warn("Not running in Telegram Web App or user data not available.");
+                    // For testing purposes without Telegram, you might want to mock a user
+                    // currentUser = { id: 123456789, username: "test_admin" };
+                }
+            } else {
+                console.warn("Telegram Web App SDK not found.");
+                // Handle cases where the script isn't loaded or not in Telegram
+                // Potentially redirect to a login page or show an error.
+                // For now, we'll allow it to proceed but expect Firebase errors if not configured properly.
+            }
+
+            // Initial navigation to dashboard
+            navigateTo('dashboard', 'nav-dashboard');
+            fetchDashboardData(); // Load dashboard stats on startup
+
+            // Navigation links
+            document.getElementById('nav-dashboard').addEventListener('click', (e) => { e.preventDefault(); navigateTo('dashboard', 'nav-dashboard'); fetchDashboardData(); });
+            document.getElementById('nav-tasks').addEventListener('click', (e) => { e.preventDefault(); navigateTo('tasks', 'nav-tasks'); fetchTasks(); });
+            document.getElementById('nav-verification').addEventListener('click', (e) => { e.preventDefault(); navigateTo('task-verification', 'nav-verification'); fetchVerificationQueue(); });
+            document.getElementById('nav-earnings').addEventListener('click', (e) => { e.preventDefault(); navigateTo('earnings', 'nav-earnings'); fetchEarnings(); });
+            document.getElementById('nav-users').addEventListener('click', (e) => { e.preventDefault(); navigateTo('users', 'nav-users'); fetchUsers(); });
+            document.getElementById('nav-settings').addEventListener('click', (e) => { e.preventDefault(); navigateTo('settings', 'nav-settings'); loadSettings(); });
+            document.getElementById('nav-daily-codes').addEventListener('click', (e) => { e.preventDefault(); navigateTo('daily-codes', 'nav-daily-codes'); fetchDailyCodes(); });
+
+            // Form submissions
+            document.getElementById('add-task-form').addEventListener('submit', addTask);
+            document.getElementById('add-earning-form').addEventListener('submit', addEarning);
+            document.getElementById('add-daily-code-form').addEventListener('submit', addDailyCode);
+
+            // Event delegation for dynamic buttons (edit/delete/verify/reject)
+            document.addEventListener('click', async function(event) {
+                const target = event.target;
+
+                // Task Edit/Delete
+                if (target.closest('.edit-btn')) {
+                    const taskId = target.closest('.edit-btn').dataset.taskid;
+                    alert(`Editing task with ID: ${taskId} (Functionality not implemented yet)`);
+                    // TODO: Implement task editing UI and logic
+                }
+                if (target.closest('.delete-btn')) {
+                    const taskId = target.closest('.delete-btn').dataset.taskid;
+                    if (confirm(`Are you sure you want to delete task "${taskId}"? This action cannot be undone.`)) {
+                        showLoader('Deleting task...');
+                        try {
+                            await database.ref(`tasks/${taskId}`).remove();
+                            alert('Task deleted successfully.');
+                            fetchTasks(); // Refresh list
+                        } catch (error) {
+                            console.error("Error deleting task:", error);
+                            alert(`Failed to delete task: ${error.message}`);
+                        } finally {
+                            hideLoader();
+                        }
+                    }
+                }
+
+                // Task Verification Actions (Verify/Reject)
+                if (target.closest('.verify-btn')) {
+                    const completionId = target.closest('.verify-btn').dataset.completionid;
+                    await handleVerificationAction(completionId, 'verify');
+                }
+                if (target.closest('.delete-btn[data-completion-id]')) { // Using a more specific selector for reject
+                    const completionId = target.closest('.delete-btn').dataset.completionid;
+                    await handleVerificationAction(completionId, 'reject');
+                }
+
+                // Earnings Edit/Delete
+                 if (target.closest('.edit-btn[data-earningid]')) {
+                    const earningId = target.closest('.edit-btn').dataset.earningid;
+                    alert(`Editing earning record with ID: ${earningId} (Functionality not implemented yet)`);
+                    // TODO: Implement earning editing UI and logic
+                }
+                if (target.closest('.delete-btn[data-earningid]')) {
+                    const earningId = target.closest('.delete-btn').dataset.earningid;
+                    if (confirm(`Are you sure you want to delete this earning record?`)) {
+                        showLoader('Deleting earning record...');
+                        try {
+                            await database.ref(`earnings/${earningId}`).remove();
+                            alert('Earning record deleted successfully.');
+                            fetchEarnings(); // Refresh list
+                            fetchDashboardData(); // Refresh totals
+                        } catch (error) {
+                            console.error("Error deleting earning:", error);
+                            alert(`Failed to delete earning: ${error.message}`);
+                        } finally {
+                            hideLoader();
+                        }
+                    }
+                }
+
+                 // User Edit/Delete
+                 if (target.closest('.edit-btn[data-userid]')) {
+                    const userId = target.closest('.edit-btn').dataset.userid;
+                    alert(`Editing user with ID: ${userId} (Functionality not implemented yet)`);
+                    // TODO: Implement user editing UI and logic
+                }
+                if (target.closest('.delete-btn[data-userid]')) {
+                    const userId = target.closest('.delete-btn').dataset.userid;
+                    if (confirm(`Are you sure you want to delete user "${userId}" and all their data? This action cannot be undone.`)) {
+                        showLoader('Deleting user...');
+                        try {
+                            // Delete user data (adjust paths as needed)
+                            await database.ref(`users/${userId}`).remove();
+                            await database.ref('earnings').orderByChild('userId').equalTo(userId).once('value', snapshot => {
+                                snapshot.forEach(child => child.ref.remove());
+                            });
+                            // Potentially remove from taskCompletions too if needed
+                             await database.ref('taskCompletions').orderByChild('userId').equalTo(userId).once('value', snapshot => {
+                                snapshot.forEach(child => child.ref.remove());
+                            });
+
+                            alert('User deleted successfully.');
+                            fetchUsers(); // Refresh list
+                            fetchDashboardData(); // Refresh totals
+                        } catch (error) {
+                            console.error("Error deleting user:", error);
+                            alert(`Failed to delete user: ${error.message}`);
+                        } finally {
+                            hideLoader();
+                        }
+                    }
+                }
+
+                 // Daily Code Edit/Delete
+                 if (target.closest('.edit-btn[data-codeid]')) {
+                    const codeId = target.closest('.edit-btn').dataset.codeid;
+                    alert(`Editing daily code with ID: ${codeId} (Functionality not implemented yet)`);
+                    // TODO: Implement daily code editing UI and logic
+                }
+                if (target.closest('.delete-btn[data-codeid]')) {
+                    const codeId = target.closest('.delete-btn').dataset.codeid;
+                    if (confirm(`Are you sure you want to delete this daily code?`)) {
+                        showLoader('Deleting daily code...');
+                        try {
+                            await database.ref(`dailyCodes/${codeId}`).remove();
+                            alert('Daily code deleted successfully.');
+                            fetchDailyCodes(); // Refresh list
+                        } catch (error) {
+                            console.error("Error deleting daily code:", error);
+                            alert(`Failed to delete daily code: ${error.message}`);
+                        } finally {
+                            hideLoader();
+                        }
+                    }
+                }
+            });
         });
 
     </script>
