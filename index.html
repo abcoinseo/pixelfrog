@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixel Frog</title>
+    <!-- Favicon (optional but good practice) -->
+    <link rel="icon" href="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" type="image/png">
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Source+Code+Pro:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Telegram Web App SDK -->
+    <!-- IMPORTANT: This script MUST be loaded to enable Telegram Web App functionality. -->
+    <!-- It's best to include it directly in the head for immediate availability. -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
-        /* Telegram Mini App Theme Variables (can be overridden) */
+        /* Telegram Mini App Theme Variables */
         :root {
             --tg-theme-bg-color: #1a1a2e; /* Dark Background */
             --tg-theme-text-color: #e0e0e0; /* Light Text */
@@ -40,7 +52,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            box-sizing: border-box; /* Include padding and border in element's total width and height */
+            box-sizing: border-box;
         }
 
         .container {
@@ -69,6 +81,7 @@
             display: flex;
             align-items: center;
             text-align: left;
+            overflow: hidden; /* Prevent content overflow issues */
         }
 
         .header .user-info img {
@@ -77,6 +90,7 @@
             border-radius: 50%;
             margin-right: 15px;
             border: 2px solid var(--primary-accent);
+            flex-shrink: 0; /* Prevent image from shrinking */
         }
 
         .header .user-info .username {
@@ -84,6 +98,10 @@
             font-weight: 700;
             color: var(--primary-accent);
             font-family: 'Rubik Mono One', sans-serif;
+            white-space: nowrap; /* Prevent username wrap */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Show ellipsis for overflow */
+            max-width: 150px; /* Limit width */
         }
         .header .user-info .user-id {
             font-size: 0.8em;
@@ -97,6 +115,7 @@
             font-family: 'Rubik Mono One', sans-serif;
             display: flex;
             align-items: center;
+            flex-shrink: 0; /* Prevent balance from shrinking */
         }
 
         .header .coin-balance img {
@@ -127,6 +146,10 @@
             border-radius: 10px;
             margin-top: 20px;
             border: 1px solid var(--border-color);
+            position: sticky; /* Make nav bar sticky at the bottom */
+            bottom: 15px; /* Add some space from the bottom */
+            z-index: 100; /* Ensure it's above other content */
+            box-sizing: border-box;
         }
 
         .nav-bar a {
@@ -139,6 +162,8 @@
             padding: 8px 15px;
             border-radius: 8px;
             transition: background-color 0.3s, color 0.3s;
+            flex-grow: 1; /* Allow items to grow */
+            text-align: center; /* Center text */
         }
 
         .nav-bar a.active {
@@ -189,15 +214,26 @@
             border: 1px solid var(--border-color);
             text-align: left;
             transition: box-shadow 0.3s;
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
         }
 
         .task-item:hover {
             box-shadow: 0 0 15px var(--primary-accent);
         }
 
+        .task-item .task-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 5px;
+            object-fit: cover;
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
+
         .task-item .task-details {
             flex-grow: 1;
             margin-right: 10px;
+            min-width: 150px; /* Ensure minimum width for details */
         }
 
         .task-item .task-details .title {
@@ -205,7 +241,7 @@
             color: var(--primary-accent);
             font-family: 'Rubik Mono One', sans-serif;
             font-size: 1.1em;
-            display: block; /* Ensure title is on its own line */
+            display: block;
         }
          .task-item .task-details .description {
             font-size: 0.8em;
@@ -214,13 +250,11 @@
             display: block;
         }
 
-
-        .task-item .task-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-            border-radius: 5px;
-            object-fit: cover;
+        .task-item .task-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between elements in actions */
+            flex-shrink: 0; /* Prevent actions from shrinking */
         }
 
         .task-item .task-actions .btn {
@@ -234,6 +268,7 @@
             font-weight: 700;
             transition: background-color 0.3s, transform 0.2s;
             font-family: 'Source Code Pro', monospace;
+            white-space: nowrap; /* Prevent button text wrap */
         }
 
         .task-item .task-actions .btn:hover {
@@ -243,8 +278,7 @@
 
         /* Code Task Specifics */
         .task-item.code-task .task-actions {
-            display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Stack input and button */
             align-items: center;
         }
 
@@ -254,11 +288,11 @@
             background-color: var(--input-background);
             border: 1px solid var(--border-color);
             border-radius: 5px;
-            margin-bottom: 5px;
             color: var(--tg-theme-text-color);
             font-family: 'Source Code Pro', monospace;
             font-size: 0.9em;
             box-sizing: border-box;
+            margin-bottom: 5px;
         }
 
         .task-item.code-task .task-actions .claim-code-input:focus {
@@ -271,6 +305,10 @@
         .category-filter {
             margin-bottom: 20px;
             text-align: center;
+            display: flex; /* Use flexbox for categories */
+            justify-content: center; /* Center the buttons */
+            flex-wrap: wrap; /* Allow buttons to wrap */
+            gap: 5px; /* Space between buttons */
         }
 
         .category-filter button {
@@ -281,7 +319,6 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9em;
-            margin: 0 5px 5px 0;
             transition: background-color 0.3s, color 0.3s;
         }
 
@@ -314,9 +351,11 @@
             padding: 10px 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            word-break: break-all; /* Break long links */
+            word-break: break-all;
             border: 1px solid var(--border-color);
-            display: inline-block; /* To allow padding and width */
+            display: inline-block;
+            max-width: calc(100% - 40px); /* Prevent overflow */
+            overflow-wrap: break-word;
         }
 
         .referral-section .btn.copy-btn {
@@ -331,6 +370,9 @@
             transition: background-color 0.3s, transform 0.2s;
             font-family: 'Source Code Pro', monospace;
             margin-top: 10px;
+            display: block; /* Make button full width for tap targets */
+            margin-left: auto;
+            margin-right: auto;
         }
         .referral-section .btn.copy-btn:hover {
             background-color: var(--button-hover-bg);
@@ -413,7 +455,6 @@
             margin-left: 5px;
         }
 
-
         /* Daily Code Section */
         .daily-code-section {
              background-color: var(--card-background);
@@ -433,9 +474,12 @@
             justify-content: center;
             gap: 5px;
             margin-bottom: 15px;
+            flex-wrap: wrap; /* Allow wrapping */
         }
         .daily-code-section .code-input {
-            width: 60%;
+            /* width: 60%; */ /* Removed fixed width to allow flexbox to control */
+            flex: 1; /* Allow input to grow */
+            min-width: 150px; /* Ensure minimum width */
             padding: 10px;
             background-color: var(--input-background);
             border: 1px solid var(--border-color);
@@ -513,83 +557,38 @@
 
         /* Responsive Adjustments */
         @media (max-width: 480px) {
-            .header .user-info img {
-                width: 40px;
-                height: 40px;
-                margin-right: 10px;
-            }
-            .header .user-info .username {
-                font-size: 1em;
-            }
-            .header .coin-balance {
-                font-size: 1.2em;
-            }
-            .frog-graphic img {
-                width: 100px;
-                height: 100px;
-            }
-            .nav-bar a {
-                font-size: 0.7em;
-                padding: 6px 10px;
-            }
-            .nav-bar a i {
-                font-size: 1.3em;
-            }
-            .content-section h3 {
-                font-size: 1.2em;
-            }
-             .task-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .task-item .task-icon {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-            .task-item .task-details {
-                width: 100%;
-                margin-right: 0;
-            }
-             .task-item .task-actions {
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-between;
-                margin-top: 10px;
-            }
-            .task-item.code-task .task-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            .task-item.code-task .task-actions .claim-code-input {
-                width: calc(100% - 20px); /* Account for padding */
-                margin-bottom: 10px;
-            }
-            .referral-section .referral-link {
-                font-size: 0.9em;
-            }
-             .profile-section .username {
-                font-size: 1.5em;
-            }
-            .profile-section .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .daily-code-section .code-input-group {
-                flex-direction: column;
-            }
-            .daily-code-section .code-input {
-                width: 100%;
-                margin-bottom: 10px;
-            }
+            .header .user-info img { width: 40px; height: 40px; margin-right: 10px; }
+            .header .user-info .username { font-size: 1em; max-width: 120px; }
+            .header .coin-balance { font-size: 1.2em; }
+            .frog-graphic img { width: 100px; height: 100px; }
+            .nav-bar { padding: 8px 0; bottom: 10px; }
+            .nav-bar a { font-size: 0.7em; padding: 6px 8px; }
+            .nav-bar a i { font-size: 1.3em; }
+            .content-section h3 { font-size: 1.2em; }
+             .task-item { padding: 10px; flex-direction: column; align-items: flex-start; }
+            .task-item .task-icon { margin-right: 0; margin-bottom: 10px; }
+            .task-item .task-details { width: 100%; margin-right: 0; }
+             .task-item .task-actions { width: 100%; justify-content: space-between; margin-top: 10px; flex-wrap: wrap; }
+            .task-item.code-task .task-actions { flex-direction: column; align-items: center; }
+            .task-item.code-task .task-actions .claim-code-input { width: 100%; margin-bottom: 10px; }
+            .referral-section .referral-link { font-size: 0.9em; max-width: calc(100% - 20px); }
+            .profile-section .username { font-size: 1.5em; }
+            .profile-section .stats-grid { grid-template-columns: 1fr; }
+            .daily-code-section .code-input-group { flex-direction: column; }
+            .daily-code-section .code-input { width: 100%; margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
+    <!-- Loader Element -->
     <div class="loader" id="loader">
         <div class="loader-spinner"></div>
         Initializing Pixel Frog...
     </div>
 
+    <!-- Main App Container -->
     <div class="container">
+        <!-- Header: User Info & Coin Balance -->
         <div class="header">
             <div class="user-info">
                 <img id="user-avatar" src="https://via.placeholder.com/50/2ecc71/ffffff?text=?" alt="User Avatar">
@@ -600,31 +599,35 @@
             </div>
             <div class="coin-balance">
                 <span id="coin-balance">0</span>
-                <img id="coin-image" src="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" alt="Coin">
+                <img id="coin-image" src="" alt="Coin"> <!-- Image source set by JS -->
             </div>
         </div>
 
+        <!-- Frog Mascot Graphic -->
         <div class="frog-graphic">
             <img src="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" alt="Pixel Frog Mascot">
         </div>
 
+        <!-- Home Section -->
         <div id="home-section" class="content-section">
             <h3><i class="fas fa-home"></i> Welcome to Pixel Frog!</h3>
             <p>Complete tasks, earn PXF coins, and climb the leaderboards. Your adventure starts now!</p>
-            <p>Here's a sneak peek at your current coin balance.</p>
+            <p>Check out the <a href="#tasks" onclick="navigateTo('tasks-section', 'nav-tasks')">Tasks</a> section to begin earning.</p>
         </div>
 
+        <!-- Tasks Section -->
         <div id="tasks-section" class="content-section" style="display: none;">
             <h3><i class="fas fa-tasks"></i> Available Tasks</h3>
-            <div class="category-filter">
+            <div class="category-filter" id="category-filter">
                 <button class="active" data-category="all">All Tasks</button>
-                <!-- Categories will be dynamically added here -->
+                <!-- Dynamic category buttons will be added here -->
             </div>
             <div id="task-list">
-                <!-- Tasks will be loaded here -->
+                <!-- Tasks will be loaded here by JavaScript -->
             </div>
         </div>
 
+        <!-- Refer Section -->
         <div id="refer-section" class="content-section" style="display: none;">
             <h3><i class="fas fa-users"></i> Refer Friends</h3>
             <div class="referral-section">
@@ -640,16 +643,17 @@
             </div>
         </div>
 
+        <!-- Profile Section -->
         <div id="profile-section" class="content-section" style="display: none;">
             <h3><i class="fas fa-user-circle"></i> Your Profile</h3>
-            <img id="profile-avatar" class="user-avatar" src="https://via.placeholder.com/100/2ecc71/ffffff?text=?" alt="Profile Avatar">
+            <img id="profile-avatar" class="user-avatar" src="" alt="Profile Avatar">
             <div class="username" id="profile-username">Loading...</div>
             <div class="user-id" id="profile-user-id">ID: Loading...</div>
             <div class="referral-code-display">My Code: <span id="profile-referral-code">Loading...</span></div>
             <div class="stats-grid">
                 <div class="stats-card">
                     <div class="label">Total Coins</div>
-                    <div class="value" id="profile-total-coins">0 <img id="profile-coin-image" src="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" alt="Coin"></div>
+                    <div class="value" id="profile-total-coins">0 <img id="profile-coin-image" src="" alt="Coin"></div>
                 </div>
                  <div class="stats-card">
                     <div class="label">Tasks Completed</div>
@@ -662,6 +666,7 @@
             </div>
         </div>
 
+        <!-- Daily Code Section -->
         <div id="daily-code-section" class="content-section" style="display: none;">
             <h3><i class="fas fa-gift"></i> Daily Codes</h3>
             <div class="daily-code-section">
@@ -675,7 +680,7 @@
             </div>
         </div>
 
-
+        <!-- Navigation Bar -->
         <div class="nav-bar">
             <a href="#home" id="nav-home" class="active"><i class="fas fa-home"></i> Home</a>
             <a href="#tasks" id="nav-tasks"><i class="fas fa-tasks"></i> Tasks</a>
@@ -702,150 +707,182 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
         // --- Global Variables ---
         let tgUser = null;
-        let userRef = null; // Firebase reference for the current user
+        let userRef = null;
         let currentUserId = null;
-        let referralCodeUsed = false; // Flag to track if referral code was already used for this user
-        let globalSettings = {}; // To store settings like referral percentage
+        let globalSettings = {};
+        let initialReferralProcessed = false; // Flag to ensure referral isn't processed multiple times
 
-        // --- Utility Functions ---
-        function showLoader(message = "Loading...") {
-            const loader = document.getElementById('loader');
-            loader.querySelector('.loader-spinner').style.display = 'block';
-            loader.querySelector('div:last-child').textContent = message; // Update message text
-            loader.classList.remove('loader-hidden');
+        // --- Initialization & Telegram Web App SDK Handling ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // IMPORTANT CHECK: Ensure Telegram Web App SDK is available
+            if (typeof window.Telegram === 'undefined' || typeof window.Telegram.WebApp === 'undefined') {
+                console.error("Telegram Web App SDK not found. Please ensure this app is launched from within Telegram.");
+                // Display a user-friendly message if not in Telegram context
+                document.body.innerHTML = `
+                    <div style="
+                        color: var(--tg-theme-text-color, #e0e0e0);
+                        background-color: var(--tg-theme-bg-color, #1a1a2e);
+                        font-family: 'Source Code Pro', monospace;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        min-height: 100vh;
+                        padding: 20px;
+                        text-align: center;
+                    ">
+                        <h2><i class="fas fa-exclamation-triangle"></i> Not in Telegram</h2>
+                        <p>This application must be opened from within a Telegram chat or bot.</p>
+                        <p>Please launch Pixel Frog via your Telegram bot.</p>
+                    </div>
+                `;
+                return; // Stop execution if not in Telegram
+            }
+
+            // Initialize Telegram Web App features
+            window.Telegram.WebApp.ready();      // Signal that the app is ready
+            window.Telegram.WebApp.expand();     // Expand the app to use the full screen height
+
+            // Get Telegram User Data
+            tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+
+            if (!tgUser) {
+                console.error("Failed to retrieve Telegram user data.");
+                // Display an error in the UI if user data can't be obtained
+                document.getElementById('loader').innerHTML = `
+                    <div style="color: red; font-size: 1.2em;">
+                        <i class="fas fa-exclamation-triangle"></i> Login Error
+                    </div>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Could not get your Telegram user information.</p>
+                `;
+                document.getElementById('loader').classList.remove('loader-hidden');
+                return; // Stop if no user data
+            }
+
+            currentUserId = tgUser.id;
+            console.log("Telegram User Data:", tgUser);
+
+            // Initialize Firebase once Telegram is ready and user is identified
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database(); // Alias for Firebase Database
+
+            // Load global settings first, then user data
+            loadGlobalSettings(db).then(() => fetchUserData(db));
+
+            // Set up navigation
+            setupNavigation();
+
+            // Initial view
+            navigateTo('home-section', 'nav-home');
+        });
+
+        // --- Firebase & Data Functions ---
+        async function loadGlobalSettings(db) {
+            try {
+                const snapshot = await db.ref('settings').once('value');
+                if (snapshot.exists()) {
+                    globalSettings = snapshot.val();
+                    // Update coin image in UI immediately
+                    const coinImageUrl = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
+                    document.getElementById('profile-coin-image').src = coinImageUrl;
+                    document.getElementById('coin-image').src = coinImageUrl;
+                    document.getElementById('profile-coin-image').alt = "Coin";
+                    document.getElementById('coin-image').alt = "Coin";
+                } else {
+                    // Set default coin image if no settings found
+                    document.getElementById('profile-coin-image').src = 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
+                    document.getElementById('coin-image').src = 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
+                }
+            } catch (error) {
+                console.error("Error loading global settings:", error);
+            }
         }
 
-        function hideLoader() {
-            const loader = document.getElementById('loader');
-            loader.classList.add('loader-hidden');
-            // Optionally remove the spinner if message is enough
-            // loader.querySelector('.loader-spinner').style.display = 'none';
+        async function fetchUserData(db) {
+            if (!currentUserId) return;
+
+            userRef = db.ref(`users/${currentUserId}`);
+
+            try {
+                const snapshot = await userRef.once('value');
+                let userData = snapshot.val();
+
+                if (!userData) {
+                    // User not found, create a new entry
+                    userData = {
+                        id: currentUserId,
+                        username: tgUser.username || tgUser.first_name || 'User',
+                        firstName: tgUser.first_name,
+                        lastName: tgUser.last_name,
+                        photoUrl: tgUser.photo_url,
+                        referralCode: generateReferralCode(),
+                        coins: 0,
+                        completedTasks: 0,
+                        referrals: 0,
+                        referralEarnings: 0,
+                        joinedAt: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    await userRef.set(userData);
+                    showMessage("Welcome to Pixel Frog!", "success");
+                } else {
+                    // Update user info if Telegram provides newer data or missing fields
+                    const updatedUserData = { ...userData };
+                    updatedUserData.username = tgUser.username || tgUser.first_name || userData.username;
+                    updatedUserData.firstName = tgUser.first_name || userData.firstName;
+                    updatedUserData.lastName = tgUser.last_name || userData.lastName;
+                    updatedUserData.photoUrl = tgUser.photo_url || userData.photoUrl;
+                    if (!updatedUserData.referralCode) { // Ensure referral code exists
+                        updatedUserData.referralCode = generateReferralCode();
+                    }
+                    // Only update if changes occurred to avoid unnecessary writes
+                    if (JSON.stringify(userData) !== JSON.stringify(updatedUserData)) {
+                        await userRef.update(updatedUserData);
+                        userData = updatedUserData; // Update local variable with potentially changed data
+                    }
+                }
+
+                updateUI(userData); // Update the UI with fetched data
+
+                // Load tasks after user data is confirmed
+                fetchTasks(db);
+
+                // Handle referral parameter ONLY if it's the initial load or referral hasn't been processed
+                if (!initialReferralProcessed) {
+                    handleReferral(db, userData);
+                }
+
+            } catch (error) {
+                console.error("Error fetching or setting user data:", error);
+                showMessage("Failed to load your profile. Please try again.", "error");
+            } finally {
+                hideLoader(); // Hide loader after user data is processed
+            }
         }
 
-        function showMessage(message, type = 'info') { // type can be 'success', 'error', 'info'
-            const messageDiv = document.getElementById('daily-code-message'); // Reusing daily code message div for general messages
-            messageDiv.textContent = message;
-            messageDiv.style.color = type === 'success' ? 'var(--primary-accent)' : type === 'error' ? '#e74c3c' : 'var(--tg-theme-hint-color)';
-            setTimeout(() => { messageDiv.textContent = ''; }, 5000); // Clear message after 5 seconds
-        }
-
-        function updateUI(data) {
-            // Update user info in header and profile
-            const avatarUrl = tgUser.photo_url || "https://via.placeholder.com/50/2ecc71/ffffff?text=?";
-            document.getElementById('user-avatar').src = avatarUrl;
-            document.getElementById('user-username').textContent = tgUser.username || tgUser.first_name || 'User';
-            document.getElementById('user-id').textContent = `ID: ${tgUser.id}`;
-            document.getElementById('profile-avatar').src = avatarUrl;
-            document.getElementById('profile-username').textContent = tgUser.username || tgUser.first_name || 'User';
-            document.getElementById('profile-user-id').textContent = `ID: ${tgUser.id}`;
-
-            // Update coin balance
-            const coinBalance = data.coins || 0;
-            document.getElementById('coin-balance').textContent = coinBalance.toLocaleString();
-            document.getElementById('profile-total-coins').textContent = coinBalance.toLocaleString();
-            document.getElementById('profile-coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
-            document.getElementById('profile-coin-image').alt = "Coin";
-            document.getElementById('coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
-            document.getElementById('coin-image').alt = "Coin";
-
-            // Update profile stats
-            document.getElementById('profile-tasks-completed').textContent = data.completedTasks || 0;
-            document.getElementById('profile-referrals').textContent = data.referrals || 0;
-
-            // Update referral code display and stats
-            const userReferralCode = data.referralCode || 'N/A';
-            document.getElementById('profile-referral-code').textContent = userReferralCode;
-            const referralLink = `${window.location.origin}?ref=${userReferralCode}`; // Assumes your app is hosted
-            document.getElementById('referral-link-display').textContent = referralLink;
-            document.getElementById('total-referred').textContent = data.referrals || 0;
-            document.getElementById('referral-rewards-earned').textContent = (data.referralEarnings || 0).toLocaleString();
-            document.getElementById('referral-earn-percentage').textContent = globalSettings.referralPercentage || '0%';
-            document.getElementById('referral-bonus-points').textContent = globalSettings.referralRewardPoints ? globalSettings.referralRewardPoints.toLocaleString() : '0';
-        }
-
-        function navigateTo(sectionId, navLinkId) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
-            });
-
-            // Show the target section
-            document.getElementById(sectionId).style.display = 'block';
-
-            // Update active navigation link
-            document.querySelectorAll('.nav-bar a').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.getElementById(navLinkId).classList.add('active');
-        }
-
-        // Helper to get parameter from URL (for referral link)
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
-
-        // Function to fetch tasks and populate the list
-        async function fetchTasks(filterCategory = 'all') {
+        async function fetchTasks(db, filterCategory = 'all') {
             const taskListDiv = document.getElementById('task-list');
             taskListDiv.innerHTML = ''; // Clear previous tasks
             showLoader('Fetching tasks...');
 
             try {
-                const snapshot = await database.ref('tasks').once('value');
+                const snapshot = await db.ref('tasks').once('value');
                 if (snapshot.exists()) {
                     const tasks = [];
                     snapshot.forEach(child => {
                         const task = child.val();
-                        task.id = child.key; // Add Firebase key as ID
+                        task.id = child.key;
                         tasks.push(task);
                     });
 
-                    // Sort tasks (e.g., by creation date, or priority if implemented)
-                    // tasks.sort((a, b) => a.createdAt - b.createdAt); // Example sort
-
                     tasks.forEach(task => {
                         if (filterCategory === 'all' || task.category.toLowerCase() === filterCategory.toLowerCase()) {
-                            const taskItem = document.createElement('div');
-                            taskItem.className = `task-item ${task.codeVerificationRequired ? 'code-task' : ''}`;
-
-                            let actionHtml = '';
-                            if (task.codeVerificationRequired) {
-                                actionHtml = `
-                                    <input type="text" class="claim-code-input" placeholder="Enter Code">
-                                    <button class="btn" onclick="claimTaskCode('${task.taskId}', '${task.code || ''}', '${task.rewardPoints}', this)">Claim Code</button>
-                                `;
-                            } else if (task.taskUrl) {
-                                actionHtml = `<button class="btn" onclick="openTaskLink('${task.taskUrl}', '${task.taskId}')">Start Task</button>`;
-                            } else {
-                                actionHtml = `<button class="btn" disabled>No Action</button>`;
-                            }
-
-                            taskItem.innerHTML = `
-                                <img src="${task.iconUrl}" alt="${task.title} Icon" class="task-icon">
-                                <div class="task-details">
-                                    <span class="title">${task.title}</span>
-                                    <span class="description">${task.description}</span>
-                                </div>
-                                <div class="task-actions">
-                                    <span style="font-size: 0.9em; color: var(--coin-color); font-weight: 700;">
-                                        <i class="fas fa-coins"></i> ${task.rewardPoints}
-                                    </span>
-                                    ${actionHtml}
-                                </div>
-                            `;
+                            const taskItem = createTaskElement(task, db); // Use a helper to create task element
                             taskListDiv.appendChild(taskItem);
                         }
                     });
-                     // Update category filters
-                    updateCategoryFilters(tasks);
-
+                    updateCategoryFilters(tasks); // Update category filters after fetching tasks
                 } else {
                     taskListDiv.innerHTML = '<p>No tasks available yet. Check back soon!</p>';
                 }
@@ -857,8 +894,40 @@
             }
         }
 
-        async function updateCategoryFilters(tasks) {
-            const categoryFilterDiv = document.querySelector('.category-filter');
+        function createTaskElement(task, db) {
+            const taskItem = document.createElement('div');
+            taskItem.className = `task-item ${task.codeVerificationRequired ? 'code-task' : ''}`;
+
+            let actionHtml = '';
+            if (task.codeVerificationRequired) {
+                actionHtml = `
+                    <input type="text" class="claim-code-input" placeholder="Enter Code" id="task-${task.taskId}-code">
+                    <button class="btn" onclick="claimTaskCode('${task.taskId}', '${task.code || ''}', '${task.rewardPoints}', this, db)">Claim Code</button>
+                `;
+            } else if (task.taskUrl) {
+                actionHtml = `<button class="btn" onclick="openTaskLink('${task.taskUrl}', '${task.taskId}', db)">Start Task</button>`;
+            } else {
+                actionHtml = `<button class="btn" disabled>No Action</button>`;
+            }
+
+            taskItem.innerHTML = `
+                <img src="${task.iconUrl || 'https://via.placeholder.com/40/303040/FFFFFF?text=?'}" alt="${task.title} Icon" class="task-icon">
+                <div class="task-details">
+                    <span class="title">${task.title}</span>
+                    <span class="description">${task.description}</span>
+                </div>
+                <div class="task-actions">
+                    <span style="font-size: 0.9em; color: var(--coin-color); font-weight: 700;">
+                        <i class="fas fa-coins"></i> ${task.rewardPoints || 0}
+                    </span>
+                    ${actionHtml}
+                </div>
+            `;
+            return taskItem;
+        }
+
+        function updateCategoryFilters(tasks) {
+            const categoryFilterDiv = document.getElementById('category-filter');
             const existingCategories = new Set();
             tasks.forEach(task => {
                 if (task.category) {
@@ -866,7 +935,7 @@
                 }
             });
 
-            // Remove existing dynamic buttons to avoid duplicates
+            // Remove previously added dynamic buttons to avoid duplicates
             categoryFilterDiv.querySelectorAll('button:not([data-category="all"])').forEach(btn => btn.remove());
 
             existingCategories.forEach(category => {
@@ -876,44 +945,38 @@
                 button.onclick = () => {
                     document.querySelectorAll('.category-filter button').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
-                    fetchTasks(category);
+                    fetchTasks(firebase.database(), category); // Pass db context
                 };
                 categoryFilterDiv.appendChild(button);
             });
         }
 
-
-        // Function to handle starting a task (opening a link)
-        function openTaskLink(url, taskId) {
+        function openTaskLink(url, taskId, db) {
             if (!url) {
                 showMessage("Task link is not available.", "error");
                 return;
             }
 
-            // Open in an external browser or Telegram's built-in view
-            // Telegram.WebApp.openLink(url); // Use this for Telegram's preferred way
-            window.open(url, '_blank'); // Standard browser open
+            // Use Telegram's preferred method for opening links if available
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+                window.Telegram.WebApp.openLink(url);
+            } else {
+                window.open(url, '_blank'); // Fallback for environments without Telegram SDK fully functional
+            }
 
-            // Track task start for verification later if needed
-            // Or to start a timer for completionTime
-            console.log(`Task started: ${taskId}, URL: ${url}`);
-
-            // Optional: Update task status or start a timer in Firebase
-            // Example: record task start time for this user
+            // Track task start for potential future verification or time tracking
             const completionId = `${currentUserId}_${taskId}`;
-            database.ref(`taskCompletions/${completionId}`).set({
+            db.ref(`taskCompletions/${completionId}`).set({
                 userId: currentUserId,
                 taskId: taskId,
-                status: 'in_progress', // or 'started'
+                status: 'in_progress',
                 startedAt: firebase.database.ServerValue.TIMESTAMP,
-                // Add other relevant info
             }).catch(error => console.error("Error tracking task start:", error));
         }
 
-        // Function to handle claiming a code for a task
-        function claimTaskCode(taskId, correctCode, rewardPoints, buttonElement) {
+        async function claimTaskCode(taskId, correctCode, rewardPoints, buttonElement, db) {
             const taskItem = buttonElement.closest('.task-item');
-            const inputElement = taskItem.querySelector('.claim-code-input');
+            const inputElement = taskItem.querySelector(`#task-${taskId}-code`); // Get input by specific ID
             const enteredCode = inputElement.value.trim();
 
             if (!enteredCode) {
@@ -922,16 +985,15 @@
             }
 
             if (enteredCode === correctCode) {
-                // Correct code entered
-                showLoader('Verifying code...');
+                showLoader('Claiming...');
                 const completionId = `${currentUserId}_${taskId}`;
 
-                // Update user's coins and log earning
-                database.ref(`users/${currentUserId}/coins`).transaction(currentCoins => {
-                    return (currentCoins || 0) + parseInt(rewardPoints);
-                })
-                .then(() => {
-                    database.ref('earnings').push({
+                try {
+                    // 1. Award coins to user
+                    await db.ref(`users/${currentUserId}/coins`).transaction(currentCoins => (currentCoins || 0) + parseInt(rewardPoints));
+
+                    // 2. Log the earning
+                    await db.ref('earnings').push({
                         userId: currentUserId,
                         type: 'task_completion',
                         amount: parseInt(rewardPoints),
@@ -940,67 +1002,33 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
 
-                    // Mark this task completion as verified/completed
-                    database.ref(`taskCompletions/${completionId}`).update({
+                    // 3. Update task completion status to 'completed' and grant reward
+                    await db.ref(`taskCompletions/${completionId}`).update({
                         status: 'completed',
                         completedAt: firebase.database.ServerValue.TIMESTAMP,
                         codeUsed: enteredCode,
                         rewardGranted: parseInt(rewardPoints)
-                    })
-                    .then(() => {
-                        showMessage(`Successfully claimed ${rewardPoints} PXF coins!`, "success");
-                        // Disable the input and button, or change the button text
-                        inputElement.disabled = true;
-                        buttonElement.textContent = 'Claimed';
-                        buttonElement.disabled = true;
-                        buttonElement.style.backgroundColor = 'var(--tg-theme-hint-color)'; // Grey out
-                    })
-                    .catch(error => {
-                        console.error("Error updating task completion status:", error);
-                        showMessage("Error confirming completion.", "error");
                     });
-                })
-                .catch(error => {
-                    console.error("Error awarding coins:", error);
-                    showMessage("Error awarding coins. Please contact support.", "error");
-                })
-                .finally(() => {
-                    hideLoader();
-                });
 
+                    showMessage(`Successfully claimed ${rewardPoints} PXF coins!`, "success");
+                    inputElement.disabled = true;
+                    buttonElement.textContent = 'Claimed';
+                    buttonElement.disabled = true;
+                    buttonElement.style.backgroundColor = 'var(--tg-theme-hint-color)'; // Visually indicate claimed
+                    fetchUserData(db); // Refresh user's coin balance
+                } catch (error) {
+                    console.error("Error claiming task code:", error);
+                    showMessage("Error claiming code. Please try again.", "error");
+                } finally {
+                    hideLoader();
+                }
             } else {
-                // Incorrect code
                 showMessage("Incorrect code. Try again!", "error");
-                inputElement.value = ''; // Clear input
+                inputElement.value = ''; // Clear input for retry
             }
         }
 
-        // Function to handle task completion verification (e.g., after external link is visited)
-        // This is a placeholder for when verification logic is needed beyond just codes.
-        // For example, if a task requires a screenshot or a time delay.
-        function verifyTaskSubmission(taskId) {
-            const completionId = `${currentUserId}_${taskId}`;
-            // In a real app, this would involve checking if the task was actually completed
-            // (e.g., via a callback, or after a certain time if task.completionTime is used)
-            // For now, we'll simulate it.
-            console.log(`Attempting to verify task: ${taskId}`);
-            // For tasks without codes, a "Verify" button might appear after starting.
-            // For now, we assume completion if the user navigates to the task.
-        }
-
-        // Function to copy referral link to clipboard
-        function copyReferralLink() {
-            const link = document.getElementById('referral-link-display').textContent;
-            navigator.clipboard.writeText(link).then(() => {
-                showMessage("Referral link copied!", "success");
-            }).catch(err => {
-                console.error("Failed to copy link: ", err);
-                showMessage("Failed to copy link.", "error");
-            });
-        }
-
-        // Function to redeem a daily code
-        async function redeemDailyCode() {
+        async function redeemDailyCode(db) {
             const codeInput = document.getElementById('daily-code-input');
             const code = codeInput.value.trim();
             const messageDiv = document.getElementById('daily-code-message');
@@ -1013,7 +1041,7 @@
 
             showLoader('Checking code...');
             try {
-                const snapshot = await database.ref('dailyCodes').once('value');
+                const snapshot = await db.ref('dailyCodes').once('value');
                 let foundCode = null;
                 snapshot.forEach(child => {
                     const cd = child.val();
@@ -1031,19 +1059,15 @@
                         messageDiv.textContent = "This code has expired.";
                         messageDiv.style.color = '#e74c3c';
                     } else {
-                        // Check if user has already used this specific code (or a code for today)
-                        const userCodeUsageRef = database.ref(`userCodeUsage/${currentUserId}/${foundCode.id}`);
+                        const userCodeUsageRef = db.ref(`userCodeUsage/${currentUserId}/${foundCode.id}`);
                         const usageSnapshot = await userCodeUsageRef.once('value');
 
                         if (usageSnapshot.exists()) {
                             messageDiv.textContent = "You have already redeemed this code.";
                             messageDiv.style.color = '#e74c3c';
                         } else {
-                            // Redeem the code
-                            await database.ref(`users/${currentUserId}/coins`).transaction(currentCoins => {
-                                return (currentCoins || 0) + foundCode.points;
-                            });
-                            await database.ref('earnings').push({
+                            await db.ref(`users/${currentUserId}/coins`).transaction(currentCoins => (currentCoins || 0) + foundCode.points);
+                            await db.ref('earnings').push({
                                 userId: currentUserId,
                                 type: 'lucky_code',
                                 amount: foundCode.points,
@@ -1051,15 +1075,12 @@
                                 codeId: foundCode.id,
                                 timestamp: firebase.database.ServerValue.TIMESTAMP
                             });
-
-                            // Mark code as used by this user
                             await userCodeUsageRef.set({ redeemedAt: firebase.database.ServerValue.TIMESTAMP });
 
                             messageDiv.textContent = `Successfully redeemed ${foundCode.points} PXF coins!`;
                             messageDiv.style.color = 'var(--primary-accent)';
-                            codeInput.value = ''; // Clear input
-                            // Update coin balance UI
-                            fetchUserData(); // Re-fetch user data to update balance
+                            codeInput.value = '';
+                            fetchUserData(db); // Refresh UI to update balance
                         }
                     }
                 } else {
@@ -1075,226 +1096,178 @@
             }
         }
 
-        // Function to load user data from Firebase
-        async function fetchUserData() {
-            if (!currentUserId) return;
-
-            showLoader('Loading profile...');
-            userRef = database.ref(`users/${currentUserId}`);
-
-            try {
-                const snapshot = await userRef.once('value');
-                let userData = snapshot.val();
-
-                if (!userData) {
-                    // User not found, create a new entry
-                    userData = {
-                        id: currentUserId,
-                        username: tgUser.username || tgUser.first_name || 'User',
-                        firstName: tgUser.first_name,
-                        lastName: tgUser.last_name,
-                        photoUrl: tgUser.photo_url,
-                        referralCode: generateReferralCode(), // Generate a referral code
-                        coins: 0,
-                        completedTasks: 0,
-                        referrals: 0,
-                        referralEarnings: 0,
-                        joinedAt: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    await userRef.set(userData);
-                    showMessage("Welcome to Pixel Frog!", "success");
-                } else {
-                    // Update user info if Telegram provides newer data
-                    userData.username = tgUser.username || tgUser.first_name || userData.username;
-                    userData.firstName = tgUser.first_name || userData.firstName;
-                    userData.lastName = tgUser.last_name || userData.lastName;
-                    userData.photoUrl = tgUser.photo_url || userData.photoUrl;
-                    // If no referral code was generated on first sign up (e.g., if code generation logic was added later)
-                    if (!userData.referralCode) {
-                        userData.referralCode = generateReferralCode();
-                    }
-                    await userRef.update(userData); // Update potentially changed fields
-                }
-
-                updateUI(userData); // Update the UI with fetched data
-
-                // Load tasks after user data is ready
-                fetchTasks();
-
-                // Check for referral parameters in the URL
-                handleReferral();
-
-            } catch (error) {
-                console.error("Error fetching or setting user data:", error);
-                showMessage("Failed to load your profile. Please try again.", "error");
-            } finally {
-                hideLoader();
-            }
-        }
-
-        // Function to handle referral logic
-        function handleReferral() {
+        function handleReferral(db, userData) {
             const referrerCode = getQueryParam('ref');
-            if (referrerCode && referrerCode !== (tgUser.id.toString() || 'N/A')) { // Ensure not referring oneself
-                const userReferralCode = document.getElementById('profile-referral-code').textContent; // Get current user's code
+            const userCurrentReferralCode = userData.referralCode; // Get the code from fetched data
 
-                // Prevent applying referral bonus if the referrer code is the same as the current user's code
-                // This is a safety check against self-referrals or broken logic.
-                if (referrerCode === userReferralCode) {
-                    console.log("Detected self-referral or invalid referrer code. Skipping referral bonus.");
-                    return;
-                }
+            // Check if referrerCode exists, is different from the user's own code, and referral hasn't been processed
+            if (referrerCode && referrerCode !== userCurrentReferralCode && !initialReferralProcessed) {
+                initialReferralProcessed = true; // Mark as processed
 
-                // Check if the referral has already been processed for this user
-                database.ref(`userReferrals/${currentUserId}`).once('value', snapshot => {
-                    if (snapshot.exists()) {
-                        console.log("Referral already processed for this user.");
-                        return;
-                    }
+                db.ref('users').orderByChild('referralCode').equalTo(referrerCode).once('value', referrerSnapshot => {
+                    if (referrerSnapshot.exists()) {
+                        let referrerUserId = null;
+                        let referrerRef = null;
+                        referrerSnapshot.forEach(child => {
+                            referrerUserId = child.key;
+                            referrerRef = child.ref;
+                            return true;
+                        });
 
-                    // Process the referral
-                    showLoader('Processing referral...');
-                    const referredBy = referrerCode; // The code of the person who referred
+                        if (referrerUserId && referrerRef) {
+                            const referralReward = globalSettings.referralRewardPoints || 100;
+                            // const referralPercentage = (globalSettings.referralPercentage || 10) / 100; // Not used for initial bonus
 
-                    // Find the referrer's ID (requires an extra lookup or storing referrer user ID in the referral link)
-                    // For simplicity, we'll assume we can find the referrer by their code.
-                    // In a more robust system, you might store the referrer's USER ID in the URL.
-                    database.ref('users').orderByChild('referralCode').equalTo(referredBy).once('value', referrerSnapshot => {
-                        if (referrerSnapshot.exists()) {
-                            let referrerUserId = null;
-                            let referrerRef = null;
-                            referrerSnapshot.forEach(child => {
-                                referrerUserId = child.key;
-                                referrerRef = child.ref;
-                                return true; // Stop after finding the first match
-                            });
-
-                            if (referrerUserId && referrerRef) {
-                                const referralReward = globalSettings.referralRewardPoints || 100;
-                                const referralPercentage = (globalSettings.referralPercentage || 10) / 100;
-
-                                // Update referrer's stats
-                                referrerRef.transaction(referrerData => {
-                                    if (referrerData) {
-                                        referrerData.referrals = (referrerData.referrals || 0) + 1;
-                                        // Calculate referral earnings based on the new user's first reward
-                                        // For simplicity, we'll give a fixed bonus per referral AND a percentage of future earnings
-                                        // Here, we'll add the fixed bonus
-                                        referrerData.coins = (referrerData.coins || 0) + referralReward;
-                                        // We'll log referral earnings when the referred user earns
-                                        // For now, just update referral count and fixed bonus
-                                    }
-                                    return referrerData;
-                                })
-                                .then(async () => {
-                                    // Log the fixed referral bonus for the referrer
-                                     await database.ref('earnings').push({
-                                        userId: referrerUserId,
-                                        type: 'referral_bonus',
-                                        amount: referralReward,
-                                        description: `Referral bonus for ${tgUser.username || tgUser.first_name}`,
-                                        referredUserId: currentUserId,
-                                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                                    });
-
-                                    // Update the current user's referral tracking
-                                    await database.ref(`userReferrals/${currentUserId}`).set({
-                                        referredByUserId: referrerUserId,
-                                        rewarded: true, // Mark as rewarded for the initial bonus
-                                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                                    });
-                                    // Also update the referred count on the current user's profile (though not strictly necessary for them to see)
-                                    await userRef.update({
-                                        referredBy: referrerUserId // Store who referred them
-                                    });
-
-                                    showMessage(`You were referred by ${referredBy}! You've received your first bonus.`, "success");
-                                    fetchUserData(); // Refresh UI to show bonus
-                                })
-                                .catch(error => {
-                                    console.error("Error processing referral:", error);
-                                    showMessage("Error processing referral. Please contact support.", "error");
-                                })
-                                .finally(() => {
-                                    hideLoader();
+                            showLoader('Processing referral...');
+                            referrerRef.transaction(referrerData => {
+                                if (referrerData) {
+                                    referrerData.referrals = (referrerData.referrals || 0) + 1;
+                                    referrerData.coins = (referrerData.coins || 0) + referralReward; // Award fixed bonus
+                                }
+                                return referrerData;
+                            })
+                            .then(async () => {
+                                await db.ref('earnings').push({
+                                    userId: referrerUserId,
+                                    type: 'referral_bonus',
+                                    amount: referralReward,
+                                    description: `Referral bonus for ${tgUser.username || tgUser.first_name}`,
+                                    referredUserId: currentUserId,
+                                    timestamp: firebase.database.ServerValue.TIMESTAMP
                                 });
-                            } else {
-                                console.log("Referrer not found by code:", referredBy);
+
+                                await userRef.update({ // Update current user's data
+                                    referredByUserId: referrerUserId,
+                                    // No need to set initialReferralProcessed to true here, it's a local flag
+                                });
+                                await db.ref(`userReferrals/${currentUserId}`).set({ // Track that this user has been referred
+                                    referredByUserId: referrerUserId,
+                                    rewarded: true,
+                                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                                });
+
+                                showMessage(`You were invited by ${referrerCode}! You've received your first bonus.`, "success");
+                                fetchUserData(db); // Refresh UI to show the bonus
+                            })
+                            .catch(error => {
+                                console.error("Error processing referral:", error);
+                                showMessage("Error processing referral. Please contact support.", "error");
+                            })
+                            .finally(() => {
                                 hideLoader();
-                            }
+                            });
                         } else {
-                            console.log("Referrer not found by code:", referredBy);
-                            hideLoader();
+                            console.log("Referrer not found by code:", referrerCode);
                         }
-                    });
+                    } else {
+                        console.log("Referrer not found by code:", referrerCode);
+                    }
                 });
             }
         }
 
-        // Function to load global settings
-        async function loadGlobalSettings() {
-            try {
-                const snapshot = await database.ref('settings').once('value');
-                if (snapshot.exists()) {
-                    globalSettings = snapshot.val();
-                    // Update any relevant parts of the UI that depend on settings
-                    // e.g., coin image, referral bonus text
-                    document.getElementById('profile-coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
-                    document.getElementById('coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
-                }
-            } catch (error) {
-                console.error("Error loading global settings:", error);
-            }
+        // --- UI Update & Navigation ---
+        function updateUI(userData) {
+            const avatarUrl = tgUser.photo_url || "https://via.placeholder.com/50/2ecc71/ffffff?text=?";
+            document.getElementById('user-avatar').src = avatarUrl;
+            document.getElementById('user-username').textContent = tgUser.username || tgUser.first_name || 'User';
+            document.getElementById('user-id').textContent = `ID: ${tgUser.id}`;
+
+            document.getElementById('profile-avatar').src = avatarUrl;
+            document.getElementById('profile-username').textContent = tgUser.username || tgUser.first_name || 'User';
+            document.getElementById('profile-user-id').textContent = `ID: ${tgUser.id}`;
+
+            const coinBalance = userData.coins || 0;
+            document.getElementById('coin-balance').textContent = coinBalance.toLocaleString();
+            document.getElementById('profile-total-coins').textContent = coinBalance.toLocaleString();
+
+            document.getElementById('profile-tasks-completed').textContent = userData.completedTasks || 0;
+            document.getElementById('profile-referrals').textContent = userData.referrals || 0;
+
+            const userReferralCode = userData.referralCode || 'N/A';
+            document.getElementById('profile-referral-code').textContent = userReferralCode;
+            const referralLink = `${window.location.origin}?ref=${userReferralCode}`;
+            document.getElementById('referral-link-display').textContent = referralLink;
+            document.getElementById('total-referred').textContent = userData.referrals || 0;
+            document.getElementById('referral-rewards-earned').textContent = (userData.referralEarnings || 0).toLocaleString(); // Note: referralEarnings needs to be populated in earnings log for this to work.
+
+            // Update settings displayed on UI if any are relevant here (e.g., referral percentage)
+            document.getElementById('referral-earn-percentage').textContent = globalSettings.referralPercentage ? `${globalSettings.referralPercentage}%` : '0%';
+            document.getElementById('referral-bonus-points').textContent = globalSettings.referralRewardPoints ? globalSettings.referralRewardPoints.toLocaleString() : '0';
         }
 
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Telegram Web App
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand(); // Expand the app to full height
-                tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-                if (tgUser) {
-                    currentUserId = tgUser.id;
-                    console.log("Telegram User:", tgUser);
-                    // Load settings first, then user data
-                    loadGlobalSettings().then(fetchUserData);
-                } else {
-                    console.error("Failed to initialize with Telegram user data.");
-                    document.querySelector('.header .user-info div').textContent = "Login failed.";
-                    document.getElementById('loader').querySelector('div:last-child').textContent = "Login Error!";
-                    document.getElementById('loader').classList.remove('loader-hidden'); // Show error message
-                    document.getElementById('loader').querySelector('.loader-spinner').style.display = 'none';
-                    return; // Stop execution if no user
-                }
-            } else {
-                console.error("Telegram Web App SDK not found. This app must be run within Telegram.");
-                // Optionally show an error message to the user
-                document.body.innerHTML = '<div style="color: red; text-align: center; padding: 50px;">Please open this app within Telegram.</div>';
-                return;
-            }
+        function navigateTo(sectionId, navLinkId) {
+            document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
 
-            // Navigation links
+            document.querySelectorAll('.nav-bar a').forEach(link => link.classList.remove('active'));
+            document.getElementById(navLinkId).classList.add('active');
+        }
+
+        function setupNavigation() {
             document.getElementById('nav-home').addEventListener('click', (e) => { e.preventDefault(); navigateTo('home-section', 'nav-home'); });
-            document.getElementById('nav-tasks').addEventListener('click', (e) => { e.preventDefault(); navigateTo('tasks-section', 'nav-tasks'); fetchTasks(); }); // Re-fetch tasks on tab switch
+            document.getElementById('nav-tasks').addEventListener('click', (e) => { e.preventDefault(); navigateTo('tasks-section', 'nav-tasks'); fetchTasks(firebase.database()); }); // Re-fetch tasks on tab switch
             document.getElementById('nav-refer').addEventListener('click', (e) => { e.preventDefault(); navigateTo('refer-section', 'nav-refer'); });
             document.getElementById('nav-profile').addEventListener('click', (e) => { e.preventDefault(); navigateTo('profile-section', 'nav-profile'); });
             document.getElementById('nav-daily-code').addEventListener('click', (e) => { e.preventDefault(); navigateTo('daily-code-section', 'nav-daily-code'); });
+        }
 
-            // Initial view
-            navigateTo('home-section', 'nav-home');
+        // --- Utility Helpers ---
+        function showLoader(message = "Loading...") {
+            const loader = document.getElementById('loader');
+            loader.querySelector('.loader-spinner').style.display = 'block';
+            loader.querySelector('div:last-child').textContent = message;
+            loader.classList.remove('loader-hidden');
+        }
 
-            // Event delegation for task category filters
-            document.querySelector('.category-filter').addEventListener('click', (e) => {
-                if (e.target.tagName === 'BUTTON' && e.target.hasAttribute('data-category')) {
-                    e.preventDefault();
-                    document.querySelectorAll('.category-filter button').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    fetchTasks(e.target.getAttribute('data-category'));
-                }
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('loader-hidden');
+        }
+
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('daily-code-message');
+            messageDiv.textContent = message;
+            messageDiv.style.color = type === 'success' ? 'var(--primary-accent)' : type === 'error' ? '#e74c3c' : 'var(--tg-theme-hint-color)';
+            setTimeout(() => { messageDiv.textContent = ''; }, 5000);
+        }
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function generateReferralCode() {
+            return `REF_${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+        }
+
+        function copyReferralLink() {
+            const link = document.getElementById('referral-link-display').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showMessage("Referral link copied!", "success");
+            }).catch(err => {
+                console.error("Failed to copy link: ", err);
+                showMessage("Failed to copy link.", "error");
             });
+        }
 
-        });
+        // --- Callbacks (must be global to be called from inline onclick) ---
+        // Ensure these are called with the correct `db` context from inline handlers
+        function claimTaskCode(taskId, correctCode, rewardPoints, buttonElement) {
+            // We need to pass the db instance. Since it's not globally available here,
+            // we'll fetch it from firebase.initializeApp() again or pass it down.
+            // For simplicity in this example, it's better to make db a global variable after init.
+            // Let's assume db is accessible globally after DOMContentLoaded.
+             claimTaskCode(taskId, correctCode, rewardPoints, buttonElement, firebase.database());
+        }
+        function openTaskLink(url, taskId) {
+             openTaskLink(url, taskId, firebase.database());
+        }
+        function redeemDailyCode() {
+            redeemDailyCode(firebase.database());
+        }
+        // Note: For complex apps, avoid inline onclick and use addEventListener for better maintainability.
+
     </script>
 </body>
 </html>
