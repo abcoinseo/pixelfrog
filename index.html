@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Frog 🐸</title>
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Google Fonts for a modern feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50; /* Green */
+            --secondary-color: #8BC34A; /* Light Green */
+            --accent-color: #FFC107; /* Amber/Yellow */
+            --background-color: #f0f4f0; /* Very Light Grey/Off-white */
+            --card-background: #ffffff; /* White */
+            --text-color: #333;
+            --text-color-secondary: #666;
+            --border-color: #e0e0e0;
+            --frog-outline: #388E3C; /* Darker Green for outlines */
+            --pixel-shadow: 2px 2px 0px var(--frog-outline);
+            --button-shadow: 0 4px 0px var(--frog-outline);
+            --button-shadow-hover: 0 2px 0px var(--frog-outline);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+            font-weight: 500;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding-bottom: 70px; /* Space for the fixed bottom nav */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Header */
+        .app-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            font-family: 'Luckiest Guy', cursive; /* Froggier font */
+            font-size: 1.8em;
+            letter-spacing: 1px;
+        }
+
+        .app-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-header .header-left .frog-icon {
+            font-size: 1.5em;
+            transform: translateY(-3px);
+            text-shadow: var(--pixel-shadow);
+        }
+
+        .app-header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .app-header .coins {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--accent-color);
+            color: var(--frog-outline);
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: var(--pixel-shadow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .app-header .coins .coin-icon {
+            font-size: 1.2em;
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            flex-grow: 1;
+            padding: 20px 15px;
+            text-align: center;
+            position: relative; /* For absolute positioning within sections */
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pixel Art Elements */
+        .pixel-frame {
+            border: 4px solid var(--frog-outline);
+            box-shadow: var(--pixel-shadow);
+            background-color: var(--card-background);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .pixel-frame h2 {
+            font-family: 'Luckiest Guy', cursive;
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px white; /* White text shadow for pop */
+        }
+
+        .pixel-button {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 30px;
+            border: 4px solid var(--frog-outline);
+            border-radius: 10px;
+            box-shadow: var(--button-shadow);
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none; /* For anchor tags as buttons */
+        }
+
+        .pixel-button:hover {
+            background-color: var(--primary-color);
+            box-shadow: var(--button-shadow-hover);
+            transform: translateY(2px);
+        }
+
+        .pixel-button:active {
+            box-shadow: none;
+            transform: translateY(4px);
+        }
+
+        .pixel-button.disabled {
+            background-color: var(--border-color);
+            border-color: var(--text-color-secondary);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: translateY(0);
+        }
+
+        .pixel-button i {
+            font-size: 1.3em;
+        }
+
+        /* Home Section */
+        #home .greeting {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2.5em;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 0px white, 4px 4px 0px var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        #home .pixel-frog-image {
+            width: 180px;
+            height: 180px;
+            background-image: url('https://i.imgur.com/x4bBq6p.png'); /* Placeholder pixel frog */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin: 20px auto;
+            filter: drop-shadow(3px 3px 0px var(--frog-outline));
+        }
+
+        #home .welcome-message {
+            font-size: 1.2em;
+            color: var(--text-color-secondary);
+            max-width: 400px;
+            margin: 0 auto 30px auto;
+        }
+
+        #home .activity-section {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        #home .activity-section h3 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.8em;
+            margin-top: 0;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 0px var(--frog-outline);
+        }
+
+        #home .activity-section p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        /* Task Section */
+        #tasks .task-list {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column for mobile */
+            gap: 15px;
+        }
+
+        #tasks .task-item {
+            background-color: var(--card-background);
+            border: 3px solid var(--border-color);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        #tasks .task-item .task-icon {
+            width: 50px;
+            height: 50px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        #tasks .task-item .task-details {
+            flex-grow: 1;
+        }
+
+        #tasks .task-item h3 {
+            font-size: 1.3em;
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        #tasks .task-item p {
+            font-size: 0.9em;
+            color: var(--text-color-secondary);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #tasks .task-item .task-points {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #tasks .task-item .task-points .coin-icon {
+             font-size: 1.1em;
+        }
+
+        #tasks .task-item .claim-button {
+            background-color: var(--accent-color);
+            color: var(--frog-outline);
+            border: 3px solid var(--frog-outline);
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            box-shadow: 0 3px 0px var(--frog-outline);
+            font-family: 'Press Start 2P', cursive;
+            margin-left: auto; /* Push to the right */
+        }
+
+        #tasks .task-item .claim-button:hover {
+            background-color: #ffb300; /* Darker Amber */
+            box-shadow: 0 2px 0px var(--frog-outline);
+            transform: translateY(1px);
+        }
+        #tasks .task-item .claim-button:active {
+            box-shadow: none;
+            transform: translateY(3px);
+        }
+
+        #tasks .task-item .claim-button.claimed {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--frog-outline);
+            cursor: default;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Refer Section */
+        #refer .refer-promo {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px white, 4px 4px 0px var(--secondary-color);
+        }
+
+        #refer .refer-link-container {
+            background-color: var(--card-background);
+            border: 3px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 25px;
+            word-break: break-all; /* Prevent long links from breaking layout */
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9em;
+            color: var(--frog-outline);
+            position: relative;
+        }
+
+        #refer .refer-link-container .copy-button {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        #refer .refer-link-container .copy-button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #refer .refer-bonus-info {
+            font-size: 1.1em;
+            color: var(--text-color-secondary);
+            margin-bottom: 30px;
+        }
+
+        #refer .refer-bonus-info strong {
+            color: var(--primary-color);
+        }
+
+        /* Profile Section */
+        #profile .profile-card {
+            background-color: var(--card-background);
+            border: 3px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #profile .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 5px solid var(--frog-outline);
+            box-shadow: 0 0 0 5px var(--primary-color);
+            overflow: hidden;
+        }
+
+        #profile .profile-avatar .avatar-icon {
+            font-size: 3em;
+            color: white;
+        }
+
+        #profile .profile-name {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0px white;
+        }
+
+        #profile .profile-username {
+            font-size: 1.1em;
+            color: var(--text-color-secondary);
+            margin-bottom: 20px;
+        }
+
+        #profile .profile-stats {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        #profile .profile-stats .stat-box {
+            background-color: var(--background-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        #profile .profile-stats .stat-box .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        #profile .profile-stats .stat-box .stat-label {
+            font-size: 0.9em;
+            color: var(--text-color-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--card-background);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color-secondary);
+            font-size: 0.8em;
+            padding: 5px 10px;
+            transition: color 0.3s ease;
+        }
+
+        .bottom-nav a.active {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .bottom-nav a i {
+            font-size: 1.4em;
+            margin-bottom: 3px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 400px) {
+            .app-header {
+                font-size: 1.5em;
+                padding: 10px 15px;
+            }
+            .app-header .coins {
+                font-size: 0.8em;
+                padding: 6px 12px;
+            }
+            .content-wrapper {
+                padding: 15px 10px;
+            }
+            .pixel-frame h2 {
+                font-size: 1.6em;
+            }
+            .pixel-button {
+                font-size: 1em;
+                padding: 12px 25px;
+            }
+            #profile .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            #profile .profile-name {
+                font-size: 1.8em;
+            }
+             #profile .profile-stats {
+                grid-template-columns: 1fr; /* Stack stats on very small screens */
+            }
+            .bottom-nav {
+                padding: 8px 0;
+            }
+            .bottom-nav a i {
+                font-size: 1.2em;
+            }
+            .bottom-nav a {
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Telegram Web App initialization -->
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Expand the app to the full height
+        tg.ready(); // Indicate that the app is ready
+        tg.setHeaderColor('secondary_bg_color'); // Optional: Set header color
+        tg.enableClosingConfirmation(); // Ask for confirmation if user tries to close
+    </script>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-left">
+                <span class="frog-icon">🐸</span>
+                <span class="app-title">Pixel Frog</span>
+            </div>
+            <div class="header-right">
+                <div class="coins">
+                    <i class="fas fa-coins coin-icon"></i>
+                    <span id="userCoins">--</span>
+                </div>
+                <button id="theme-toggle" class="pixel-button" style="padding: 8px 12px; font-size: 0.7em; background-color: transparent; border-color: white; color: white;">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="content-wrapper">
+            <!-- Home Section -->
+            <section id="home" class="content-section active">
+                <h1 class="greeting">Hello, <span id="userName">Froggy</span>!</h1>
+                <div class="pixel-frog-image"></div>
+                <p class="welcome-message">Jump into action and complete tasks to earn awesome rewards!</p>
+                <div class="activity-section">
+                    <h3>Your Daily Frog Leap!</h3>
+                    <p>Complete today's featured task to get a bonus boost!</p>
+                    <a href="#task?id=featured_daily" class="pixel-button">Jump In! <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </section>
+
+            <!-- Task Section -->
+            <section id="task" class="content-section">
+                <h2>Your Tasks</h2>
+                <div class="task-list" id="taskList">
+                    <!-- Task items will be loaded here -->
+                    <p class="no-data-message">Loading tasks...</p>
+                </div>
+            </section>
+
+            <!-- Refer Section -->
+            <section id="refer" class="content-section">
+                <h2 class="refer-promo">Invite Friends!</h2>
+                <div class="refer-link-container">
+                    <span id="referralLink">https://t.me/YourBotUsername?startapp=ref_YOUR_USER_ID</span>
+                    <button class="copy-button">Copy</button>
+                </div>
+                <p class="refer-bonus-info">
+                    Share your unique link! You'll get <strong>100 coins</strong> for every friend who joins, and they'll get <strong>50 coins</strong> to start!
+                </p>
+                <a href="#" class="pixel-button"><i class="fas fa-share-alt"></i> Share Via Telegram</a>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="content-section">
+                <h2>Your Profile</h2>
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user avatar-icon"></i>
+                    </div>
+                    <h3 id="profileName" class="profile-name">Froggy McRibbit</h3>
+                    <p id="profileUsername" class="profile-username">@your_telegram_username</p>
+                    <div class="profile-stats">
+                        <div class="stat-box">
+                            <div class="stat-value"><span class="coin-icon">🐸</span><span id="profileTotalCoins">0</span></div>
+                            <div class="stat-label">Total Coins</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value"><span id="profileTasksCompleted">0</span></div>
+                            <div class="stat-label">Tasks Completed</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value"><span id="profileReferrals">0</span></div>
+                            <div class="stat-label">Referrals</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value"><span id="profileLevel">1</span></div>
+                            <div class="stat-label">Level</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bottom-nav">
+            <a href="#home" data-section="home"><i class="fas fa-home"></i> Home</a>
+            <a href="#task" data-section="task"><i class="fas fa-tasks"></i> Tasks</a>
+            <a href="#refer" data-section="refer"><i class="fas fa-users"></i> Refer</a>
+            <a href="#profile" data-section="profile"><i class="fas fa-user"></i> Profile</a>
+        </footer>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const BOT_USERNAME = "YourPixelFrogBot"; // Replace with your actual Telegram Bot username
+        const REFERRAL_BONUS_POINTS = 100;
+        const JOIN_BONUS_POINTS = 50;
+        const COINS_PER_TASK_DEFAULT = 10; // Default points for a task
+
+        // --- Simulated Data Store (Replace with Firebase calls) ---
+        let userData = {
+            id: null, // Telegram User ID
+            username: null,
+            firstName: null,
+            coins: 0,
+            tasksCompleted: 0,
+            level: 1,
+            referralCode: null,
+            referredBy: null,
+            theme: 'light' // 'light' or 'dark'
+        };
+
+        let tasks = [
+            { id: 'daily_login', title: 'Daily Login Bonus', description: 'Log in daily for a quick boost!', icon: 'https://i.imgur.com/p8j3G4y.png', points: 10, type: 'daily', completed: false, rewardUrl: null },
+            { id: 'invite_friends', title: 'Invite 3 Friends', description: 'Get rewarded for growing the frog pond!', icon: 'https://i.imgur.com/9W23s8x.png', points: 150, type: 'referral', completed: false, rewardUrl: '#refer' },
+            { id: 'complete_task_x', title: 'Complete Task X', description: 'Tap the frog to see details', icon: 'https://i.imgur.com/p8j3G4y.png', points: 20, type: 'general', completed: false, rewardUrl: '#task?id=daily_login' },
+            { id: 'featured_daily', title: 'Jump High!', description: 'Tap the special frog for a daily surprise!', icon: 'https://i.imgur.com/p8j3G4y.png', points: 50, type: 'daily', completed: false, rewardUrl: '#task?id=daily_login' }
+        ];
+
+        // --- DOM Elements ---
+        const contentSections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.bottom-nav a');
+        const userNameSpan = document.getElementById('userName');
+        const userCoinsSpan = document.getElementById('userCoins');
+        const referralLinkSpan = document.getElementById('referralLink');
+        const copyReferralButton = document.querySelector('.refer-link-container .copy-button');
+        const themeToggleButton = document.getElementById('theme-toggle');
+
+        // --- Telegram Web App Initialization ---
+        const initData = tg.initData; // Raw init data
+        const user = tg.initDataUnsafe.user; // Parsed user data
+
+        if (user) {
+            userData.id = user.id;
+            userData.username = user.username || `user_${user.id}`;
+            userData.firstName = user.first_name;
+            userData.referralCode = `ref_${user.id}`; // Generate a referral code
+            userNameSpan.textContent = userData.firstName;
+            referralLinkSpan.textContent = `https://t.me/${BOT_USERNAME}?startapp=${userData.referralCode}`;
+        } else {
+            console.error("Telegram user data not found!");
+            // Handle cases where user data might not be available
+        }
+
+        // --- Routing ---
+        function navigateTo(hash) {
+            // Hide all sections
+            contentSections.forEach(section => section.classList.remove('active'));
+            // Remove active class from nav links
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            // Show the target section and activate the nav link
+            const targetId = hash.split('?')[0].substring(1); // Get ID without hash and params
+            const targetSection = document.getElementById(targetId);
+            const targetNavLink = document.querySelector(`.bottom-nav a[data-section="${targetId}"]`);
+
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            if (targetNavLink) {
+                targetNavLink.classList.add('active');
+            }
+            // Handle specific task views if present
+            if (hash.startsWith('#task?id=')) {
+                const taskId = hash.split('=')[1];
+                displayTaskDetails(taskId);
+            }
+        }
+
+        window.addEventListener('hashchange', () => {
+            navigateTo(location.hash || '#home');
+        });
+
+        // --- Theme Management ---
+        function applyTheme(theme) {
+            userData.theme = theme;
+            if (theme === 'dark') {
+                document.body.style.backgroundColor = '#1a1a2e'; // Dark background
+                document.body.style.color = '#e0e0e0'; // Light text
+                document.documentElement.style.setProperty('--primary-color', '#757575'); // Dark Grey
+                document.documentElement.style.setProperty('--secondary-color', '#9e9e9e'); // Lighter Grey
+                document.documentElement.style.setProperty('--accent-color', '#ffab00'); // Amber
+                document.documentElement.style.setProperty('--background-color', '#2a2a3e'); // Dark card background
+                document.documentElement.style.setProperty('--card-background', '#3a3a4e'); // Slightly lighter dark
+                document.documentElement.style.setProperty('--text-color', '#e0e0e0');
+                document.documentElement.style.setProperty('--text-color-secondary', '#b0b0b0');
+                document.documentElement.style.setProperty('--border-color', '#444');
+                document.documentElement.style.setProperty('--frog-outline', '#ffffff');
+                document.documentElement.style.setProperty('--pixel-shadow', '2px 2px 0px white');
+                document.documentElement.style.setProperty('--button-shadow', '0 4px 0px white');
+
+                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i>';
+                tg.setHeaderColor('#2a2a3e'); // Dark header
+            } else { // Light Theme
+                document.body.style.backgroundColor = '#f0f4f0';
+                document.body.style.color = '#333';
+                document.documentElement.style.setProperty('--primary-color', '#4CAF50');
+                document.documentElement.style.setProperty('--secondary-color', '#8BC34A');
+                document.documentElement.style.setProperty('--accent-color', '#FFC107');
+                document.documentElement.style.setProperty('--background-color', '#ffffff');
+                document.documentElement.style.setProperty('--card-background', '#ffffff');
+                document.documentElement.style.setProperty('--text-color', '#333');
+                document.documentElement.style.setProperty('--text-color-secondary', '#666');
+                document.documentElement.style.setProperty('--border-color', '#e0e0e0');
+                document.documentElement.style.setProperty('--frog-outline', '#388E3C');
+                document.documentElement.style.setProperty('--pixel-shadow', '2px 2px 0px var(--frog-outline)');
+                document.documentElement.style.setProperty('--button-shadow', '0 4px 0px var(--frog-outline)');
+
+                themeToggleButton.innerHTML = '<i class="fas fa-moon"></i>';
+                tg.setHeaderColor('secondary_bg_color'); // Default header color
+            }
+             // Save theme preference (e.g., to localStorage or Firebase)
+            localStorage.setItem('pixelFrogTheme', theme);
+        }
+
+        themeToggleButton.addEventListener('click', () => {
+            const newTheme = userData.theme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+        });
+
+        // Load theme from localStorage on startup
+        const savedTheme = localStorage.getItem('pixelFrogTheme') || 'light';
+        applyTheme(savedTheme);
+
+        // --- Data Management Functions (Simulated) ---
+
+        // Simulate fetching user data and tasks (in a real app, this would be API calls)
+        function loadAppData() {
+            // Simulate getting user data from backend
+            console.log("Fetching app data for user:", userData.id);
+
+            // Simulate setting initial coins and tasks completed based on referral or join bonus
+            if (location.search.includes('startapp=ref_')) {
+                const referrerCode = location.search.split('=')[1]; // e.g., ref_123456789
+                const referrerUserId = referrerCode.split('_')[1]; // Extract user ID
+
+                // Apply join bonus to the new user
+                userData.coins += JOIN_BONUS_POINTS;
+                // Notify referrer (simulated) - this would involve a backend call
+                console.log(`User ${userData.firstName} joined via referral from ${referrerUserId}. Applying ${JOIN_BONUS_POINTS} join bonus.`);
+                // You'd also need to update the referrer's coin count on the backend.
+                // In a real scenario, you'd call: sendAnalyticsEvent('join_bonus', { userId: userData.id, referrerId: referrerUserId });
+            }
+
+            // Simulate fetching tasks and their completion status
+            updateTaskCompletionStatus();
+            updateUI();
+        }
+
+        function updateUI() {
+            userCoinsSpan.textContent = userData.coins;
+            // Update profile section
+            document.getElementById('profileName').textContent = userData.firstName || 'Froggy';
+            document.getElementById('profileUsername').textContent = `@${userData.username}`;
+            document.getElementById('profileTotalCoins').textContent = userData.coins;
+            document.getElementById('profileTasksCompleted').textContent = userData.tasksCompleted;
+            document.getElementById('profileReferrals').textContent = userData.level; // Placeholder for referrals, use a separate count if needed
+            document.getElementById('profileLevel').textContent = userData.level;
+        }
+
+        function addTaskCompletion() {
+            userData.tasksCompleted++;
+            // Optionally give a small bonus for completing tasks
+            // userData.coins += 5;
+            updateTaskCompletionStatus();
+            updateUI();
+        }
+
+        function updateTaskCompletionStatus() {
+            tasks.forEach(task => {
+                if (task.type === 'daily' && isToday(task.id)) { // Simple check for daily task completion
+                    task.completed = true; // Or check against a lastCompletedDate
+                } else if (task.type === 'referral' && userData.tasksCompleted >= 3) { // Example referral task
+                    task.completed = true;
+                }
+                // Add more logic for other task types and conditions
+            });
+        }
+
+        // Simple helper to check if a daily task was done today
+        function isToday(taskId) {
+            const lastCompleted = localStorage.getItem(`task_completion_${taskId}`);
+            if (!lastCompleted) return false;
+            const lastDate = new Date(lastCompleted);
+            const today = new Date();
+            return lastDate.toDateString() === today.toDateString();
+        }
+
+        function markTaskAsCompleted(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task && !task.completed) {
+                task.completed = true;
+                userData.coins += task.points || COINS_PER_TASK_DEFAULT;
+                if (task.type === 'referral') {
+                    // Logic to grant referral bonus if applicable
+                }
+                if (task.type === 'daily') {
+                    localStorage.setItem(`task_completion_${taskId}`, new Date().toISOString());
+                }
+                addTaskCompletion();
+                renderTasks(); // Re-render tasks to show completed state
+                updateUI();
+                tg.showAlert(`You earned ${task.points || COINS_PER_TASK_DEFAULT} coins!`);
+            } else if (task && task.completed) {
+                tg.showAlert("You've already completed this task!");
+            }
+        }
+
+        function renderTasks() {
+            const taskListDiv = document.getElementById('taskList');
+            taskListDiv.innerHTML = ''; // Clear existing tasks
+
+            if (tasks.length === 0) {
+                taskListDiv.innerHTML = '<p class="no-data-message">No tasks available right now. Check back soon!</p>';
+                return;
+            }
+
+            tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.classList.add('task-item');
+                const isTaskCompleted = task.completed || isToday(task.id); // Check completion status
+
+                taskElement.innerHTML = `
+                    <div class="task-icon" style="background-image: url('${task.icon}');"></div>
+                    <div class="task-details">
+                        <h3>${task.title}</h3>
+                        <p>${task.description}</p>
+                        <div class="task-points"><i class="fas fa-coins coin-icon"></i> ${task.points || COINS_PER_TASK_DEFAULT}</div>
+                    </div>
+                    ${task.rewardUrl ? `
+                        <a href="${task.rewardUrl}" class="pixel-button claim-button ${isTaskCompleted ? 'claimed' : ''}">
+                            ${isTaskCompleted ? 'Completed' : 'Jump'}
+                        </a>
+                    ` : `
+                        <button class="pixel-button claim-button ${isTaskCompleted ? 'claimed' : ''}" ${isTaskCompleted ? 'disabled' : ''} data-task-id="${task.id}">
+                            ${isTaskCompleted ? 'Completed' : 'Jump'}
+                        </button>
+                    `}
+                `;
+                taskListDiv.appendChild(taskElement);
+            });
+
+            // Add event listeners to claim buttons
+            document.querySelectorAll('#taskList .claim-button:not(.claimed)').forEach(button => {
+                button.addEventListener('click', () => {
+                    const taskId = button.getAttribute('data-task-id');
+                    markTaskAsCompleted(taskId);
+                });
+            });
+        }
+
+        // --- Specific Section Logic ---
+
+        // Task Details View (if URL has task ID parameter)
+        function displayTaskDetails(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) {
+                tg.showAlert("Task not found!");
+                return;
+            }
+
+            // Here you would typically show a modal or a more detailed view
+            // For simplicity, we'll just show an alert with task details
+            let message = `Task: ${task.title}\nDescription: ${task.description}\nPoints: ${task.points || COINS_PER_TASK_DEFAULT}`;
+            if (task.type === 'referral') {
+                message += `\n\nShare your referral link: ${referralLinkSpan.textContent}`;
+            }
+            tg.showAlert(message);
+
+            // If the task is actionable, link back to tasks or handle it
+            if (task.rewardUrl) {
+                // The navigation will handle going to the URL, but we might want to close this alert or prompt
+            }
+        }
+
+        // Copy referral link functionality
+        copyReferralButton.addEventListener('click', () => {
+            const linkToCopy = referralLinkSpan.textContent;
+            navigator.clipboard.writeText(linkToCopy).then(() => {
+                tg.showAlert('Referral link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy referral link: ', err);
+                tg.showAlert('Failed to copy link. Try manual copy.');
+            });
+        });
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial navigation based on URL hash
+            navigateTo(location.hash || '#home');
+            // Load app data (user info, tasks, etc.)
+            loadAppData();
+            // Render tasks initially
+            renderTasks();
+        });
+
+    </script>
+</body>
+</html>
