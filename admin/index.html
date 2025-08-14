@@ -3,97 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Admin Panel</title>
+    <title>Game Admin Panel v1.0</title>
     <style>
-        /* General Styles */
+        /* --- Font Awesome for Icons (Optional but recommended for PRO feel) --- */
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+        /* --- General Styles --- */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --background-light: #f8f9fa;
+            --background-dark: #eef2f3;
+            --text-primary: #333;
+            --text-secondary: #555;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --modal-backdrop: rgba(0, 0, 0, 0.5);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #f4f7f6;
-            color: #333;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
             display: flex;
             min-height: 100vh;
             overflow: hidden; /* Prevent scroll on body */
         }
 
-        .admin-panel {
+        .admin-panel-wrapper {
+            display: flex;
             width: 100%;
+            min-height: 100vh;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 250px; /* Fixed width for sidebar */
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 2px 0 5px var(--shadow-color);
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Full viewport height */
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            transition: width 0.3s ease;
         }
 
-        /* Header */
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
+        .sidebar.collapsed {
+            width: 60px; /* Collapsed width */
         }
 
-        header h1 {
+        .sidebar-header {
+            text-align: center;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h1 {
             margin: 0;
-            font-size: 1.8em;
+            font-size: 1.6em;
             letter-spacing: 1px;
+            transition: opacity 0.3s ease;
         }
 
-        header nav {
-            display: flex;
-            gap: 10px;
+        .sidebar.collapsed .sidebar-header h1 {
+            opacity: 0;
+            font-size: 0; /* Hide text completely when collapsed */
         }
 
-        header nav button {
-            background-color: #3498db;
+        .sidebar-header .toggle-btn {
+            position: absolute;
+            top: 10px;
+            right: -25px; /* Position outside the sidebar for visibility */
+            background: var(--primary-color);
             color: white;
             border: none;
-            padding: 0.8em 1.2em;
+            padding: 8px;
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 1em;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            border-radius: 50%;
+            font-size: 1.2em;
+            transition: transform 0.3s ease, right 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-header .toggle-btn {
+            right: 15px; /* Move inside when collapsed */
+            transform: rotate(180deg);
+        }
+
+        .sidebar-menu {
+            flex-grow: 1;
+            padding: 0 1rem;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            font-size: 1.05em;
             font-weight: 500;
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: hidden; /* Hide text if collapsed */
         }
 
-        header nav button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
+        .sidebar-menu a i {
+            margin-right: 15px;
+            font-size: 1.2em;
+            min-width: 30px; /* Fixed width for icons */
+            text-align: center;
         }
 
-        /* Main Content */
-        main {
+        .sidebar.collapsed .sidebar-menu a {
+            padding: 12px 12px; /* Smaller padding when collapsed */
+            justify-content: center;
+            margin: 0; /* Reset margin */
+        }
+
+        .sidebar.collapsed .sidebar-menu a span {
+            display: none; /* Hide text when collapsed */
+        }
+
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar.collapsed .sidebar-menu a:hover {
+            transform: none; /* No translation when collapsed */
+        }
+
+        .sidebar-menu .active-nav-item {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-menu .active-nav-item:hover {
+            background-color: #3498db; /* Keep primary color on hover */
+            transform: none;
+        }
+
+
+        /* --- Main Content Area --- */
+        .main-content {
             flex-grow: 1;
             padding: 2rem;
             overflow-y: auto; /* Allow scrolling for content */
-            background-color: #eef2f3; /* Slightly different background for main area */
+            position: relative; /* For positioning of header/title if needed */
         }
 
+        .main-content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            background-color: white; /* Give header a distinct background */
+            padding: 1.5rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .main-content-header h2 {
+            margin: 0;
+            color: var(--secondary-color);
+            font-size: 2em;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .main-content-header h2 i {
+            color: var(--primary-color);
+        }
+
+        /* Section Styling */
         section {
             background-color: white;
-            padding: 2rem;
+            padding: 2.5rem; /* More padding */
             margin-bottom: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
+            border-radius: 12px; /* Slightly larger radius */
+            box-shadow: 0 5px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
-        section h2 {
-            color: #2c3e50;
+        section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        section h3 { /* Section titles moved from h2 */
+            color: var(--secondary-color);
             margin-top: 0;
-            border-bottom: 3px solid #3498db;
+            border-bottom: 3px solid var(--primary-color);
             padding-bottom: 10px;
             margin-bottom: 25px;
-            font-size: 1.7em;
+            font-size: 1.8em;
             letter-spacing: 0.5px;
         }
 
+        /* --- Table Styles --- */
         .data-table-container {
             overflow-x: auto;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
+            background-color: white; /* Ensure table container has background */
         }
 
         table {
@@ -105,23 +238,27 @@
         th, td {
             padding: 15px 18px;
             text-align: left;
-            border-bottom: 1px solid #ecf0f1;
-            white-space: nowrap; /* Prevent text from wrapping in cells */
+            border-bottom: 1px solid #eef2f3; /* Lighter border for cells */
+            white-space: nowrap;
+            font-size: 1em;
         }
 
         th {
-            background-color: #f8f9fa;
+            background-color: #f0f3f4; /* Lighter header background */
             font-weight: 600;
-            color: #555;
+            color: var(--text-secondary);
             font-size: 1.05em;
+            position: sticky; /* Make header sticky */
+            top: 0;
+            z-index: 10; /* Above table content */
         }
 
         tr:hover {
-            background-color: #f9f9f9;
+            background-color: #fcfcfc;
         }
 
         td button {
-            background-color: #e74c3c;
+            background-color: var(--accent-color);
             color: white;
             border: none;
             padding: 8px 12px;
@@ -130,65 +267,83 @@
             border-radius: 4px;
             font-size: 0.9em;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         td button.edit-btn {
-            background-color: #f39c12;
+            background-color: #f39c12; /* Warning color */
         }
 
         td button:hover {
             transform: translateY(-1px);
-            opacity: 0.95;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        /* Add New Buttons */
-        section > button {
-            background-color: #2ecc71;
-            padding: 10px 20px;
-            font-size: 1em;
+        /* --- Action Buttons --- */
+        .add-btn {
+            background-color: #2ecc71 !important; /* Green */
+            padding: 10px 20px !important;
+            font-size: 1em !important;
             transition: background-color 0.3s ease, transform 0.2s ease;
             margin-bottom: 20px;
+            display: inline-block;
+            border-radius: 8px !important;
+            font-weight: 500;
         }
 
-        section > button:hover {
-            background-color: #27ae60;
+        .add-btn:hover {
+            background-color: #27ae60 !important;
             transform: translateY(-2px);
         }
 
-        /* Modals */
+        /* --- Modals --- */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0, 0, 0, 0.5); /* Darker background */
-            backdrop-filter: blur(8px); /* More pronounced blur */
-            -webkit-backdrop-filter: blur(8px); /* For Safari */
-            padding-top: 30px; /* Add some padding at the top */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: var(--modal-backdrop);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding-top: 50px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal.visible {
+            opacity: 1;
+            visibility: visible;
         }
 
         .modal-content {
             background-color: #fff;
-            margin: 5% auto; /* 5% from the top and centered */
+            margin: 5% auto;
             padding: 35px;
-            border-radius: 12px;
-            width: 90%; /* Could be more or less, depending on screen size */
+            border-radius: 15px; /* More rounded */
+            width: 90%;
             max-width: 600px;
             position: relative;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); /* Stronger shadow */
             border: 1px solid #ddd;
+            transform: translateY(-50px); /* Initial off-screen position */
+            transition: transform 0.3s ease;
+        }
+
+        .modal.visible .modal-content {
+            transform: translateY(0); /* Slide into view */
         }
 
         .modal-content h3 {
             margin-top: 0;
-            color: #2c3e50;
+            color: var(--secondary-color);
             text-align: center;
             margin-bottom: 30px;
-            font-size: 1.8em;
+            font-size: 2em;
             letter-spacing: 0.5px;
         }
 
@@ -196,22 +351,19 @@
             display: block;
             margin-bottom: 10px;
             font-weight: 600;
-            color: #444;
+            color: var(--text-secondary);
             font-size: 1.05em;
         }
 
-        .modal-content input[type="text"],
-        .modal-content input[type="time"],
-        .modal-content input[type="number"],
-        .modal-content input[type="date"],
+        .modal-content input,
         .modal-content textarea,
         .modal-content select {
-            width: calc(100% - 24px); /* Adjust for padding */
+            width: calc(100% - 24px);
             padding: 12px 15px;
             margin-bottom: 18px;
             border: 1px solid #ccc;
-            border-radius: 7px;
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            border-radius: 8px; /* Rounded inputs */
+            box-sizing: border-box;
             font-size: 1em;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -219,8 +371,8 @@
         .modal-content input:focus,
         .modal-content textarea:focus,
         .modal-content select:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
             outline: none;
         }
 
@@ -235,7 +387,7 @@
             font-size: 1.15em;
             background-color: #2ecc71;
             border: none;
-            border-radius: 7px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             font-weight: 600;
@@ -264,199 +416,319 @@
             text-decoration: none;
         }
 
-        /* Checkboxes and radios */
-        .modal-content input[type="checkbox"] {
-            margin-right: 10px;
-            width: auto; /* Reset width */
-            cursor: pointer;
-            transform: scale(1.2); /* Make checkboxes slightly larger */
-        }
-
         .checkbox-label {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
 
-        /* Utility Classes */
-        .hidden {
-            display: none !important; /* Use !important to ensure it overrides */
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 12px;
+            width: auto;
+            cursor: pointer;
+            transform: scale(1.2);
+            accent-color: var(--primary-color); /* Style checkbox color */
         }
 
-        /* Responsive adjustments */
+        /* --- Input Groups for related fields --- */
+        .input-group {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start; /* Align items at the start */
+            margin-bottom: 15px;
+        }
+        .input-group > div {
+            flex: 1; /* Distribute space */
+        }
+        .input-group label {
+            margin-bottom: 8px; /* Reduce label margin within group */
+        }
+
+        /* --- Specific Section Enhancements --- */
+        #tasks .data-table-container th:nth-child(2),
+        #tasks .data-table-container td:nth-child(2) { /* Description */
+            white-space: normal; /* Allow description to wrap */
+            max-width: 200px; /* Limit width */
+        }
+        #tasks .data-table-container th:nth-child(3),
+        #tasks .data-table-container td:nth-child(3) { /* Category */
+            max-width: 150px;
+        }
+
+        #luckyCodes .data-table-container th:nth-child(5),
+        #luckyCodes .data-table-container td:nth-child(5) { /* Valid Until */
+            white-space: normal;
+            max-width: 180px;
+        }
+
+        /* --- Mobile Responsiveness --- */
         @media (max-width: 768px) {
-            header {
+            .admin-panel-wrapper {
                 flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto; /* Auto height when collapsed */
+                padding-bottom: 10px;
+                border-right: none;
+                box-shadow: 0 2px 5px var(--shadow-color);
+            }
+
+            .sidebar.collapsed {
+                width: 100%; /* Full width when collapsed on mobile */
+                height: 60px; /* Fixed height when collapsed */
+                overflow: hidden;
+                box-shadow: 0 2px 5px var(--shadow-color);
+            }
+
+            .sidebar-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 padding: 1rem;
             }
-            header h1 {
-                font-size: 1.5em;
+
+            .sidebar-header h1 {
+                font-size: 1.4em;
+                opacity: 1; /* Always visible on mobile header */
+                font-size: auto;
             }
-            header nav {
-                margin-top: 15px;
-                flex-wrap: wrap;
+
+            .sidebar.collapsed .sidebar-header h1 {
+                opacity: 1; /* Show title on collapsed mobile header */
+                font-size: 1.4em;
+            }
+
+            .sidebar.collapsed .sidebar-header .toggle-btn {
+                right: 15px; /* Standard position */
+                transform: rotate(0deg); /* No rotation needed */
+            }
+
+            .sidebar-menu {
+                padding: 0 0.5rem;
+            }
+
+            .sidebar-menu a {
+                padding: 10px 15px;
+                font-size: 1em;
+                justify-content: flex-start; /* Align left */
+            }
+            .sidebar-menu a i {
+                margin-right: 15px;
+            }
+            .sidebar.collapsed .sidebar-menu a {
+                padding: 10px 10px; /* Keep minimal padding */
                 justify-content: center;
-                gap: 5px;
             }
-            header nav button {
-                padding: 0.6em 1em;
-            }
-            main {
+
+
+            .main-content {
                 padding: 1rem;
             }
+
+            .main-content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+
+            .main-content-header h2 {
+                font-size: 1.6em;
+                margin-bottom: 10px;
+            }
+
             section {
                 padding: 1.5rem;
+                margin-bottom: 1.5rem;
             }
+
+            section h3 {
+                font-size: 1.6em;
+            }
+
             .modal-content {
-                margin: 10% auto;
+                margin: 20% auto;
                 padding: 25px;
             }
+
+            .modal-content h3 {
+                font-size: 1.7em;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
             th, td {
                 padding: 10px 12px;
                 font-size: 0.9em;
             }
+
             td button {
                 padding: 6px 10px;
                 font-size: 0.85em;
+                margin-right: 4px;
+            }
+
+            .add-btn {
+                padding: 8px 15px !important;
+                font-size: 0.95em !important;
             }
         }
     </style>
 </head>
 <body>
-    <div class="admin-panel">
-        <header>
-            <h1>Game Admin Panel</h1>
-            <nav>
-                <button onclick="showSection('users')">Users</button>
-                <button onclick="showSection('categories')">Categories</button>
-                <button onclick="showSection('tasks')">Tasks</button>
-                <button onclick="showSection('luckyCodes')">Lucky Codes</button>
-                <button onclick="showSection('earnings')">Earnings</button>
+    <div class="admin-panel-wrapper">
+        <!-- --- Sidebar --- -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>Admin Panel</h1>
+                <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-angle-left"></i></button>
+            </div>
+            <nav class="sidebar-menu">
+                <ul>
+                    <li><a href="#" onclick="showSection('users'); setActiveNav('users');"><i class="fas fa-users"></i><span>Users</span></a></li>
+                    <li><a href="#" onclick="showSection('categories'); setActiveNav('categories');"><i class="fas fa-list-alt"></i><span>Categories</span></a></li>
+                    <li><a href="#" onclick="showSection('tasks'); setActiveNav('tasks');"><i class="fas fa-tasks"></i><span>Tasks</span></a></li>
+                    <li><a href="#" onclick="showSection('luckyCodes'); setActiveNav('luckyCodes');"><i class="fas fa-gift"></i><span>Lucky Codes</span></a></li>
+                    <li><a href="#" onclick="showSection('earnings'); setActiveNav('earnings');"><i class="fas fa-dollar-sign"></i><span>Earnings</span></a></li>
+                    <!-- Add more navigation links here -->
+                </ul>
             </nav>
-        </header>
+        </aside>
 
-        <main>
-            <!-- Users Section -->
-            <section id="users" class="hidden">
-                <h2>User List</h2>
-                <div class="data-table-container">
-                    <table id="userTable">
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Points</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- User data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        <!-- --- Main Content Area --- -->
+        <div class="main-content">
+            <header class="main-content-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard / <span id="currentSectionTitle">Users</span></h2>
+                <!-- You could add user login info/logout button here -->
+            </header>
 
-            <!-- Categories Section -->
-            <section id="categories" class="hidden">
-                <h2>Categories</h2>
-                <button onclick="openModal('categoryModal', null)">Add New Category</button>
-                <div class="data-table-container">
-                    <table id="categoryTable">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>URL</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Category data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            <main>
+                <!-- --- Users Section --- -->
+                <section id="users">
+                    <h3>User Management</h3>
+                    <div class="data-table-container">
+                        <table id="userTable">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Points</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- User data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <!-- Tasks Section -->
-            <section id="tasks" class="hidden">
-                <h2>Tasks</h2>
-                <button onclick="openModal('taskModal', null)">Add New Task</button>
-                <div class="data-table-container">
-                    <table id="taskTable">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Task ID</th>
-                                <th>Reward Points</th>
-                                <th>Total Completes</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Task data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <!-- --- Categories Section --- -->
+                <section id="categories" class="hidden">
+                    <h3>Categories</h3>
+                    <button class="add-btn" onclick="openModal('categoryModal', null)"><i class="fas fa-plus"></i> Add New Category</button>
+                    <div class="data-table-container">
+                        <table id="categoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>URL</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Category data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <!-- Daily Lucky Codes Section -->
-            <section id="luckyCodes" class="hidden">
-                <h2>Daily Lucky Codes</h2>
-                <button onclick="openModal('luckyCodeModal', null)">Add New Lucky Code</button>
-                <div class="data-table-container">
-                    <table id="luckyCodeTable">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Code</th>
-                                <th>Points</th>
-                                <th>Reward Type</th>
-                                <th>Valid Until</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Lucky Code data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <!-- --- Tasks Section --- -->
+                <section id="tasks" class="hidden">
+                    <h3>Task Management</h3>
+                    <button class="add-btn" onclick="openModal('taskModal', null)"><i class="fas fa-plus"></i> Add New Task</button>
+                    <div class="data-table-container">
+                        <table id="taskTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Task ID</th>
+                                    <th>Reward Points</th>
+                                    <th>Max Completes</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Task data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <!-- Earnings Section -->
-            <section id="earnings" class="hidden">
-                <h2>Earnings Configuration</h2>
-                <button onclick="openModal('earningModal', null)">Configure Earning</button>
-                <div class="data-table-container">
-                    <table id="earningTable">
-                        <thead>
-                            <tr>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Coins per Coin</th>
-                                <th>Total Users Attendant</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Earning data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <!-- --- Daily Lucky Codes Section --- -->
+                <section id="luckyCodes" class="hidden">
+                    <h3>Daily Lucky Codes</h3>
+                    <button class="add-btn" onclick="openModal('luckyCodeModal', null)"><i class="fas fa-plus"></i> Add New Lucky Code</button>
+                    <div class="data-table-container">
+                        <table id="luckyCodeTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Code</th>
+                                    <th>Points</th>
+                                    <th>Reward Type</th>
+                                    <th>Valid Until</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Lucky Code data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-        </main>
+                <!-- --- Earnings Section --- -->
+                <section id="earnings" class="hidden">
+                    <h3>Earnings Configuration</h3>
+                    <button class="add-btn" onclick="openModal('earningModal', null)"><i class="fas fa-cog"></i> Configure Earning</button>
+                    <div class="data-table-container">
+                        <table id="earningTable">
+                            <thead>
+                                <tr>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Coins per Coin</th>
+                                    <th>Max Active Users</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Earning data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
 
-    <!-- Modals -->
+    <!-- --- Modals --- -->
 
     <!-- Category Modal -->
-    <div id="categoryModal" class="modal hidden">
+    <div id="categoryModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('categoryModal')">&times;</span>
             <h3 id="categoryModalTitle">Add New Category</h3>
@@ -470,102 +742,180 @@
     </div>
 
     <!-- Task Modal -->
-    <div id="taskModal" class="modal hidden">
+    <div id="taskModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('taskModal')">&times;</span>
             <h3 id="taskModalTitle">Add New Task</h3>
             <input type="hidden" id="taskIdEdit">
+
             <label for="taskTitle">Title:</label>
             <input type="text" id="taskTitle" placeholder="e.g., Collect 10 Gems">
+
             <label for="taskDescription">Description:</label>
             <textarea id="taskDescription" placeholder="e.g., Perform the action described to complete the task."></textarea>
-            <label for="taskIconUrl">Task Icon URL (Optional):</label>
-            <input type="text" id="taskIconUrl" placeholder="e.g., http://yourgame.com/icons/gem_collect.png">
-            <label for="taskUrl">Task URL (Optional):</label>
-            <input type="text" id="taskUrl" placeholder="e.g., http://yourgame.com/tasks/gems">
-            <label for="taskCompleteTime">Estimated Completion Time (Optional):</label>
-            <input type="text" id="taskCompleteTime" placeholder="e.g., 5m, 1h, 3d">
-            <label for="taskCategory">Category:</label>
-            <select id="taskCategory"></select>
-            <label for="taskRewardPoints">Reward Points:</label>
-            <input type="number" id="taskRewardPoints" value="0" min="0">
-            <label for="taskRewardItemName">Reward Item Name (Optional):</label>
-            <input type="text" id="taskRewardItemName" placeholder="e.g., Golden Key">
+
+            <div class="input-group">
+                <div>
+                    <label for="taskIconUrl">Task Icon URL (Optional):</label>
+                    <input type="text" id="taskIconUrl" placeholder="e.g., http://yourgame.com/icons/gem_collect.png">
+                </div>
+                <div>
+                    <label for="taskUrl">Task URL (Optional):</label>
+                    <input type="text" id="taskUrl" placeholder="e.g., http://yourgame.com/tasks/gems">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label for="taskCategory">Category:</label>
+                    <select id="taskCategory"></select>
+                </div>
+                <div>
+                    <label for="taskCompleteTime">Est. Completion Time (Optional):</label>
+                    <input type="text" id="taskCompleteTime" placeholder="e.g., 5m, 1h, 3d">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label for="taskRewardPoints">Reward Points:</label>
+                    <input type="number" id="taskRewardPoints" value="0" min="0">
+                </div>
+                <div>
+                    <label for="taskRewardItemName">Reward Item Name (Optional):</label>
+                    <input type="text" id="taskRewardItemName" placeholder="e.g., Golden Key">
+                </div>
+            </div>
+
             <label for="taskRewardItemId">Reward Item ID (Optional):</label>
             <input type="text" id="taskRewardItemId" placeholder="e.g., ITEM_GOLDEN_KEY">
-            <label for="taskTotalCompletes">Max Task Completes (0 for unlimited):</label>
-            <input type="number" id="taskTotalCompletes" value="0" min="0">
-            <label for="taskStatus">Status:</label>
-            <select id="taskStatus">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
+
+            <div class="input-group">
+                <div>
+                    <label for="taskTotalCompletes">Max Task Completes (0=unlimited):</label>
+                    <input type="number" id="taskTotalCompletes" value="0" min="0">
+                </div>
+                <div>
+                    <label for="taskStatus">Status:</label>
+                    <select id="taskStatus">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
             <label for="taskPerma" class="checkbox-label">
                 <input type="checkbox" id="taskPerma"> Permanent Task
             </label>
+
             <label for="taskCode">Task Code (Optional):</label>
             <input type="text" id="taskCode" placeholder="e.g., SECRETCODE123">
+
             <label for="taskCodeVerification" class="checkbox-label">
                 <input type="checkbox" id="taskCodeVerification"> Code Verification Required
             </label>
+
             <button onclick="saveTask()">Save Task</button>
         </div>
     </div>
 
     <!-- Daily Lucky Code Modal -->
-    <div id="luckyCodeModal" class="modal hidden">
+    <div id="luckyCodeModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('luckyCodeModal')">&times;</span>
             <h3 id="luckyCodeModalTitle">Add New Lucky Code</h3>
             <input type="hidden" id="luckyCodeId">
+
             <label for="luckyCodeTitle">Title:</label>
             <input type="text" id="luckyCodeTitle" placeholder="e.g., Today's Bonus Code">
-            <label for="luckyCode">Lucky Code:</label>
-            <input type="text" id="luckyCode" placeholder="e.g., WINNER2024">
-            <label for="luckyCodePoints">Points Awarded:</label>
-            <input type="number" id="luckyCodePoints" value="0" min="0">
-            <label for="luckyCodeRewardType">Reward Type:</label>
-            <select id="luckyCodeRewardType">
-                <option value="Points">Points</option>
-                <option value="Item">In-game Item</option>
-                <option value="Boost">Boost</option>
-                <option value="None">None</option>
-            </select>
-            <label for="luckyCodeRewardDetails">Reward Details (Item Name/ID, Boost Type etc.):</label>
-            <input type="text" id="luckyCodeRewardDetails" placeholder="e.g., Golden Key / ITEM_KEY001 / Speed Boost x2">
-            <label for="luckyCodeStartTime">Start Time:</label>
-            <input type="datetime-local" id="luckyCodeStartTime">
-            <label for="luckyCodeEndTime">End Time:</label>
-            <input type="datetime-local" id="luckyCodeEndTime">
+
+            <div class="input-group">
+                <div>
+                    <label for="luckyCode">Lucky Code:</label>
+                    <input type="text" id="luckyCode" placeholder="e.g., WINNER2024">
+                </div>
+                <div>
+                    <label for="luckyCodePoints">Points Awarded:</label>
+                    <input type="number" id="luckyCodePoints" value="0" min="0">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label for="luckyCodeRewardType">Reward Type:</label>
+                    <select id="luckyCodeRewardType">
+                        <option value="Points">Points</option>
+                        <option value="Item">In-game Item</option>
+                        <option value="Boost">Boost</option>
+                        <option value="None">None</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="luckyCodeRewardDetails">Reward Details (Item/Boost):</label>
+                    <input type="text" id="luckyCodeRewardDetails" placeholder="e.g., Golden Key / ITEM_KEY001 / Speed Boost x2">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label for="luckyCodeStartTime">Start Time:</label>
+                    <input type="datetime-local" id="luckyCodeStartTime">
+                </div>
+                <div>
+                    <label for="luckyCodeEndTime">End Time:</label>
+                    <input type="datetime-local" id="luckyCodeEndTime">
+                </div>
+            </div>
+
             <label for="luckyCodeStatus">Status:</label>
             <select id="luckyCodeStatus">
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
+
             <button onclick="saveLuckyCode()">Save Lucky Code</button>
         </div>
     </div>
 
     <!-- Earning Modal -->
-    <div id="earningModal" class="modal hidden">
+    <div id="earningModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('earningModal')">&times;</span>
             <h3 id="earningModalTitle">Configure Earning</h3>
             <input type="hidden" id="earningId">
-            <label for="earningStartTime">Start Time (Daily):</label>
-            <input type="time" id="earningStartTime" placeholder="HH:MM">
-            <label for="earningEndTime">End Time (Daily):</label>
-            <input type="time" id="earningEndTime" placeholder="HH:MM">
-            <label for="earningPerCoin">Coins per Coin Exchange Rate:</label>
-            <input type="number" id="earningPerCoin" placeholder="e.g., 100">
-            <label for="earningTotalUsers">Max Active Users for Boost (Optional):</label>
-            <input type="number" id="earningTotalUsers" placeholder="e.g., 1000">
+
+            <div class="input-group">
+                <div>
+                    <label for="earningStartTime">Daily Start Time:</label>
+                    <input type="time" id="earningStartTime" placeholder="HH:MM">
+                </div>
+                <div>
+                    <label for="earningEndTime">Daily End Time:</label>
+                    <input type="time" id="earningEndTime" placeholder="HH:MM">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label for="earningPerCoin">Coins per Coin Exchange Rate:</label>
+                    <input type="number" id="earningPerCoin" placeholder="e.g., 100">
+                </div>
+                <div>
+                    <label for="earningTotalUsers">Max Active Users for Boost (Optional):</label>
+                    <input type="number" id="earningTotalUsers" placeholder="e.g., 1000">
+                </div>
+            </div>
+
             <button onclick="saveEarning()">Save Earning Configuration</button>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
     <script>
-        // Your Firebase configuration
+        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyBCBnT2enEoLaf7IhaSnMmlZbsZfoPjgrE",
             authDomain: "abs-grow.firebaseapp.com",
@@ -580,12 +930,24 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // --- Navigation ---
+        // --- UI State Variables ---
+        let currentSection = 'users';
+        let sidebarCollapsed = false;
+
+        // --- DOM Elements ---
+        const sidebar = document.getElementById('sidebar');
+        const mainContentHeaderTitle = document.getElementById('currentSectionTitle');
+
+        // --- Navigation Logic ---
         function showSection(sectionId) {
             document.querySelectorAll('main section').forEach(section => {
                 section.classList.add('hidden');
             });
             document.getElementById(sectionId).classList.remove('hidden');
+            currentSection = sectionId; // Update current section
+
+            // Update the header title
+            mainContentHeaderTitle.innerText = sectionId.charAt(0).toUpperCase() + sectionId.slice(1).replace(/([A-Z])/g, ' $1');
 
             // Load data for the selected section
             if (sectionId === 'users') loadUsers();
@@ -595,10 +957,47 @@
             else if (sectionId === 'earnings') loadEarnings();
         }
 
-        // --- Modals ---
+        function setActiveNav(sectionId) {
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active-nav-item');
+            });
+            const activeLink = document.querySelector(`.sidebar-menu a[onclick*="${sectionId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active-nav-item');
+            }
+        }
+
+        function toggleSidebar() {
+            sidebarCollapsed = !sidebarCollapsed;
+            sidebar.classList.toggle('collapsed');
+
+            const toggleIcon = sidebar.querySelector('.toggle-btn i');
+            if (sidebarCollapsed) {
+                toggleIcon.classList.remove('fa-angle-left');
+                toggleIcon.classList.add('fa-angle-right');
+            } else {
+                toggleIcon.classList.remove('fa-angle-right');
+                toggleIcon.classList.add('fa-angle-left');
+            }
+        }
+
+        // --- Modal Logic ---
         function openModal(modalId, data) {
             const modal = document.getElementById(modalId);
-            modal.classList.remove('hidden');
+            modal.classList.add('visible'); // Add visible class for transition
+
+            // Reset form inputs
+            const formElements = modal.querySelectorAll('input[type="text"], input[type="number"], textarea, select');
+            formElements.forEach(el => {
+                // Store initial values or reset to default if not editing
+                if (!data) { // If adding new, reset
+                    if (el.type === 'checkbox') el.checked = false;
+                    else el.value = '';
+                    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                    if (el.type === 'number') el.value = el.min || 0;
+                    if (el.id === 'taskStatus' || el.id === 'luckyCodeStatus') el.value = 'active';
+                }
+            });
 
             // Populate modal with data if provided (for editing)
             if (data) {
@@ -617,7 +1016,7 @@
                     document.getElementById('taskRewardPoints').value = data.rewardPoints || 0;
                     document.getElementById('taskRewardItemName').value = data.rewardItemName || '';
                     document.getElementById('taskRewardItemId').value = data.rewardItemId || '';
-                    document.getElementById('taskTotalCompletes').value = data.totalCompletes || 0;
+                    document.getElementById('taskTotalCompletes').value = data.totalCompletes === null ? 0 : data.totalCompletes; // Handle null for unlimited
                     document.getElementById('taskStatus').value = data.status || 'active';
                     document.getElementById('taskPerma').checked = data.isPermanent || false;
                     document.getElementById('taskCode').value = data.code || '';
@@ -632,8 +1031,8 @@
                     document.getElementById('luckyCodeRewardType').value = data.rewardType || 'Points';
                     document.getElementById('luckyCodeRewardDetails').value = data.rewardDetails || '';
                     // Convert ISO string to local datetime string for datetime-local input
-                    document.getElementById('luckyCodeStartTime').value = data.startTime ? data.startTime.replace('Z', '') : '';
-                    document.getElementById('luckyCodeEndTime').value = data.endTime ? data.endTime.replace('Z', '') : '';
+                    document.getElementById('luckyCodeStartTime').value = data.startTime ? data.startTime.substring(0, 16) : '';
+                    document.getElementById('luckyCodeEndTime').value = data.endTime ? data.endTime.substring(0, 16) : '';
                     document.getElementById('luckyCodeStatus').value = data.status || 'active';
                     document.getElementById('luckyCodeModalTitle').innerText = 'Edit Lucky Code';
                 } else if (modalId === 'earningModal') {
@@ -641,75 +1040,51 @@
                     document.getElementById('earningStartTime').value = data.startTime;
                     document.getElementById('earningEndTime').value = data.endTime;
                     document.getElementById('earningPerCoin').value = data.perCoin;
-                    document.getElementById('earningTotalUsers').value = data.totalUsersAttendant;
+                    document.getElementById('earningTotalUsers').value = data.totalUsersAttendant || '';
                     document.getElementById('earningModalTitle').innerText = 'Edit Earning Configuration';
                 }
             } else {
-                // Reset form for adding new items
-                document.getElementById('categoryId').value = '';
-                document.getElementById('categoryTitle').value = '';
-                document.getElementById('categoryUrl').value = '';
-                document.getElementById('categoryModalTitle').innerText = 'Add New Category';
-
-                document.getElementById('taskIdEdit').value = '';
-                document.getElementById('taskTitle').value = '';
-                document.getElementById('taskDescription').value = '';
-                document.getElementById('taskIconUrl').value = '';
-                document.getElementById('taskUrl').value = '';
-                document.getElementById('taskCompleteTime').value = '';
-                document.getElementById('taskRewardPoints').value = 0;
-                document.getElementById('taskRewardItemName').value = '';
-                document.getElementById('taskRewardItemId').value = '';
-                document.getElementById('taskTotalCompletes').value = 0;
-                document.getElementById('taskStatus').value = 'active';
-                document.getElementById('taskPerma').checked = false;
-                document.getElementById('taskCode').value = '';
-                document.getElementById('taskCodeVerification').checked = false;
-                document.getElementById('taskModalTitle').innerText = 'Add New Task';
-                populateCategoryDropdown(null);
-
-                document.getElementById('luckyCodeId').value = '';
-                document.getElementById('luckyCodeTitle').value = '';
-                document.getElementById('luckyCode').value = '';
-                document.getElementById('luckyCodePoints').value = 0;
-                document.getElementById('luckyCodeRewardType').value = 'Points';
-                document.getElementById('luckyCodeRewardDetails').value = '';
-                document.getElementById('luckyCodeStartTime').value = '';
-                document.getElementById('luckyCodeEndTime').value = '';
-                document.getElementById('luckyCodeStatus').value = 'active';
-                document.getElementById('luckyCodeModalTitle').innerText = 'Add New Lucky Code';
-
-                document.getElementById('earningId').value = '';
-                document.getElementById('earningStartTime').value = '';
-                document.getElementById('earningEndTime').value = '';
-                document.getElementById('earningPerCoin').value = '';
-                document.getElementById('earningTotalUsers').value = '';
-                document.getElementById('earningModalTitle').innerText = 'Configure Earning';
+                // Reset modal titles for adding new items
+                if (modalId === 'categoryModal') document.getElementById('categoryModalTitle').innerText = 'Add New Category';
+                if (modalId === 'taskModal') document.getElementById('taskModalTitle').innerText = 'Add New Task';
+                if (modalId === 'luckyCodeModal') document.getElementById('luckyCodeModalTitle').innerText = 'Add New Lucky Code';
+                if (modalId === 'earningModal') document.getElementById('earningModalTitle').innerText = 'Configure Earning';
             }
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('visible'); // Remove visible class for transition
+            // A slight delay before setting to hidden to allow fade-out
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.style.opacity = ''; // Reset opacity
+                modal.style.visibility = ''; // Reset visibility
+                modal.querySelector('.modal-content').style.transform = 'translateY(-50px)'; // Reset transform
+            }, 300);
         }
 
         // Close modal if user clicks outside of it
         window.onclick = function(event) {
             const modals = document.getElementsByClassName('modal');
             for (let i = 0; i < modals.length; i++) {
-                if (event.target === modals[i]) {
-                    modals[i].classList.add('hidden');
+                if (event.target === modals[i]) { // Check if the click was directly on the modal backdrop
+                    closeModal(modals[i].id);
                 }
             }
         }
 
         // --- Data Loading and Display ---
-
         function loadUsers() {
             const userTableBody = document.getElementById('userTable').querySelector('tbody');
-            userTableBody.innerHTML = ''; // Clear existing rows
+            userTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading Users...</td></tr>'; // Placeholder
 
             firebase.database().ref('users').on('value', (snapshot) => {
-                userTableBody.innerHTML = ''; // Clear again to prevent duplicates on real-time updates
+                userTableBody.innerHTML = ''; // Clear previous content
+                if (!snapshot.exists()) {
+                    userTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No users found.</td></tr>';
+                    return;
+                }
                 snapshot.forEach((childSnapshot) => {
                     const user = childSnapshot.val();
                     const row = userTableBody.insertRow();
@@ -720,21 +1095,26 @@
                     row.insertCell(4).innerText = user.status || 'Active';
                     const actionsCell = row.insertCell(5);
                     actionsCell.innerHTML = `
-                        <button class="edit-btn" onclick="editUser('${childSnapshot.key}', ${JSON.stringify(user)})">Edit</button>
-                        <button onclick="deleteUser('${childSnapshot.key}')">Delete</button>
+                        <button class="edit-btn" onclick="editUser('${childSnapshot.key}', ${JSON.stringify(user)})"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteUser('${childSnapshot.key}')"><i class="fas fa-trash-alt"></i> Delete</button>
                     `;
                 });
             }, (error) => {
                 console.error("Error loading users:", error);
+                userTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error loading users.</td></tr>';
             });
         }
 
         function loadCategories() {
             const categoryTableBody = document.getElementById('categoryTable').querySelector('tbody');
-            categoryTableBody.innerHTML = '';
+            categoryTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading Categories...</td></tr>';
 
             firebase.database().ref('categories').on('value', (snapshot) => {
                 categoryTableBody.innerHTML = '';
+                if (!snapshot.exists()) {
+                    categoryTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No categories found.</td></tr>';
+                    return;
+                }
                 snapshot.forEach((childSnapshot) => {
                     const category = childSnapshot.val();
                     const row = categoryTableBody.insertRow();
@@ -742,48 +1122,58 @@
                     row.insertCell(1).innerText = category.url || 'N/A';
                     const actionsCell = row.insertCell(2);
                     actionsCell.innerHTML = `
-                        <button class="edit-btn" onclick="editCategory('${childSnapshot.key}', ${JSON.stringify(category)})">Edit</button>
-                        <button onclick="deleteCategory('${childSnapshot.key}')">Delete</button>
+                        <button class="edit-btn" onclick="editCategory('${childSnapshot.key}', ${JSON.stringify(category)})"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteCategory('${childSnapshot.key}')"><i class="fas fa-trash-alt"></i> Delete</button>
                     `;
                 });
             }, (error) => {
                 console.error("Error loading categories:", error);
+                categoryTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Error loading categories.</td></tr>';
             });
         }
 
         function loadTasks() {
             const taskTableBody = document.getElementById('taskTable').querySelector('tbody');
-            taskTableBody.innerHTML = '';
+            taskTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading Tasks...</td></tr>';
 
             firebase.database().ref('tasks').on('value', (snapshot) => {
                 taskTableBody.innerHTML = '';
+                if (!snapshot.exists()) {
+                    taskTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No tasks found.</td></tr>';
+                    return;
+                }
                 snapshot.forEach((childSnapshot) => {
                     const task = childSnapshot.val();
                     const row = taskTableBody.insertRow();
                     row.insertCell(0).innerText = task.title;
-                    row.insertCell(1).innerText = task.description ? task.description.substring(0, 40) + '...' : 'N/A'; // Truncate description
+                    row.insertCell(1).innerText = task.description ? task.description.substring(0, 40) + '...' : 'N/A';
                     row.insertCell(2).innerText = task.category || 'None';
-                    row.insertCell(3).innerText = task.taskId || childSnapshot.key; // Use taskId if available, else Firebase key
+                    row.insertCell(3).innerText = task.taskId || childSnapshot.key;
                     row.insertCell(4).innerText = task.rewardPoints || 0;
-                    row.insertCell(5).innerText = task.totalCompletes || 0;
+                    row.insertCell(5).innerText = task.totalCompletes === null ? 'Unlimited' : task.totalCompletes;
                     row.insertCell(6).innerText = task.status || 'active';
                     const actionsCell = row.insertCell(7);
                     actionsCell.innerHTML = `
-                        <button class="edit-btn" onclick="editTask('${childSnapshot.key}', ${JSON.stringify(task)})">Edit</button>
-                        <button onclick="deleteTask('${childSnapshot.key}')">Delete</button>
+                        <button class="edit-btn" onclick="editTask('${childSnapshot.key}', ${JSON.stringify(task)})"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteTask('${childSnapshot.key}')"><i class="fas fa-trash-alt"></i> Delete</button>
                     `;
                 });
             }, (error) => {
                 console.error("Error loading tasks:", error);
+                taskTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">Error loading tasks.</td></tr>';
             });
         }
 
         function loadLuckyCodes() {
             const luckyCodeTableBody = document.getElementById('luckyCodeTable').querySelector('tbody');
-            luckyCodeTableBody.innerHTML = '';
+            luckyCodeTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading Lucky Codes...</td></tr>';
 
             firebase.database().ref('luckyCodes').on('value', (snapshot) => {
                 luckyCodeTableBody.innerHTML = '';
+                if (!snapshot.exists()) {
+                    luckyCodeTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No lucky codes found.</td></tr>';
+                    return;
+                }
                 snapshot.forEach((childSnapshot) => {
                     const codeData = childSnapshot.val();
                     const row = luckyCodeTableBody.insertRow();
@@ -791,45 +1181,50 @@
                     row.insertCell(1).innerText = codeData.code || 'N/A';
                     row.insertCell(2).innerText = codeData.points || 0;
                     row.insertCell(3).innerText = codeData.rewardType || 'None';
-                    row.insertCell(4).innerText = codeData.endTime ? new Date(codeData.endTime).toLocaleString() : 'N/A'; // Display end time nicely
+                    row.insertCell(4).innerText = codeData.endTime ? new Date(codeData.endTime).toLocaleString() : 'N/A';
                     row.insertCell(5).innerText = codeData.status || 'active';
                     const actionsCell = row.insertCell(6);
                     actionsCell.innerHTML = `
-                        <button class="edit-btn" onclick="editLuckyCode('${childSnapshot.key}', ${JSON.stringify(codeData)})">Edit</button>
-                        <button onclick="deleteLuckyCode('${childSnapshot.key}')">Delete</button>
+                        <button class="edit-btn" onclick="editLuckyCode('${childSnapshot.key}', ${JSON.stringify(codeData)})"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteLuckyCode('${childSnapshot.key}')"><i class="fas fa-trash-alt"></i> Delete</button>
                     `;
                 });
             }, (error) => {
                 console.error("Error loading lucky codes:", error);
+                luckyCodeTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Error loading lucky codes.</td></tr>';
             });
         }
 
         function loadEarnings() {
             const earningTableBody = document.getElementById('earningTable').querySelector('tbody');
-            earningTableBody.innerHTML = '';
+            earningTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading Earnings...</td></tr>';
 
             firebase.database().ref('earnings').on('value', (snapshot) => {
                 earningTableBody.innerHTML = '';
+                if (!snapshot.exists()) {
+                    earningTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No earning configurations found.</td></tr>';
+                    return;
+                }
                 snapshot.forEach((childSnapshot) => {
                     const earning = childSnapshot.val();
                     const row = earningTableBody.insertRow();
-                    row.insertCell(0).innerText = earning.startTime;
-                    row.insertCell(1).innerText = earning.endTime;
-                    row.insertCell(2).innerText = earning.perCoin;
+                    row.insertCell(0).innerText = earning.startTime || 'N/A';
+                    row.insertCell(1).innerText = earning.endTime || 'N/A';
+                    row.insertCell(2).innerText = earning.perCoin || 'N/A';
                     row.insertCell(3).innerText = earning.totalUsersAttendant || 'N/A';
                     const actionsCell = row.insertCell(4);
                     actionsCell.innerHTML = `
-                        <button class="edit-btn" onclick="editEarning('${childSnapshot.key}', ${JSON.stringify(earning)})">Edit</button>
-                        <button onclick="deleteEarning('${childSnapshot.key}')">Delete</button>
+                        <button class="edit-btn" onclick="editEarning('${childSnapshot.key}', ${JSON.stringify(earning)})"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteEarning('${childSnapshot.key}')"><i class="fas fa-trash-alt"></i> Delete</button>
                     `;
                 });
             }, (error) => {
                 console.error("Error loading earnings:", error);
+                earningTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error loading earnings.</td></tr>';
             });
         }
 
-        // --- Saving Data ---
-
+        // --- Data Saving Functions ---
         function saveCategory() {
             const id = document.getElementById('categoryId').value;
             const title = document.getElementById('categoryTitle').value.trim();
@@ -840,10 +1235,7 @@
                 return;
             }
 
-            const categoryData = {
-                title: title,
-                url: url
-            };
+            const categoryData = { title, url: url || null }; // Store null if URL is empty
 
             const ref = firebase.database().ref('categories');
             if (id) {
@@ -868,7 +1260,8 @@
             const rewardPoints = parseInt(document.getElementById('taskRewardPoints').value, 10) || 0;
             const rewardItemName = document.getElementById('taskRewardItemName').value.trim();
             const rewardItemId = document.getElementById('taskRewardItemId').value.trim();
-            const totalCompletes = parseInt(document.getElementById('taskTotalCompletes').value, 10) || 0;
+            const totalCompletesInput = document.getElementById('taskTotalCompletes').value;
+            const totalCompletes = totalCompletesInput === '' || totalCompletesInput === '0' ? null : parseInt(totalCompletesInput, 10); // Use null for unlimited
             const status = document.getElementById('taskStatus').value;
             const isPermanent = document.getElementById('taskPerma').checked;
             const code = document.getElementById('taskCode').value.trim();
@@ -882,7 +1275,7 @@
             const taskData = {
                 title, description, iconUrl, taskUrl, completeTime, category,
                 rewardPoints, rewardItemName, rewardItemId,
-                totalCompletes: totalCompletes === 0 ? null : totalCompletes, // Use null for unlimited
+                totalCompletes, // null for unlimited
                 status, isPermanent, code, codeVerificationRequired
             };
 
@@ -901,22 +1294,23 @@
         function saveLuckyCode() {
             const id = document.getElementById('luckyCodeId').value;
             const title = document.getElementById('luckyCodeTitle').value.trim();
-            const code = document.getElementById('luckyCode').value.trim();
+            const code = document.getElementById('luckyCode').value.trim().toUpperCase(); // Codes are often case-insensitive or uppercase
             const points = parseInt(document.getElementById('luckyCodePoints').value, 10) || 0;
             const rewardType = document.getElementById('luckyCodeRewardType').value;
             const rewardDetails = document.getElementById('luckyCodeRewardDetails').value.trim();
-            const startTime = document.getElementById('luckyCodeStartTime').value;
-            const endTime = document.getElementById('luckyCodeEndTime').value;
+            const startTimeInput = document.getElementById('luckyCodeStartTime').value;
+            const endTimeInput = document.getElementById('luckyCodeEndTime').value;
             const status = document.getElementById('luckyCodeStatus').value;
 
-            if (!title || !code || !startTime || !endTime) {
+            if (!title || !code || !startTimeInput || !endTimeInput) {
                 alert('Please fill in title, code, start time, and end time.');
                 return;
             }
 
             // Convert local datetime string to ISO 8601 format for Firebase
-            const formattedStartTime = startTime ? new Date(startTime).toISOString() : null;
-            const formattedEndTime = endTime ? new Date(endTime).toISOString() : null;
+            // datetime-local value is YYYY-MM-DDTHH:MM, Date needs it to be YYYY-MM-DDTHH:MM:00.000Z
+            const formattedStartTime = startTimeInput ? new Date(startTimeInput).toISOString() : null;
+            const formattedEndTime = endTimeInput ? new Date(endTimeInput).toISOString() : null;
 
             const luckyCodeData = {
                 title, code, points, rewardType, rewardDetails,
@@ -969,12 +1363,11 @@
             }
         }
 
-        // --- Editing Data ---
+        // --- Edit Functions ---
         function editUser(id, user) {
-            // You'd create an editUser modal or modify the existing one
-            alert(`Editing user ${id}: ${user.username}`);
-            // For now, just showing basic info
-            openModal('userEditModal', { id, ...user }); // Assuming you'd create a userEditModal
+            // For this example, we'll just log. A proper admin panel would have an edit user modal.
+            alert(`Editing User (ID: ${id}): ${user.username}\nPoints: ${user.points}\nStatus: ${user.status}`);
+            // If you were to implement this, you'd open a modal here.
         }
 
         function editCategory(id, category) {
@@ -993,20 +1386,20 @@
             openModal('earningModal', { id: id, ...earning });
         }
 
-        // --- Deleting Data ---
+        // --- Delete Functions ---
         function deleteUser(id) {
-            if (confirm('Are you sure you want to delete this user?')) {
+            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
                 firebase.database().ref(`users/${id}`).remove()
-                    .then(() => alert('User deleted.'))
-                    .catch(error => alert('Error deleting user.'));
+                    .then(() => alert('User deleted successfully.'))
+                    .catch(error => { alert('Error deleting user.'); console.error("Error deleting user:", error); });
             }
         }
 
         function deleteCategory(id) {
-            if (confirm('Are you sure you want to delete this category?')) {
+            if (confirm('Are you sure you want to delete this category? All associated tasks might be affected.')) {
                 firebase.database().ref(`categories/${id}`).remove()
                     .then(() => alert('Category deleted.'))
-                    .catch(error => alert('Error deleting category.'));
+                    .catch(error => { alert('Error deleting category.'); console.error("Error deleting category:", error); });
             }
         }
 
@@ -1014,7 +1407,7 @@
             if (confirm('Are you sure you want to delete this task?')) {
                 firebase.database().ref(`tasks/${id}`).remove()
                     .then(() => alert('Task deleted.'))
-                    .catch(error => alert('Error deleting task.'));
+                    .catch(error => { alert('Error deleting task.'); console.error("Error deleting task:", error); });
             }
         }
 
@@ -1022,7 +1415,7 @@
             if (confirm('Are you sure you want to delete this lucky code?')) {
                 firebase.database().ref(`luckyCodes/${id}`).remove()
                     .then(() => alert('Lucky code deleted.'))
-                    .catch(error => alert('Error deleting lucky code.'));
+                    .catch(error => { alert('Error deleting lucky code.'); console.error("Error deleting lucky code:", error); });
             }
         }
 
@@ -1030,7 +1423,7 @@
             if (confirm('Are you sure you want to delete this earning configuration?')) {
                 firebase.database().ref(`earnings/${id}`).remove()
                     .then(() => alert('Earning configuration deleted.'))
-                    .catch(error => alert('Error deleting earning configuration.'));
+                    .catch(error => { alert('Error deleting earning configuration.'); console.error("Error deleting earning configuration:", error); });
             }
         }
 
@@ -1040,8 +1433,10 @@
             categorySelect.innerHTML = '<option value="">-- Select Category --</option>'; // Clear and add default
 
             firebase.database().ref('categories').once('value', (snapshot) => {
+                const categories = [];
                 snapshot.forEach((childSnapshot) => {
                     const category = childSnapshot.val();
+                    categories.push(category.title);
                     const option = document.createElement('option');
                     option.value = category.title;
                     option.innerText = category.title;
@@ -1050,13 +1445,21 @@
                     }
                     categorySelect.appendChild(option);
                 });
+                if (categories.length === 0) {
+                     // Optionally add a prompt to create a category
+                     categorySelect.innerHTML += '<option value="" disabled>No categories available. Add one first.</option>';
+                }
             });
         }
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Show the default section on page load
-            showSection('users');
+            // Show the default section and set active nav item
+            showSection(currentSection);
+            setActiveNav(currentSection);
+
+            // Initial load of categories for the task dropdown
+            populateCategoryDropdown(null);
         });
     </script>
 </body>
