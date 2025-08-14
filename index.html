@@ -4,1573 +4,1296 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixel Frog</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Source+Code+Pro:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
     <style>
-        /* -- Telegram Theme Variables -- */
+        /* Telegram Mini App Theme Variables (can be overridden) */
         :root {
-            --tg-theme-bg-color: #1e1e2f; /* Default dark background */
-            --tg-theme-text-color: #ffffff; /* Default white text */
-            --tg-theme-hint-color: #9e9ea0; /* Default gray hint text */
-            --tg-theme-link-color: #0099ff; /* Default blue link color */
-            --tg-theme-button-color: #007aff; /* Default blue button color */
-            --tg-theme-button-text-color: #ffffff; /* Default white button text */
-            --tg-theme-secondary-bg-color: #2a2a40; /* Slightly lighter dark */
-            --tg-theme-accent-color: #ff9900; /* Orange accent */
-            --tg-theme-border-color: #444;
-            --success-color: #4CAF50;
-            --danger-color: #f44336;
-            --font-family-main: 'Roboto', sans-serif;
-            --font-family-pixel: 'Press Start 2P', cursive;
+            --tg-theme-bg-color: #1a1a2e; /* Dark Background */
+            --tg-theme-text-color: #e0e0e0; /* Light Text */
+            --tg-theme-hint-color: #b0b0b0; /* Muted Text */
+            --tg-theme-link-color: #3498db; /* Bright Blue Links */
+            --tg-theme-button-color: #2ecc71; /* Vibrant Green Buttons */
+            --tg-theme-button-text-color: #1a1a2e; /* Dark Text on Buttons */
+
+            --primary-accent: #2ecc71; /* Vibrant Green */
+            --secondary-accent: #3498db; /* Bright Blue */
+            --coin-color: #FFD700; /* Gold for coins */
+            --button-hover-bg: rgba(46, 204, 113, 0.8);
+            --card-background: #2a2a3e;
+            --border-color: #4a4a7e;
+            --input-background: #303040;
+            --frog-green: #4CAF50;
+            --frog-darker: #388E3C;
         }
 
-        /* Fallback for themes that don't define variables perfectly */
+        /* Apply Telegram theme colors if available */
         body {
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            font-family: var(--font-family-main);
+            font-family: 'Source Code Pro', monospace;
+            background-color: var(--tg-theme-bg-color, #1a1a2e);
+            color: var(--tg-theme-text-color, #e0e0e0);
             margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
-            min-height: 100vh;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center content horizontally */
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
         }
 
         .container {
             width: 100%;
-            max-width: 600px; /* Max width for mobile apps */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            padding-bottom: 80px; /* Space for the fixed navbar */
-        }
-
-        h1, h2, h3 {
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-accent-color);
+            max-width: 600px; /* Max width for content */
+            padding: 15px;
+            box-sizing: border-box;
             text-align: center;
-            margin-bottom: 15px;
         }
 
-        h1 { font-size: 1.8em; }
-        h2 { font-size: 1.4em; }
-        h3 { font-size: 1.2em; }
-
-        /* --- Navigation Bar --- */
-        .navbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+        /* Header / User Info */
+        .header {
+            background-color: var(--card-background);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
-            background-color: var(--tg-theme-secondary-bg-color);
-            border-top: 1px solid var(--tg-theme-border-color);
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+        }
+
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .header .user-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid var(--primary-accent);
+        }
+
+        .header .user-info .username {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--primary-accent);
+            font-family: 'Rubik Mono One', sans-serif;
+        }
+        .header .user-info .user-id {
+            font-size: 0.8em;
+            color: var(--tg-theme-hint-color);
+        }
+
+        .header .coin-balance {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--coin-color);
+            font-family: 'Rubik Mono One', sans-serif;
+            display: flex;
+            align-items: center;
+        }
+
+        .header .coin-balance img {
+            width: 25px;
+            height: 25px;
+            margin-left: 5px;
+        }
+
+        /* Frog Design Elements */
+        .frog-graphic {
+            margin: 20px auto;
+            display: block;
+        }
+
+        .frog-graphic img {
+            width: 150px;
+            height: 150px;
+            filter: drop-shadow(0 0 10px rgba(46, 204, 113, 0.7));
+        }
+
+        /* Navigation */
+        .nav-bar {
             display: flex;
             justify-content: space-around;
+            width: 100%;
+            background-color: var(--card-background);
             padding: 10px 0;
-            z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
         }
 
-        .navbar a {
+        .nav-bar a {
             color: var(--tg-theme-hint-color);
             text-decoration: none;
+            font-size: 0.9em;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 0.8em;
-            transition: color 0.3s ease;
-        }
-
-        .navbar a i {
-            font-size: 1.5em;
-            margin-bottom: 4px;
-        }
-
-        .navbar a.active {
-            color: var(--tg-theme-accent-color);
-            font-weight: bold;
-        }
-
-        /* --- Content Sections --- */
-        .content-section {
-            width: 100%;
-            background-color: var(--tg-theme-secondary-bg-color);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            display: none; /* Hidden by default */
-            animation: fadeIn 0.5s ease;
-            flex-grow: 1;
-        }
-
-        .content-section.active {
-            display: flex; /* Use flex to center content within the section */
-            flex-direction: column;
-            align-items: center;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- Frog Design Elements --- */
-        .frog-icon {
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle at 30% 30%, #76ff03 40%, #4caf50 80%);
-            border-radius: 50%;
-            border: 4px solid #4caf50;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(118, 255, 3, 0.7);
-        }
-
-        .frog-icon::before {
-            content: '';
-            position: absolute;
-            top: 25%;
-            left: 40%;
-            width: 12px;
-            height: 12px;
-            background-color: black;
-            border-radius: 50%;
-            box-shadow: 25px 0 0 0 black;
-        }
-
-        .user-profile .frog-icon {
-             width: 100px;
-             height: 100px;
-        }
-
-
-        /* --- Home Section --- */
-        .home-content .welcome-message {
-            font-size: 1.2em;
-            color: var(--tg-theme-hint-color);
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .home-content .balance-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-            background-color: var(--tg-theme-bg-color);
-            padding: 15px 25px;
-            border-radius: 8px;
-            border: 1px dashed var(--tg-theme-accent-color);
-        }
-
-        .home-content .balance-display .label {
-            font-size: 1.1em;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 5px;
-        }
-
-        .home-content .balance-display .amount {
-            font-family: var(--font-family-pixel);
-            font-size: 2.5em;
-            color: var(--tg-theme-accent-color);
-            text-shadow: 0 0 10px rgba(255, 153, 0, 0.7);
-        }
-
-        .home-content .cta-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .cta-button {
-            padding: 12px 25px;
-            font-family: var(--font-family-main);
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .cta-button.main {
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
-            font-size: 1.1em;
-        }
-
-        .cta-button.main:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-            transform: translateY(-3px);
-        }
-
-        .cta-button.secondary {
-            background-color: var(--tg-theme-secondary-bg-color);
-            color: var(--tg-theme-accent-color);
-            border: 1px solid var(--tg-theme-accent-color);
-            font-size: 1em;
-        }
-
-        .cta-button.secondary:hover {
-            background-color: var(--tg-theme-bg-color);
-            transform: translateY(-3px);
-        }
-
-        /* --- Task Section --- */
-        .task-section .task-filter {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .task-filter button {
             padding: 8px 15px;
-            border: 1px solid var(--tg-theme-border-color);
-            background-color: var(--tg-theme-secondary-bg-color);
-            color: var(--tg-theme-hint-color);
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: 8px;
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .task-filter button.active {
-            background-color: var(--tg-theme-accent-color);
+        .nav-bar a.active {
+            background-color: var(--primary-accent);
             color: var(--tg-theme-bg-color);
-            border-color: var(--tg-theme-accent-color);
-            font-weight: bold;
+        }
+
+        .nav-bar a i {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        /* Main Content Sections */
+        .content-section {
+            width: 100%;
+            margin-top: 20px;
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .content-section h3 {
+            font-family: 'Rubik Mono One', sans-serif;
+            color: var(--primary-accent);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+            border-bottom: 2px dashed var(--secondary-accent);
+            padding-bottom: 10px;
+        }
+
+        /* Task Section */
+        .task-list {
+            list-style: none;
+            padding: 0;
         }
 
         .task-item {
-            background-color: var(--tg-theme-bg-color);
+            background-color: var(--input-background);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
-            border: 1px solid var(--tg-theme-border-color);
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .task-item .task-header {
-            display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            transition: box-shadow 0.3s;
         }
 
-        .task-item .task-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            color: var(--tg-theme-text-color);
+        .task-item:hover {
+            box-shadow: 0 0 15px var(--primary-accent);
         }
 
-        .task-item .task-points {
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-accent-color);
-            font-size: 1.1em;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .task-item .task-description {
-            font-size: 0.9em;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 10px;
-        }
-
-        .task-item .task-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .task-item .action-button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .task-item .start-button { background-color: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
-        .task-item .start-button:hover { background-color: #0056b3; transform: translateY(-2px); }
-
-        .task-item .verify-button { background-color: var(--tg-theme-accent-color); color: var(--tg-theme-bg-color); }
-        .task-item .verify-button:hover { background-color: #ffcc80; transform: translateY(-2px); }
-
-        .task-item .claim-button { background-color: var(--success-color); color: white; }
-        .task-item .claim-button:hover { background-color: #388e3c; transform: translateY(-2px); }
-
-        .task-item .code-input {
+        .task-item .task-details {
             flex-grow: 1;
-            padding: 8px;
-            margin-right: 5px;
-            border-radius: 5px;
-            border: 1px solid var(--tg-theme-border-color);
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            font-family: var(--font-family-main);
+            margin-right: 10px;
         }
 
-        .task-item .task-status-message {
-            font-size: 0.85em;
+        .task-item .task-details .title {
+            font-weight: 700;
+            color: var(--primary-accent);
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 1.1em;
+            display: block; /* Ensure title is on its own line */
+        }
+         .task-item .task-details .description {
+            font-size: 0.8em;
+            color: var(--tg-theme-hint-color);
             margin-top: 5px;
             display: block;
-            text-align: center;
         }
 
-        .task-item .task-status-message.pending { color: var(--tg-theme-hint-color); }
-        .task-item .task-status-message.completed { color: var(--success-color); font-weight: bold; }
-        .task-item .task-status-message.failed { color: var(--danger-color); font-weight: bold; }
 
-
-        /* --- Referral Section --- */
-        .referral-content .referral-link-container {
-            background-color: var(--tg-theme-bg-color);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px dashed var(--tg-theme-accent-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-            word-break: break-all; /* Ensure long links wrap */
+        .task-item .task-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 5px;
+            object-fit: cover;
         }
 
-        .referral-content .referral-link-container label {
-            font-size: 1em;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 8px;
-        }
-
-        .referral-content .referral-link {
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-accent-color);
-            font-size: 1.1em;
-            text-align: center;
-        }
-
-        .referral-content .copy-button {
-            padding: 8px 15px;
+        .task-item .task-actions .btn {
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
+            padding: 10px 18px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            margin-top: 10px;
             font-size: 0.9em;
-            transition: background-color 0.3s;
-        }
-        .referral-content .copy-button:hover {
-            background-color: #0056b3;
-        }
-
-        .referral-content .rewards-info {
-            background-color: var(--tg-theme-secondary-bg-color);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--tg-theme-border-color);
-            text-align: center;
-            font-size: 0.95em;
-            color: var(--tg-theme-hint-color);
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.2s;
+            font-family: 'Source Code Pro', monospace;
         }
 
-        .referral-content .rewards-info span {
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-accent-color);
+        .task-item .task-actions .btn:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-1px);
         }
 
-        .referral-content .claim-referral-reward-button {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px 0;
-        }
-
-        /* --- Profile Section --- */
-        .profile-content {
+        /* Code Task Specifics */
+        .task-item.code-task .task-actions {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
         }
 
-        .profile-content .user-details {
-            background-color: var(--tg-theme-secondary-bg-color);
+        .task-item.code-task .task-actions .claim-code-input {
+            width: 100%;
+            padding: 8px;
+            background-color: var(--input-background);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 5px;
+            color: var(--tg-theme-text-color);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.9em;
+            box-sizing: border-box;
+        }
+
+        .task-item.code-task .task-actions .claim-code-input:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+        }
+
+        /* Task Category Filtering */
+        .category-filter {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .category-filter button {
+            background-color: var(--input-background);
+            color: var(--tg-theme-text-color);
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 0 5px 5px 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .category-filter button.active {
+            background-color: var(--primary-accent);
+            color: var(--tg-theme-bg-color);
+            font-weight: 700;
+        }
+
+        /* Referral Section */
+        .referral-section {
+            background-color: var(--card-background);
             padding: 20px;
             border-radius: 10px;
-            border: 1px solid var(--tg-theme-border-color);
+            border: 1px solid var(--border-color);
             text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
         }
 
-        .profile-content .user-details .user-name {
+        .referral-section h3 {
+            font-family: 'Rubik Mono One', sans-serif;
+            color: var(--primary-accent);
             font-size: 1.5em;
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-accent-color);
-            margin-bottom: 10px;
-        }
-
-        .profile-content .user-details .user-id {
-            font-size: 0.9em;
-            color: var(--tg-theme-hint-color);
             margin-bottom: 15px;
         }
 
-        .profile-content .user-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Two columns for stats */
-            gap: 15px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .profile-content .stat-card {
-            background-color: var(--tg-theme-bg-color);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--tg-theme-border-color);
-            text-align: center;
-        }
-
-        .profile-content .stat-card .label {
-            font-size: 0.9em;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 5px;
-        }
-
-        .profile-content .stat-card .value {
-            font-family: var(--font-family-pixel);
-            font-size: 1.6em;
-            color: var(--tg-theme-accent-color);
-            text-shadow: 0 0 10px rgba(255, 153, 0, 0.7);
-        }
-
-        /* --- Event Section --- */
-        .event-section .event-container {
-            width: 100%;
-        }
-
-        .event-item {
-            background-color: var(--tg-theme-secondary-bg-color);
-            padding: 15px;
+        .referral-section .referral-link {
+            font-size: 1.1em;
+            color: var(--secondary-accent);
+            background-color: var(--input-background);
+            padding: 10px 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            border: 1px solid var(--tg-theme-border-color);
+            word-break: break-all; /* Break long links */
+            border: 1px solid var(--border-color);
+            display: inline-block; /* To allow padding and width */
         }
 
-        .event-item .event-title {
-            font-size: 1.3em;
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-accent-color);
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .event-item .event-description {
-            font-size: 0.95em;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 10px;
-        }
-
-        .event-item .event-timer {
-            text-align: center;
-            font-size: 1.2em;
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-text-color);
-            margin-bottom: 15px;
-        }
-
-        .event-item .event-actions {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .event-item .event-action-button {
+        .referral-section .btn.copy-btn {
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
+            font-size: 1em;
+            font-weight: 700;
             transition: background-color 0.3s, transform 0.2s;
+            font-family: 'Source Code Pro', monospace;
+            margin-top: 10px;
+        }
+        .referral-section .btn.copy-btn:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-1px);
         }
 
-        .event-item .join-button { background-color: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
-        .event-item .join-button:hover { background-color: #0056b3; transform: translateY(-2px); }
+        .referral-section .referral-stats {
+            font-size: 0.9em;
+            color: var(--tg-theme-hint-color);
+            margin-top: 10px;
+        }
 
-        .event-item .claim-event-reward-button { background-color: var(--success-color); color: white; }
-        .event-item .claim-event-reward-button:hover { background-color: #388e3c; transform: translateY(-2px); }
+        /* Profile Section */
+        .profile-section {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .profile-section .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-accent);
+            margin-bottom: 15px;
+        }
+        .profile-section .username {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-accent);
+            font-family: 'Rubik Mono One', sans-serif;
+            margin-bottom: 5px;
+        }
+        .profile-section .user-id {
+             font-size: 0.9em;
+            color: var(--tg-theme-hint-color);
+            margin-bottom: 15px;
+        }
+         .profile-section .referral-code-display {
+             font-size: 1.1em;
+            color: var(--secondary-accent);
+            background-color: var(--input-background);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 auto 15px auto;
+            display: inline-block;
+            border: 1px solid var(--border-color);
+         }
+        .profile-section .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .profile-section .stats-card {
+            background-color: var(--input-background);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .profile-section .stats-card .label {
+            font-size: 0.8em;
+            color: var(--tg-theme-hint-color);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .profile-section .stats-card .value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--coin-color);
+            font-family: 'Rubik Mono One', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-section .stats-card .value img {
+            width: 20px;
+            height: 20px;
+            margin-left: 5px;
+        }
 
-        .event-item .waiting-for-join { color: var(--tg-theme-hint-color); font-size: 0.9em; }
-        .event-item .event-ended { color: var(--danger-color); font-weight: bold; }
 
-        /* --- Modals / Popups --- */
-        .popup {
+        /* Daily Code Section */
+        .daily-code-section {
+             background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .daily-code-section h3 {
+            font-family: 'Rubik Mono One', sans-serif;
+            color: var(--primary-accent);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        .daily-code-section .code-input-group {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .daily-code-section .code-input {
+            width: 60%;
+            padding: 10px;
+            background-color: var(--input-background);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--tg-theme-text-color);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 1em;
+        }
+        .daily-code-section .code-input:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+        }
+        .daily-code-section .redeem-btn {
+             background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.2s;
+            font-family: 'Source Code Pro', monospace;
+        }
+         .daily-code-section .redeem-btn:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-1px);
+        }
+        .daily-code-section .code-message {
+            font-size: 0.9em;
+            margin-top: 10px;
+            color: var(--tg-theme-hint-color);
+        }
+
+        /* Loader */
+        .loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background: rgba(26, 26, 46, 0.95);
+            z-index: 9999;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 1.5em;
+            color: var(--primary-accent);
+            transition: opacity 0.5s ease-in-out;
         }
 
-        .popup-content {
-            background-color: var(--tg-theme-secondary-bg-color);
-            padding: 25px;
-            border-radius: 10px;
-            border: 1px solid var(--tg-theme-border-color);
-            text-align: center;
-            width: 85%;
-            max-width: 450px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        .loader-hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .popup-content h3 {
-            color: var(--tg-theme-accent-color);
-            font-size: 1.6em;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .popup-content p {
-            font-size: 1.1em;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 20px;
-        }
-
-        .popup-button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .popup-button.confirm { background-color: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
-        .popup-button.confirm:hover { background-color: #0056b3; transform: translateY(-2px); }
-
-        .popup-button.cancel { background-color: var(--tg-theme-bg-color); color: var(--tg-theme-hint-color); border: 1px solid var(--tg-theme-border-color); }
-        .popup-button.cancel:hover { background-color: var(--tg-theme-secondary-bg-color); transform: translateY(-2px); }
-
-        /* --- Loading Spinners --- */
-        .loader {
-            border: 4px solid var(--tg-theme-border-color);
-            border-top: 4px solid var(--tg-theme-accent-color);
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            border: 5px solid var(--card-background);
+            border-top-color: var(--primary-accent);
+            animation: spin 1s ease-in-out infinite;
+            margin-top: 20px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        /* --- Small Utility --- */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-
-        /* --- Specific for tasks --- */
-        .task-item .countdown-timer {
-            font-family: var(--font-family-pixel);
-            color: var(--tg-theme-accent-color);
-            font-size: 1em;
-            margin-top: 5px;
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .header .user-info img {
+                width: 40px;
+                height: 40px;
+                margin-right: 10px;
+            }
+            .header .user-info .username {
+                font-size: 1em;
+            }
+            .header .coin-balance {
+                font-size: 1.2em;
+            }
+            .frog-graphic img {
+                width: 100px;
+                height: 100px;
+            }
+            .nav-bar a {
+                font-size: 0.7em;
+                padding: 6px 10px;
+            }
+            .nav-bar a i {
+                font-size: 1.3em;
+            }
+            .content-section h3 {
+                font-size: 1.2em;
+            }
+             .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .task-item .task-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            .task-item .task-details {
+                width: 100%;
+                margin-right: 0;
+            }
+             .task-item .task-actions {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+            .task-item.code-task .task-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .task-item.code-task .task-actions .claim-code-input {
+                width: calc(100% - 20px); /* Account for padding */
+                margin-bottom: 10px;
+            }
+            .referral-section .referral-link {
+                font-size: 0.9em;
+            }
+             .profile-section .username {
+                font-size: 1.5em;
+            }
+            .profile-section .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .daily-code-section .code-input-group {
+                flex-direction: column;
+            }
+            .daily-code-section .code-input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
         }
-
     </style>
 </head>
 <body>
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+        Initializing Pixel Frog...
+    </div>
+
     <div class="container">
-        <div id="app-header">
-            <div class="frog-icon"></div>
-            <h1>Pixel Frog</h1>
-        </div>
-
-        <!-- Home Section -->
-        <section id="home" class="content-section active">
-            <p class="welcome-message">Welcome to Pixel Frog! Tap to start your adventure.</p>
-            <div class="balance-display">
-                <span class="label">Your Balance</span>
-                <span class="amount" id="userBalance">0 PXF</span>
-            </div>
-            <div class="home-content">
-                <div class="cta-buttons">
-                    <button class="cta-button main" onclick="navigateTo('tasks')"><i class="fas fa-tasks"></i> Play Tasks</button>
-                    <button class="cta-button secondary" onclick="navigateTo('events')"><i class="fas fa-calendar-alt"></i> Events</button>
-                    <button class="cta-button secondary" onclick="navigateTo('profile')"><i class="fas fa-user"></i> Profile</button>
-                    <button class="cta-button secondary" onclick="navigateTo('refer')"><i class="fas fa-share-alt"></i> Refer</button>
+        <div class="header">
+            <div class="user-info">
+                <img id="user-avatar" src="https://via.placeholder.com/50/2ecc71/ffffff?text=?" alt="User Avatar">
+                <div>
+                    <div class="username" id="user-username">Loading...</div>
+                    <div class="user-id" id="user-id">ID: Loading...</div>
                 </div>
             </div>
-        </section>
-
-        <!-- Tasks Section -->
-        <section id="tasks" class="content-section">
-            <h2>Tasks</h2>
-            <div class="task-filter">
-                <button class="task-category-filter active" data-category="all">All</button>
-                <!-- Category filters will be loaded here -->
+            <div class="coin-balance">
+                <span id="coin-balance">0</span>
+                <img id="coin-image" src="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" alt="Coin">
             </div>
-            <div id="tasksList" class="task-list">
+        </div>
+
+        <div class="frog-graphic">
+            <img src="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" alt="Pixel Frog Mascot">
+        </div>
+
+        <div id="home-section" class="content-section">
+            <h3><i class="fas fa-home"></i> Welcome to Pixel Frog!</h3>
+            <p>Complete tasks, earn PXF coins, and climb the leaderboards. Your adventure starts now!</p>
+            <p>Here's a sneak peek at your current coin balance.</p>
+        </div>
+
+        <div id="tasks-section" class="content-section" style="display: none;">
+            <h3><i class="fas fa-tasks"></i> Available Tasks</h3>
+            <div class="category-filter">
+                <button class="active" data-category="all">All Tasks</button>
+                <!-- Categories will be dynamically added here -->
+            </div>
+            <div id="task-list">
                 <!-- Tasks will be loaded here -->
-                <div class="loader"></div>
             </div>
-        </section>
+        </div>
 
-        <!-- Events Section -->
-        <section id="events" class="content-section">
-            <h2>Events</h2>
-            <div id="eventsList" class="event-container">
-                 <div class="loader"></div>
-            </div>
-        </section>
-
-
-        <!-- Refer Section -->
-        <section id="refer" class="content-section">
-            <h2>Refer & Earn</h2>
-            <div class="referral-content">
-                <div class="referral-link-container">
-                    <label>Your Referral Link:</label>
-                    <span class="referral-link" id="referralLink">loading...</span>
-                    <button class="copy-button" onclick="copyReferralLink()">Copy</button>
-                </div>
-                <div class="rewards-info">
-                    Refer a friend and earn <span>100 PXF</span>! Your friend also gets a bonus. You can claim rewards for each successful referral.
-                </div>
-                <button class="cta-button main claim-referral-reward-button" onclick="claimReferralReward()">Claim Referral Rewards</button>
-            </div>
-        </section>
-
-        <!-- Profile Section -->
-        <section id="profile" class="content-section">
-            <h2>Profile</h2>
-            <div class="profile-content">
-                <div class="user-details">
-                    <div class="frog-icon"></div>
-                    <div class="user-name" id="profileUserName">PixelFrog User</div>
-                    <div class="user-id">ID: <span id="profileUserId">Loading...</span></div>
-                    <div class="user-stats">
-                        <div class="stat-card">
-                            <div class="label">Level</div>
-                            <div class="value" id="profileLevel">1</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="label">Total Tasks</div>
-                            <div class="value" id="profileTotalTasks">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="label">Successful Referrals</div>
-                            <div class="value" id="profileReferrals">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="label">Referral Earnings</div>
-                            <div class="value" id="profileReferralEarnings">0 PXF</div>
-                        </div>
-                    </div>
+        <div id="refer-section" class="content-section" style="display: none;">
+            <h3><i class="fas fa-users"></i> Refer Friends</h3>
+            <div class="referral-section">
+                <p>Invite your friends to Pixel Frog and earn rewards!</p>
+                <div class="referral-link" id="referral-link-display">Generating link...</div>
+                <button class="btn copy-btn" onclick="copyReferralLink()">Copy Link</button>
+                <div class="referral-stats">
+                    <p>Earn <strong id="referral-earn-percentage">0%</strong> on your friends' earnings!</p>
+                    <p>Per Referral Bonus: <strong id="referral-bonus-points">0</strong> PXF</p>
+                    <p>Total Referred: <span id="total-referred">0</span></p>
+                    <p>Referral Rewards Earned: <span id="referral-rewards-earned">0</span> PXF</p>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
 
-    <!-- Navigation Bar -->
-    <div class="navbar">
-        <a href="#home" data-nav="home"><i class="fas fa-home"></i> Home</a>
-        <a href="#tasks" data-nav="tasks"><i class="fas fa-tasks"></i> Tasks</a>
-        <a href="#events" data-nav="events"><i class="fas fa-calendar-alt"></i> Events</a>
-        <a href="#refer" data-nav="refer"><i class="fas fa-share-alt"></i> Refer</a>
-        <a href="#profile" data-nav="profile"><i class="fas fa-user"></i> Profile</a>
-    </div>
+        <div id="profile-section" class="content-section" style="display: none;">
+            <h3><i class="fas fa-user-circle"></i> Your Profile</h3>
+            <img id="profile-avatar" class="user-avatar" src="https://via.placeholder.com/100/2ecc71/ffffff?text=?" alt="Profile Avatar">
+            <div class="username" id="profile-username">Loading...</div>
+            <div class="user-id" id="profile-user-id">ID: Loading...</div>
+            <div class="referral-code-display">My Code: <span id="profile-referral-code">Loading...</span></div>
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <div class="label">Total Coins</div>
+                    <div class="value" id="profile-total-coins">0 <img id="profile-coin-image" src="https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png" alt="Coin"></div>
+                </div>
+                 <div class="stats-card">
+                    <div class="label">Tasks Completed</div>
+                    <div class="value" id="profile-tasks-completed">0</div>
+                </div>
+                 <div class="stats-card">
+                    <div class="label">Referrals</div>
+                    <div class="value" id="profile-referrals">0</div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Popups/Modals -->
-    <div id="verificationPopup" class="popup hidden">
-        <div class="popup-content">
-            <h3 id="verificationPopupTitle">Verify Task</h3>
-            <p id="verificationPopupMessage">Did you complete the task? Tap 'Verify' to check.</p>
-            <div id="verificationInputGroup" class="hidden">
-                 <label for="taskCodeInput" style="color: var(--tg-theme-hint-color); display: block; margin-bottom: 5px;">Enter Code:</label>
-                 <input type="text" id="taskCodeInput" class="code-input" placeholder="Enter code here">
+        <div id="daily-code-section" class="content-section" style="display: none;">
+            <h3><i class="fas fa-gift"></i> Daily Codes</h3>
+            <div class="daily-code-section">
+                <p>Enter today's special code to earn bonus PXF coins!</p>
+                <div class="code-input-group">
+                    <input type="text" id="daily-code-input" class="code-input" placeholder="Enter Code Here">
+                    <button class="redeem-btn" onclick="redeemDailyCode()">Redeem</button>
+                </div>
+                <div class="code-message" id="daily-code-message"></div>
+                <p><small>Codes are case-sensitive and may expire.</small></p>
             </div>
-            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-                <button class="popup-button confirm" id="verifyBtn">Verify</button>
-                <button class="popup-button cancel" onclick="closePopup('verificationPopup')">Cancel</button>
-            </div>
+        </div>
+
+
+        <div class="nav-bar">
+            <a href="#home" id="nav-home" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="#tasks" id="nav-tasks"><i class="fas fa-tasks"></i> Tasks</a>
+            <a href="#refer" id="nav-refer"><i class="fas fa-users"></i> Refer</a>
+            <a href="#profile" id="nav-profile"><i class="fas fa-user-circle"></i> Profile</a>
+             <a href="#daily-code" id="nav-daily-code"><i class="fas fa-gift"></i> Codes</a>
         </div>
     </div>
 
-    <div id="claimRewardPopup" class="popup hidden">
-        <div class="popup-content">
-            <h3>Reward Claimed!</h3>
-            <p id="claimRewardMessage">You have successfully claimed your reward.</p>
-             <div class="frog-icon" style="margin: 15px auto;"></div>
-            <button class="popup-button confirm" onclick="closePopup('claimRewardPopup')">Awesome!</button>
-        </div>
-    </div>
-
-    <div id="copySuccessPopup" class="popup hidden">
-        <div class="popup-content">
-            <h3>Link Copied!</h3>
-            <p>Your referral link has been copied to your clipboard.</p>
-            <button class="popup-button confirm" onclick="closePopup('copySuccessPopup')">Great!</button>
-        </div>
-    </div>
-
+    <!-- Firebase Configuration -->
     <script>
-        // --- Firebase Configuration ---
         const firebaseConfig = {
-            apiKey: "AIzaSyBCBnT2enEoLaf7IhaSnMmlZbsZfoPjgrE", // REPLACE WITH YOUR ACTUAL API KEY
+            apiKey: "AIzaSyBCBnT2enEoLaf7IhaSnMmlZbsZfoPjgrE",
             authDomain: "abs-grow.firebaseapp.com",
-            databaseURL: "https://abs-grow-default-rtdb.firebaseio.com", // REPLACE WITH YOUR ACTUAL DB URL
+            databaseURL: "https://abs-grow-default-rtdb.firebaseio.com",
             projectId: "abs-grow",
             storageBucket: "abs-grow.firebasestorage.app",
             messagingSenderId: "426717629538",
             appId: "1:426717629538:web:7a6a35674112c04835553b"
         };
+    </script>
+    <!-- Firebase App and Realtime Database SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <script>
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // --- Telegram Web App Integration ---
-        const tg = window.Telegram.WebApp;
+        // --- Global Variables ---
+        let tgUser = null;
+        let userRef = null; // Firebase reference for the current user
         let currentUserId = null;
-        let currentUserData = {}; // Store user data globally
-        let currentReferralCode = null;
-        let activeEvent = null; // To store details of the current active event
+        let referralCodeUsed = false; // Flag to track if referral code was already used for this user
+        let globalSettings = {}; // To store settings like referral percentage
 
-        // Apply Telegram theme
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color);
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color);
-        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color);
-        document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color);
-        document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color);
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color);
-        document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color);
-
-        // Set Telegram theme params for buttons
-        tg.setHeaderColor('secondary_bg_color');
-        tg.enableClosingConfirmation(); // Ask user before closing
-
-        // Initialize user data on app start
-        async function initApp() {
-            if (!tg.initDataUnsafe?.user?.id) {
-                alert("Could not get Telegram user ID. Please ensure you're opening this from Telegram.");
-                return;
-            }
-            currentUserId = tg.initDataUnsafe.user.id.toString(); // Use string for Firebase keys
-            loadUserData(currentUserId);
-            loadCategoriesForTaskFilter();
-            loadTasks();
-            loadActiveEvent();
-            handleUrlHash(); // Handle deep linking on load
-
-            // Set the referral link for the current user
-            const userRef = database.ref(`users/${currentUserId}`);
-            const userSnapshot = await userRef.once('value');
-            if (userSnapshot.exists() && userSnapshot.val().referralCode) {
-                currentReferralCode = userSnapshot.val().referralCode;
-                document.getElementById('referralLink').textContent = `${window.location.origin}${window.location.pathname}#refer&ref=${currentReferralCode}`;
-            } else {
-                 // Generate and set a new referral code if none exists
-                currentReferralCode = `PXF_${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-                await userRef.update({ referralCode: currentReferralCode, createdAt: new Date().toISOString() });
-                document.getElementById('referralLink').textContent = `${window.location.origin}${window.location.pathname}#refer&ref=${currentReferralCode}`;
-            }
+        // --- Utility Functions ---
+        function showLoader(message = "Loading...") {
+            const loader = document.getElementById('loader');
+            loader.querySelector('.loader-spinner').style.display = 'block';
+            loader.querySelector('div:last-child').textContent = message; // Update message text
+            loader.classList.remove('loader-hidden');
         }
 
-        // --- Navigation ---
-        function navigateTo(sectionId) {
-            // Update URL hash
-            history.pushState(null, null, `#${sectionId}`);
-            displaySection(sectionId);
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('loader-hidden');
+            // Optionally remove the spinner if message is enough
+            // loader.querySelector('.loader-spinner').style.display = 'none';
         }
 
-        function displaySection(sectionId) {
-            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-
-            document.querySelectorAll('.navbar a').forEach(link => link.classList.remove('active'));
-            const activeLink = document.querySelector(`.navbar a[data-nav="${sectionId}"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            tg.closeButton; // Ensure buttons are shown if closed accidentally
+        function showMessage(message, type = 'info') { // type can be 'success', 'error', 'info'
+            const messageDiv = document.getElementById('daily-code-message'); // Reusing daily code message div for general messages
+            messageDiv.textContent = message;
+            messageDiv.style.color = type === 'success' ? 'var(--primary-accent)' : type === 'error' ? '#e74c3c' : 'var(--tg-theme-hint-color)';
+            setTimeout(() => { messageDiv.textContent = ''; }, 5000); // Clear message after 5 seconds
         }
 
-        // Handle URL hash changes (back/forward buttons or direct links)
-        function handleUrlHash() {
-            const hash = window.location.hash.substring(1); // Remove #
-            if (hash) {
-                const parts = hash.split('&');
-                const sectionId = parts[0]; // The section ID is always the first part
-                if (sectionId) {
-                    displaySection(sectionId);
-                }
-            } else {
-                displaySection('home'); // Default to home if no hash
-            }
+        function updateUI(data) {
+            // Update user info in header and profile
+            const avatarUrl = tgUser.photo_url || "https://via.placeholder.com/50/2ecc71/ffffff?text=?";
+            document.getElementById('user-avatar').src = avatarUrl;
+            document.getElementById('user-username').textContent = tgUser.username || tgUser.first_name || 'User';
+            document.getElementById('user-id').textContent = `ID: ${tgUser.id}`;
+            document.getElementById('profile-avatar').src = avatarUrl;
+            document.getElementById('profile-username').textContent = tgUser.username || tgUser.first_name || 'User';
+            document.getElementById('profile-user-id').textContent = `ID: ${tgUser.id}`;
+
+            // Update coin balance
+            const coinBalance = data.coins || 0;
+            document.getElementById('coin-balance').textContent = coinBalance.toLocaleString();
+            document.getElementById('profile-total-coins').textContent = coinBalance.toLocaleString();
+            document.getElementById('profile-coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
+            document.getElementById('profile-coin-image').alt = "Coin";
+            document.getElementById('coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
+            document.getElementById('coin-image').alt = "Coin";
+
+            // Update profile stats
+            document.getElementById('profile-tasks-completed').textContent = data.completedTasks || 0;
+            document.getElementById('profile-referrals').textContent = data.referrals || 0;
+
+            // Update referral code display and stats
+            const userReferralCode = data.referralCode || 'N/A';
+            document.getElementById('profile-referral-code').textContent = userReferralCode;
+            const referralLink = `${window.location.origin}?ref=${userReferralCode}`; // Assumes your app is hosted
+            document.getElementById('referral-link-display').textContent = referralLink;
+            document.getElementById('total-referred').textContent = data.referrals || 0;
+            document.getElementById('referral-rewards-earned').textContent = (data.referralEarnings || 0).toLocaleString();
+            document.getElementById('referral-earn-percentage').textContent = globalSettings.referralPercentage || '0%';
+            document.getElementById('referral-bonus-points').textContent = globalSettings.referralRewardPoints ? globalSettings.referralRewardPoints.toLocaleString() : '0';
         }
 
-        window.addEventListener('hashchange', handleUrlHash);
+        function navigateTo(sectionId, navLinkId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
 
-        // --- User Data Management ---
-        function loadUserData(userId) {
-            const userRef = database.ref(`users/${userId}`);
-            userRef.on('value', (snapshot) => {
+            // Show the target section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active navigation link
+            document.querySelectorAll('.nav-bar a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(navLinkId).classList.add('active');
+        }
+
+        // Helper to get parameter from URL (for referral link)
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Function to fetch tasks and populate the list
+        async function fetchTasks(filterCategory = 'all') {
+            const taskListDiv = document.getElementById('task-list');
+            taskListDiv.innerHTML = ''; // Clear previous tasks
+            showLoader('Fetching tasks...');
+
+            try {
+                const snapshot = await database.ref('tasks').once('value');
                 if (snapshot.exists()) {
-                    currentUserData = snapshot.val();
-                    currentUserData.id = userId; // Add ID to the data object
+                    const tasks = [];
+                    snapshot.forEach(child => {
+                        const task = child.val();
+                        task.id = child.key; // Add Firebase key as ID
+                        tasks.push(task);
+                    });
 
-                    // Update UI elements
-                    document.getElementById('userBalance').textContent = `${currentUserData.points || 0} PXF`;
-                    document.getElementById('profileUserName').textContent = currentUserData.username || `User ${userId.substring(0, 6)}`;
-                    document.getElementById('profileUserId').textContent = userId;
-                    document.getElementById('profileLevel').textContent = currentUserData.level || 1;
-                    document.getElementById('profileTotalTasks').textContent = Object.keys(currentUserData.completedTasks || {}).length;
-                    document.getElementById('profileReferrals').textContent = currentUserData.referralCount || 0;
-                    document.getElementById('profileReferralEarnings').textContent = `${currentUserData.referralEarnings || 0} PXF`;
+                    // Sort tasks (e.g., by creation date, or priority if implemented)
+                    // tasks.sort((a, b) => a.createdAt - b.createdAt); // Example sort
 
-                    // If user data is loaded, we can now load tasks specific to them
-                    loadUserSpecificTasks(userId);
+                    tasks.forEach(task => {
+                        if (filterCategory === 'all' || task.category.toLowerCase() === filterCategory.toLowerCase()) {
+                            const taskItem = document.createElement('div');
+                            taskItem.className = `task-item ${task.codeVerificationRequired ? 'code-task' : ''}`;
+
+                            let actionHtml = '';
+                            if (task.codeVerificationRequired) {
+                                actionHtml = `
+                                    <input type="text" class="claim-code-input" placeholder="Enter Code">
+                                    <button class="btn" onclick="claimTaskCode('${task.taskId}', '${task.code || ''}', '${task.rewardPoints}', this)">Claim Code</button>
+                                `;
+                            } else if (task.taskUrl) {
+                                actionHtml = `<button class="btn" onclick="openTaskLink('${task.taskUrl}', '${task.taskId}')">Start Task</button>`;
+                            } else {
+                                actionHtml = `<button class="btn" disabled>No Action</button>`;
+                            }
+
+                            taskItem.innerHTML = `
+                                <img src="${task.iconUrl}" alt="${task.title} Icon" class="task-icon">
+                                <div class="task-details">
+                                    <span class="title">${task.title}</span>
+                                    <span class="description">${task.description}</span>
+                                </div>
+                                <div class="task-actions">
+                                    <span style="font-size: 0.9em; color: var(--coin-color); font-weight: 700;">
+                                        <i class="fas fa-coins"></i> ${task.rewardPoints}
+                                    </span>
+                                    ${actionHtml}
+                                </div>
+                            `;
+                            taskListDiv.appendChild(taskItem);
+                        }
+                    });
+                     // Update category filters
+                    updateCategoryFilters(tasks);
 
                 } else {
-                    // User doesn't exist, create a basic entry
-                    const newUser = {
-                        points: 50, // Initial bonus points
-                        level: 1,
-                        username: tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || `FrogUser_${userId.substring(0,6)}`,
-                        usernameBackup: tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name,
-                        referralCode: `PXF_${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-                        referralCount: 0,
-                        referralEarnings: 0,
-                        completedTasks: {}, // Store task IDs completed by this user
-                        taskProgress: {}, // Track progress on ongoing tasks
-                        eventsJoined: {}, // Track events user has joined
-                        eventRewardsClaimed: {} // Track rewards claimed from events
-                    };
-                    userRef.set(newUser)
-                        .then(() => {
-                            console.log("New user created:", userId);
-                            currentUserData = newUser;
-                            currentUserData.id = userId; // Ensure ID is present
-                            // Update UI elements after creation
-                            document.getElementById('userBalance').textContent = `${currentUserData.points || 0} PXF`;
-                            document.getElementById('profileUserName').textContent = currentUserData.username;
-                            document.getElementById('profileUserId').textContent = userId;
-                            document.getElementById('profileLevel').textContent = currentUserData.level;
-                            document.getElementById('profileReferrals').textContent = currentUserData.referralCount;
-                            document.getElementById('profileReferralEarnings').textContent = `${currentUserData.referralEarnings || 0} PXF`;
-                            loadUserSpecificTasks(userId); // Load tasks once user is confirmed
-                             // Set referral link after code is generated
-                            currentReferralCode = currentUserData.referralCode;
-                            document.getElementById('referralLink').textContent = `${window.location.origin}${window.location.pathname}#refer&ref=${currentReferralCode}`;
-                        })
-                        .catch(error => console.error("Error creating new user:", error));
+                    taskListDiv.innerHTML = '<p>No tasks available yet. Check back soon!</p>';
                 }
-            }, (error) => {
-                console.error("Error loading user data:", error);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+                taskListDiv.innerHTML = '<p>Could not load tasks. Please try again later.</p>';
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function updateCategoryFilters(tasks) {
+            const categoryFilterDiv = document.querySelector('.category-filter');
+            const existingCategories = new Set();
+            tasks.forEach(task => {
+                if (task.category) {
+                    existingCategories.add(task.category.toLowerCase());
+                }
+            });
+
+            // Remove existing dynamic buttons to avoid duplicates
+            categoryFilterDiv.querySelectorAll('button:not([data-category="all"])').forEach(btn => btn.remove());
+
+            existingCategories.forEach(category => {
+                const button = document.createElement('button');
+                button.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                button.setAttribute('data-category', category);
+                button.onclick = () => {
+                    document.querySelectorAll('.category-filter button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    fetchTasks(category);
+                };
+                categoryFilterDiv.appendChild(button);
             });
         }
 
-        // --- Task Management ---
-        let tasks = {}; // Global store for all tasks
 
-        function loadCategoriesForTaskFilter() {
-            const taskFilterDiv = document.querySelector('.task-filter');
-            taskFilterDiv.innerHTML = '<button class="task-category-filter active" data-category="all">All</button>'; // Reset
-
-            database.ref('categories').orderByChild('active').equalTo(true).once('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const category = child.val();
-                        const categoryId = child.key;
-                        const button = document.createElement('button');
-                        button.classList.add('task-category-filter');
-                        button.textContent = category.title;
-                        button.setAttribute('data-category', categoryId);
-                        taskFilterDiv.appendChild(button);
-                    });
-                }
-            });
-        }
-
-        function loadTasks() {
-            const tasksListDiv = document.getElementById('tasksList');
-            tasksListDiv.innerHTML = '<div class="loader"></div>'; // Show loader
-
-            database.ref('tasks').on('value', (snapshot) => {
-                tasksListDiv.innerHTML = ''; // Clear previous tasks
-                if (snapshot.exists()) {
-                    tasks = {}; // Clear the global tasks object
-                    snapshot.forEach((child) => {
-                        const taskId = child.key;
-                        const taskData = child.val();
-                        tasks[taskId] = taskData; // Store task data globally
-                        renderTaskItem(taskId, taskData);
-                    });
-                } else {
-                    tasksListDiv.innerHTML = '<p class="text-center" style="color: var(--tg-theme-hint-color);">No tasks available yet!</p>';
-                }
-            }, (error) => {
-                console.error("Error loading tasks:", error);
-                tasksListDiv.innerHTML = `<p class="text-center" style="color: var(--tg-theme-danger);">${error.message}</p>`;
-            });
-        }
-
-        function renderTaskItem(taskId, taskData) {
-            const tasksListDiv = document.getElementById('tasksList');
-
-            // Check if task is active
-            if (taskData.status !== 'active') return;
-
-            // Filter by category if a filter is active
-            const activeFilter = document.querySelector('.task-category-filter.active');
-            if (activeFilter && activeFilter.getAttribute('data-category') !== 'all' && taskData.category !== activeFilter.getAttribute('data-category')) {
-                return; // Skip if category doesn't match
-            }
-
-            const taskDiv = document.createElement('div');
-            taskDiv.classList.add('task-item');
-            taskDiv.id = `task_${taskId}`;
-
-            const isTaskCompleted = currentUserData.completedTasks && currentUserData.completedTasks[taskId];
-            const userTaskProgress = currentUserData.taskProgress && currentUserData.taskProgress[taskId];
-
-            let buttonContent = '';
-            let statusMessage = '';
-            let verifyButton = '';
-            let codeInputHtml = '';
-
-            if (isTaskCompleted) {
-                buttonContent = `<button class="action-button claim-button" onclick="claimTaskReward('${taskId}')">Claim Reward</button>`;
-                statusMessage = '<span class="task-status-message completed">Completed</span>';
-            } else if (userTaskProgress && userTaskProgress.status === 'in_progress') {
-                if (taskData.type === 'no_code') {
-                    buttonContent = `<button class="action-button verify-button" onclick="startTaskVerification('${taskId}')">Verify Task</button>`;
-                    statusMessage = '<span class="task-status-message pending">In Progress</span>';
-                } else if (taskData.type === 'code_task') {
-                    codeInputHtml = `<input type="text" id="taskCodeInput_${taskId}" class="code-input" placeholder="Enter Code">`;
-                    buttonContent = `<button class="action-button verify-button" onclick="submitTaskCode('${taskId}')">Verify</button>`;
-                    statusMessage = '<span class="task-status-message pending">Enter Code</span>';
-                }
-            } else { // Not started or no progress
-                buttonContent = `<button class="action-button start-button" onclick="startTask('${taskId}')">Start</button>`;
-                statusMessage = '<span class="task-status-message pending">Ready</span>';
-            }
-
-            // Countdown timer for timed tasks
-            let timerHtml = '';
-            if (taskData.type === 'no_code' && userTaskProgress && userTaskProgress.status === 'in_progress') {
-                const startTime = new Date(userTaskProgress.startTime).getTime();
-                const duration = taskData.durationMinutes * 60000; // Duration in milliseconds
-                const endTime = startTime + duration;
-                timerHtml = `<div class="countdown-timer" id="timer_${taskId}"></div>`;
-                // Set up timer if not already running for this task
-                if (!timers[taskId]) {
-                    startTaskTimer(taskId, endTime);
-                }
-            }
-
-            taskDiv.innerHTML = `
-                <div class="task-header">
-                    <div class="task-title">${taskData.title}</div>
-                    <div class="task-points"><i class="fas fa-coins"></i> ${taskData.points}</div>
-                </div>
-                <div class="task-description">${taskData.description}</div>
-                ${timerHtml}
-                <div class="task-actions">
-                    ${codeInputHtml}
-                    ${buttonContent}
-                </div>
-                ${statusMessage}
-            `;
-            tasksListDiv.appendChild(taskDiv);
-        }
-
-
-        // --- Task Actions ---
-        function startTask(taskId) {
-            if (!currentUserId) {
-                alert("Please log in to Telegram first.");
-                return;
-            }
-            if (currentUserData.taskProgress && currentUserData.taskProgress[taskId]) {
-                alert("You are already working on this task!");
+        // Function to handle starting a task (opening a link)
+        function openTaskLink(url, taskId) {
+            if (!url) {
+                showMessage("Task link is not available.", "error");
                 return;
             }
 
-            const task = tasks[taskId];
-            if (!task) return;
+            // Open in an external browser or Telegram's built-in view
+            // Telegram.WebApp.openLink(url); // Use this for Telegram's preferred way
+            window.open(url, '_blank'); // Standard browser open
 
-            const userRef = database.ref(`users/${currentUserId}`);
+            // Track task start for verification later if needed
+            // Or to start a timer for completionTime
+            console.log(`Task started: ${taskId}, URL: ${url}`);
 
-            // Update user's task progress
-            const taskProgressUpdate = {
-                status: 'in_progress',
-                startTime: new Date().toISOString(),
-            };
-
-            if (task.type === 'no_code' && task.durationMinutes) {
-                 taskProgressUpdate.status = 'in_progress'; // Mark as in progress immediately
-                 taskProgressUpdate.startTime = new Date().toISOString();
-            }
-
-            userRef.update({
-                taskProgress: { ...currentUserData.taskProgress, [taskId]: taskProgressUpdate }
-            })
-            .then(() => {
-                if (task.type === 'no_code') {
-                    // For no-code tasks, open the link and set up verification timer
-                    const link = task.url || tg.initDataUnsafe.bot_info.username; // Default to bot username if no URL
-                    window.open(link, '_blank'); // Open in external browser
-
-                    // Set up the verification timer
-                    const duration = task.durationMinutes * 60000; // Duration in ms
-                    const verificationEndTime = Date.now() + duration;
-                    startTaskTimer(taskId, verificationEndTime);
-
-                    // Update UI for this task item
-                    const taskItem = document.getElementById(`task_${taskId}`);
-                    if (taskItem) {
-                        taskItem.querySelector('.task-actions').innerHTML = `<button class="action-button verify-button" onclick="startTaskVerification('${taskId}')">Verify Task</button>`;
-                        taskItem.querySelector('.task-status-message').textContent = 'In Progress';
-                        taskItem.querySelector('.task-status-message').className = 'task-status-message pending';
-                        taskItem.querySelector('.task-header').insertAdjacentHTML('afterend', `<div class="countdown-timer" id="timer_${taskId}"></div>`);
-                        startTaskTimer(taskId, verificationEndTime); // Start the countdown
-                    }
-                } else if (task.type === 'code_task') {
-                    // For code tasks, just update UI to show code input
-                    const taskItem = document.getElementById(`task_${taskId}`);
-                     if (taskItem) {
-                        taskItem.querySelector('.task-actions').innerHTML = `<input type="text" id="taskCodeInput_${taskId}" class="code-input" placeholder="Enter Code"><button class="action-button verify-button" onclick="submitTaskCode('${taskId}')">Verify</button>`;
-                        taskItem.querySelector('.task-status-message').textContent = 'Enter Code';
-                        taskItem.querySelector('.task-status-message').className = 'task-status-message pending';
-                    }
-                }
-                currentUserData.taskProgress = {...currentUserData.taskProgress, [taskId]: taskProgressUpdate}; // Update global state
-            })
-            .catch(error => console.error("Error starting task:", error));
+            // Optional: Update task status or start a timer in Firebase
+            // Example: record task start time for this user
+            const completionId = `${currentUserId}_${taskId}`;
+            database.ref(`taskCompletions/${completionId}`).set({
+                userId: currentUserId,
+                taskId: taskId,
+                status: 'in_progress', // or 'started'
+                startedAt: firebase.database.ServerValue.TIMESTAMP,
+                // Add other relevant info
+            }).catch(error => console.error("Error tracking task start:", error));
         }
 
-        function submitTaskCode(taskId) {
-            const task = tasks[taskId];
-            const taskItem = document.getElementById(`task_${taskId}`);
-            const codeInput = taskItem.querySelector(`#taskCodeInput_${taskId}`);
-            const enteredCode = codeInput.value.trim().toUpperCase();
+        // Function to handle claiming a code for a task
+        function claimTaskCode(taskId, correctCode, rewardPoints, buttonElement) {
+            const taskItem = buttonElement.closest('.task-item');
+            const inputElement = taskItem.querySelector('.claim-code-input');
+            const enteredCode = inputElement.value.trim();
 
             if (!enteredCode) {
-                alert("Please enter the task code.");
+                showMessage("Please enter the code.", "error");
                 return;
             }
 
-            if (task.taskCode && enteredCode === task.taskCode.toUpperCase()) {
-                // Correct code
-                const userRef = database.ref(`users/${currentUserId}`);
-                userRef.update({
-                    taskProgress: { ...currentUserData.taskProgress, [taskId]: { status: 'completed', completionTime: new Date().toISOString() } }
+            if (enteredCode === correctCode) {
+                // Correct code entered
+                showLoader('Verifying code...');
+                const completionId = `${currentUserId}_${taskId}`;
+
+                // Update user's coins and log earning
+                database.ref(`users/${currentUserId}/coins`).transaction(currentCoins => {
+                    return (currentCoins || 0) + parseInt(rewardPoints);
                 })
                 .then(() => {
-                    currentUserData.taskProgress[taskId] = { status: 'completed', completionTime: new Date().toISOString() };
-                    taskItem.querySelector('.task-actions').innerHTML = `<button class="action-button claim-button" onclick="claimTaskReward('${taskId}')">Claim Reward</button>`;
-                    taskItem.querySelector('.task-status-message').textContent = 'Code Verified';
-                    taskItem.querySelector('.task-status-message').className = 'task-status-message completed';
-                    taskItem.querySelector('.countdown-timer')?.remove(); // Remove timer if present
-                })
-                .catch(error => console.error("Error verifying code:", error));
-            } else {
-                // Incorrect code
-                codeInput.style.borderColor = 'red'; // Indicate error
-                alert("Incorrect code. Try again!");
-            }
-        }
+                    database.ref('earnings').push({
+                        userId: currentUserId,
+                        type: 'task_completion',
+                        amount: parseInt(rewardPoints),
+                        description: `Completed code task: "${taskId}"`,
+                        taskId: taskId,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
 
-        function startTaskVerification(taskId) {
-            const task = tasks[taskId];
-            if (!task || task.type !== 'no_code') return;
-
-            const taskItem = document.getElementById(`task_${taskId}`);
-            if (taskItem) {
-                taskItem.querySelector('.task-actions').innerHTML = '<p class="task-status-message pending">Checking...</p>';
-                taskItem.querySelector('.task-status-message').textContent = 'Checking...';
-                taskItem.querySelector('.task-status-message').className = 'task-status-message pending';
-            }
-
-            // Simulate verification delay
-            setTimeout(() => {
-                const userTaskProgress = currentUserData.taskProgress && currentUserData.taskProgress[taskId];
-                if (userTaskProgress && userTaskProgress.status === 'in_progress') {
-                    // Verify if timer has expired
-                    const taskEndTime = userTaskProgress.startTime ? new Date(userTaskProgress.startTime).getTime() + (task.durationMinutes * 60000) : 0;
-                    if (Date.now() < taskEndTime) {
-                        // Still within time
-                        if (taskItem) {
-                            taskItem.querySelector('.task-actions').innerHTML = `<button class="action-button claim-button" onclick="claimTaskReward('${taskId}')">Claim Reward</button>`;
-                            taskItem.querySelector('.task-status-message').textContent = 'Ready to Claim';
-                            taskItem.querySelector('.task-status-message').className = 'task-status-message completed';
-                            taskItem.querySelector('.countdown-timer')?.remove(); // Remove timer
-                        }
-                        // Update Firebase status
-                        const userRef = database.ref(`users/${currentUserId}`);
-                        userRef.update({
-                            taskProgress: { ...currentUserData.taskProgress, [taskId]: { status: 'completed', completionTime: new Date().toISOString() } }
-                        })
-                        .catch(error => console.error("Error updating task status:", error));
-                    } else {
-                        // Timer expired
-                        if (taskItem) {
-                            taskItem.querySelector('.task-actions').innerHTML = ''; // No more actions
-                            taskItem.querySelector('.task-status-message').textContent = 'Task Expired';
-                            taskItem.querySelector('.task-status-message').className = 'task-status-message failed';
-                            taskItem.querySelector('.countdown-timer')?.remove(); // Remove timer
-                        }
-                         // Update Firebase status
-                        const userRef = database.ref(`users/${currentUserId}`);
-                        userRef.update({
-                            taskProgress: { ...currentUserData.taskProgress, [taskId]: { status: 'expired', completionTime: new Date().toISOString() } }
-                        })
-                        .catch(error => console.error("Error updating task status:", error));
-                    }
-                } else {
-                    // Task not in progress or already completed/expired
-                    if (taskItem) {
-                        taskItem.querySelector('.task-status-message').textContent = 'Task Finished';
-                        taskItem.querySelector('.task-status-message').className = 'task-status-message failed';
-                        taskItem.querySelector('.countdown-timer')?.remove(); // Remove timer
-                    }
-                }
-            }, 1500); // Simulate a 1.5-second check
-        }
-
-        // Timer management
-        const timers = {};
-        function startTaskTimer(taskId, endTime) {
-            const timerElement = document.getElementById(`timer_${taskId}`);
-            if (!timerElement) return;
-
-            // Clear any existing timer for this task
-            if (timers[taskId]) {
-                clearInterval(timers[taskId]);
-            }
-
-            const updateTimer = () => {
-                const now = Date.now();
-                const timeRemaining = endTime - now;
-
-                if (timeRemaining <= 0) {
-                    clearInterval(timers[taskId]);
-                    timerElement.textContent = 'Time\'s Up!';
-                    // Update task status in Firebase to 'expired'
-                    const userRef = database.ref(`users/${currentUserId}`);
-                    userRef.update({
-                        taskProgress: { ...currentUserData.taskProgress, [taskId]: { status: 'expired', completionTime: new Date().toISOString() } }
+                    // Mark this task completion as verified/completed
+                    database.ref(`taskCompletions/${completionId}`).update({
+                        status: 'completed',
+                        completedAt: firebase.database.ServerValue.TIMESTAMP,
+                        codeUsed: enteredCode,
+                        rewardGranted: parseInt(rewardPoints)
                     })
                     .then(() => {
-                        currentUserData.taskProgress[taskId] = { status: 'expired', completionTime: new Date().toISOString() };
-                        const taskItem = document.getElementById(`task_${taskId}`);
-                        if (taskItem) {
-                            taskItem.querySelector('.task-actions').innerHTML = ''; // Remove actions
-                            taskItem.querySelector('.task-status-message').textContent = 'Task Expired';
-                            taskItem.querySelector('.task-status-message').className = 'task-status-message failed';
-                        }
+                        showMessage(`Successfully claimed ${rewardPoints} PXF coins!`, "success");
+                        // Disable the input and button, or change the button text
+                        inputElement.disabled = true;
+                        buttonElement.textContent = 'Claimed';
+                        buttonElement.disabled = true;
+                        buttonElement.style.backgroundColor = 'var(--tg-theme-hint-color)'; // Grey out
                     })
-                    .catch(error => console.error("Error setting task as expired:", error));
-                    return;
-                }
-
-                const minutes = Math.floor((timeRemaining / 1000) / 60);
-                const seconds = Math.floor((timeRemaining / 1000) % 60);
-                timerElement.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            };
-
-            updateTimer(); // Initial call
-            timers[taskId] = setInterval(updateTimer, 1000); // Update every second
-        }
-
-        function claimTaskReward(taskId) {
-            if (!currentUserId) return;
-            const task = tasks[taskId];
-            if (!task) return;
-
-            const userRef = database.ref(`users/${currentUserId}`);
-            const taskProgress = currentUserData.taskProgress && currentUserData.taskProgress[taskId];
-
-            if (!taskProgress || (taskProgress.status !== 'completed' && taskProgress.status !== 'verified')) {
-                alert("You haven't completed or verified this task yet.");
-                return;
-            }
-
-            // Award points
-            const pointsToAdd = task.points || 0;
-            userRef.update({
-                points: (currentUserData.points || 0) + pointsToAdd,
-                completedTasks: { ...currentUserData.completedTasks, [taskId]: true }, // Mark as completed
-                taskProgress: { ...currentUserData.taskProgress, [taskId]: { status: 'claimed', completionTime: new Date().toISOString() } } // Update progress status
-            })
-            .then(() => {
-                // Update global state
-                currentUserData.points = (currentUserData.points || 0) + pointsToAdd;
-                currentUserData.completedTasks = { ...currentUserData.completedTasks, [taskId]: true };
-                if (currentUserData.taskProgress) {
-                   currentUserData.taskProgress[taskId] = { status: 'claimed', completionTime: new Date().toISOString() };
-                }
-
-                // Update UI
-                document.getElementById('userBalance').textContent = `${currentUserData.points} PXF`;
-                const taskItem = document.getElementById(`task_${taskId}`);
-                if (taskItem) {
-                    taskItem.querySelector('.task-actions').innerHTML = '<span class="task-status-message completed">Reward Claimed</span>';
-                    taskItem.querySelector('.task-status-message').textContent = 'Reward Claimed';
-                }
-                // Show claim reward popup
-                document.getElementById('claimRewardPopup').classList.remove('hidden');
-                document.getElementById('claimRewardMessage').textContent = `You received ${pointsToAdd} PXF!`;
-            })
-            .catch(error => console.error("Error claiming task reward:", error));
-        }
-
-
-        // --- Referral Management ---
-        function copyReferralLink() {
-            const linkElement = document.getElementById('referralLink');
-            const link = linkElement.textContent;
-            navigator.clipboard.writeText(link).then(() => {
-                document.getElementById('copySuccessPopup').classList.remove('hidden');
-            }).catch(err => {
-                console.error('Failed to copy link: ', err);
-                alert('Could not copy link. Please copy it manually.');
-            });
-        }
-
-        function handleReferralLink() {
-            const hash = window.location.hash.substring(1);
-            const parts = hash.split('&');
-            if (parts.length > 1 && parts[0] === 'refer') {
-                const referralCode = parts[1].split('=')[1];
-                if (referralCode && referralCode !== currentReferralCode) { // Ensure it's not their own code
-                    processReferral(referralCode);
-                }
-            }
-        }
-
-        async function processReferral(referrerCode) {
-            if (!currentUserId) return;
-
-            const referrerRef = database.ref('users').orderByChild('referralCode').equalTo(referrerCode).limitToFirst(1);
-            const referrerSnapshot = await referrerRef.once('value');
-
-            if (!referrerSnapshot.exists()) {
-                alert("Invalid referral code.");
-                return;
-            }
-
-            let referrerId = null;
-            referrerSnapshot.forEach(child => {
-                referrerId = child.key;
-            });
-
-            if (!referrerId || referrerId === currentUserId) {
-                alert("Cannot use your own referral code.");
-                return;
-            }
-
-            const userRef = database.ref(`users/${currentUserId}`);
-            const referrerUserData = referrerSnapshot.val()[referrerId];
-
-            // Check if the referrer has already been referred by this user (prevents multiple rewards)
-            if (referrerUserData.referredBy && referrerUserData.referredBy[currentUserId]) {
-                alert("You've already been referred by this user.");
-                return;
-            }
-
-            const referralBonus = 100; // PXF coins for the new user
-            const referrerBonus = 10;  // Percentage of new user's earnings for referrer (e.g., 10% of initial bonus)
-
-            // Update new user's data
-            await userRef.update({
-                points: (currentUserData.points || 0) + referralBonus,
-                referredBy: { [referrerId]: true }, // Mark who referred them
-                referralCount: (currentUserData.referralCount || 0) + 1 // Increment referral count for the referrer's account
-            });
-
-            // Update referrer's data
-            const referrerUserRef = database.ref(`users/${referrerId}`);
-            const currentReferrerPoints = referrerUserData.points || 0;
-            const currentReferrerReferralEarnings = referrerUserData.referralEarnings || 0;
-
-            await referrerUserRef.update({
-                referralEarnings: currentReferrerReferralEarnings + referrerBonus,
-                referredUsers: { ...(referrerUserData.referredUsers || {}), [currentUserId]: true }, // Track referred users
-                // Note: Referral count increment is handled by tracking referredUsers
-            });
-
-            // Update global state
-            currentUserData.points += referralBonus;
-            currentUserData.referredBy = { ...currentUserData.referredBy, [referrerId]: true };
-            document.getElementById('userBalance').textContent = `${currentUserData.points} PXF`;
-
-            alert(`Welcome! You've been referred by a friend and received ${referralBonus} PXF!`);
-            // Optionally navigate to home or display a success message
-            navigateTo('home');
-        }
-
-        function claimReferralReward() {
-            if (!currentUserId) return;
-
-            const userRef = database.ref(`users/${currentUserId}`);
-            const unclaimedReferralRewards = (currentUserData.unclaimedReferralRewards && Object.keys(currentUserData.unclaimedReferralRewards).length > 0);
-
-            if (unclaimedReferralRewards) {
-                // Logic to sum up and award rewards
-                let totalReward = 0;
-                const rewardsToClaim = { ...currentUserData.unclaimedReferralRewards };
-                for (const referrerId in rewardsToClaim) {
-                    totalReward += rewardsToClaim[referrerId] || 0; // Add the reward amount from each referrer
-                }
-
-                userRef.update({
-                    points: (currentUserData.points || 0) + totalReward,
-                    referralEarnings: (currentUserData.referralEarnings || 0) + totalReward,
-                    unclaimedReferralRewards: null // Clear unclaimed rewards
-                })
-                .then(() => {
-                    currentUserData.points += totalReward;
-                    currentUserData.referralEarnings += totalReward;
-                    document.getElementById('userBalance').textContent = `${currentUserData.points} PXF`;
-                    document.getElementById('profileReferralEarnings').textContent = `${currentUserData.referralEarnings} PXF`;
-                    alert(`You claimed ${totalReward} PXF from referrals!`);
-                })
-                .catch(error => console.error("Error claiming referral rewards:", error));
-            } else {
-                alert("You have no unclaimed referral rewards.");
-            }
-        }
-
-
-        // --- Event Management ---
-        function loadActiveEvent() {
-            const eventsListDiv = document.getElementById('eventsList');
-            eventsListDiv.innerHTML = '<div class="loader"></div>';
-
-            // Fetch the *active* event. Assuming only one active event at a time.
-            database.ref('events').orderByChild('isActive').equalTo(true).limitToFirst(1).on('value', (snapshot) => {
-                eventsListDiv.innerHTML = ''; // Clear loader or previous content
-                if (snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        activeEvent = { id: child.key, ...child.val() };
-                        renderEventItem(activeEvent);
+                    .catch(error => {
+                        console.error("Error updating task completion status:", error);
+                        showMessage("Error confirming completion.", "error");
                     });
-                } else {
-                    eventsListDiv.innerHTML = '<p class="text-center" style="color: var(--tg-theme-hint-color);">No active events right now!</p>';
-                    activeEvent = null;
-                }
-            }, (error) => {
-                console.error("Error loading events:", error);
-                eventsListDiv.innerHTML = `<p class="text-center" style="color: var(--tg-theme-danger);">${error.message}</p>`;
-                activeEvent = null;
+                })
+                .catch(error => {
+                    console.error("Error awarding coins:", error);
+                    showMessage("Error awarding coins. Please contact support.", "error");
+                })
+                .finally(() => {
+                    hideLoader();
+                });
+
+            } else {
+                // Incorrect code
+                showMessage("Incorrect code. Try again!", "error");
+                inputElement.value = ''; // Clear input
+            }
+        }
+
+        // Function to handle task completion verification (e.g., after external link is visited)
+        // This is a placeholder for when verification logic is needed beyond just codes.
+        // For example, if a task requires a screenshot or a time delay.
+        function verifyTaskSubmission(taskId) {
+            const completionId = `${currentUserId}_${taskId}`;
+            // In a real app, this would involve checking if the task was actually completed
+            // (e.g., via a callback, or after a certain time if task.completionTime is used)
+            // For now, we'll simulate it.
+            console.log(`Attempting to verify task: ${taskId}`);
+            // For tasks without codes, a "Verify" button might appear after starting.
+            // For now, we assume completion if the user navigates to the task.
+        }
+
+        // Function to copy referral link to clipboard
+        function copyReferralLink() {
+            const link = document.getElementById('referral-link-display').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showMessage("Referral link copied!", "success");
+            }).catch(err => {
+                console.error("Failed to copy link: ", err);
+                showMessage("Failed to copy link.", "error");
             });
         }
 
-        function renderEventItem(eventData) {
-            const eventsListDiv = document.getElementById('eventsList');
+        // Function to redeem a daily code
+        async function redeemDailyCode() {
+            const codeInput = document.getElementById('daily-code-input');
+            const code = codeInput.value.trim();
+            const messageDiv = document.getElementById('daily-code-message');
 
-            const eventDiv = document.createElement('div');
-            eventDiv.classList.add('event-item');
-            eventDiv.id = `event_${eventData.id}`;
-
-            const startTime = new Date(eventData.startTime).getTime();
-            const endTime = new Date(eventData.endTime).getTime();
-            const now = Date.now();
-
-            let timerHtml = '';
-            let eventStatusMessage = '';
-            let actionButtonHtml = '';
-
-            if (now < startTime) { // Event hasn't started
-                eventStatusMessage = 'Event starts soon!';
-                timerHtml = `<div class="event-timer">Starts in: <span id="eventTimer_${eventData.id}"></span></div>`;
-                startEventTimer(eventData.id, startTime);
-                actionButtonHtml = '<button class="event-action-button join-button" onclick="joinEvent(\'' + eventData.id + '\')">Join Event</button>';
-            } else if (now >= startTime && now < endTime) { // Event is active
-                eventStatusMessage = 'Event is live!';
-                timerHtml = `<div class="event-timer">Ends in: <span id="eventTimer_${eventData.id}"></span></div>`;
-                startEventTimer(eventData.id, endTime);
-                const userJoined = currentUserData.eventsJoined && currentUserData.eventsJoined[eventData.id];
-                if (userJoined) {
-                    const rewardClaimed = currentUserData.eventRewardsClaimed && currentUserData.eventRewardsClaimed[eventData.id];
-                    if (rewardClaimed) {
-                         actionButtonHtml = '<button class="event-action-button disabled">Reward Claimed</button>';
-                    } else {
-                        actionButtonHtml = '<button class="event-action-button claim-event-reward-button" onclick="claimEventReward(\'' + eventData.id + '\')">Claim Reward</button>';
-                    }
-                } else {
-                    actionButtonHtml = '<button class="event-action-button join-button" onclick="joinEvent(\'' + eventData.id + '\')">Join Event</button>';
-                }
-            } else { // Event has ended
-                eventStatusMessage = 'Event Ended';
-                timerHtml = '<div class="event-timer event-ended">Ended</div>';
-                actionButtonHtml = '<button class="event-action-button disabled">Expired</button>';
+            if (!code) {
+                messageDiv.textContent = "Please enter a code.";
+                messageDiv.style.color = '#e74c3c';
+                return;
             }
 
-            eventDiv.innerHTML = `
-                <div class="event-title">${eventData.title}</div>
-                <div class="event-description">${eventData.description}</div>
-                ${timerHtml}
-                <p class="event-status-message">${eventStatusMessage}</p>
-                <div class="event-actions">
-                    ${actionButtonHtml}
-                </div>
-            `;
-            eventsListDiv.appendChild(eventDiv);
+            showLoader('Checking code...');
+            try {
+                const snapshot = await database.ref('dailyCodes').once('value');
+                let foundCode = null;
+                snapshot.forEach(child => {
+                    const cd = child.val();
+                    if (cd.codeValue === code) {
+                        foundCode = { ...cd, id: child.key };
+                        return true; // Stop iteration
+                    }
+                });
+
+                if (foundCode) {
+                    const expiryTimestamp = new Date(foundCode.expiry).getTime();
+                    const now = Date.now();
+
+                    if (now > expiryTimestamp) {
+                        messageDiv.textContent = "This code has expired.";
+                        messageDiv.style.color = '#e74c3c';
+                    } else {
+                        // Check if user has already used this specific code (or a code for today)
+                        const userCodeUsageRef = database.ref(`userCodeUsage/${currentUserId}/${foundCode.id}`);
+                        const usageSnapshot = await userCodeUsageRef.once('value');
+
+                        if (usageSnapshot.exists()) {
+                            messageDiv.textContent = "You have already redeemed this code.";
+                            messageDiv.style.color = '#e74c3c';
+                        } else {
+                            // Redeem the code
+                            await database.ref(`users/${currentUserId}/coins`).transaction(currentCoins => {
+                                return (currentCoins || 0) + foundCode.points;
+                            });
+                            await database.ref('earnings').push({
+                                userId: currentUserId,
+                                type: 'lucky_code',
+                                amount: foundCode.points,
+                                description: `Redeemed daily code: "${foundCode.title}"`,
+                                codeId: foundCode.id,
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            });
+
+                            // Mark code as used by this user
+                            await userCodeUsageRef.set({ redeemedAt: firebase.database.ServerValue.TIMESTAMP });
+
+                            messageDiv.textContent = `Successfully redeemed ${foundCode.points} PXF coins!`;
+                            messageDiv.style.color = 'var(--primary-accent)';
+                            codeInput.value = ''; // Clear input
+                            // Update coin balance UI
+                            fetchUserData(); // Re-fetch user data to update balance
+                        }
+                    }
+                } else {
+                    messageDiv.textContent = "Invalid code. Try again!";
+                    messageDiv.style.color = '#e74c3c';
+                }
+            } catch (error) {
+                console.error("Error redeeming code:", error);
+                messageDiv.textContent = "An error occurred. Please try again.";
+                messageDiv.style.color = '#e74c3c';
+            } finally {
+                hideLoader();
+            }
         }
 
-        const eventTimers = {};
-        function startEventTimer(eventId, targetTime) {
-            const timerElement = document.getElementById(`eventTimer_${eventId}`);
-            if (!timerElement) return;
+        // Function to load user data from Firebase
+        async function fetchUserData() {
+            if (!currentUserId) return;
 
-            if (eventTimers[eventId]) clearInterval(eventTimers[eventId]);
+            showLoader('Loading profile...');
+            userRef = database.ref(`users/${currentUserId}`);
 
-            const updateTimer = () => {
-                const now = Date.now();
-                const timeRemaining = targetTime - now;
+            try {
+                const snapshot = await userRef.once('value');
+                let userData = snapshot.val();
 
-                if (timeRemaining <= 0) {
-                    clearInterval(eventTimers[eventId]);
-                    timerElement.textContent = '00:00';
-                    // Refresh the event item to reflect that it has ended
-                    loadActiveEvent();
+                if (!userData) {
+                    // User not found, create a new entry
+                    userData = {
+                        id: currentUserId,
+                        username: tgUser.username || tgUser.first_name || 'User',
+                        firstName: tgUser.first_name,
+                        lastName: tgUser.last_name,
+                        photoUrl: tgUser.photo_url,
+                        referralCode: generateReferralCode(), // Generate a referral code
+                        coins: 0,
+                        completedTasks: 0,
+                        referrals: 0,
+                        referralEarnings: 0,
+                        joinedAt: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    await userRef.set(userData);
+                    showMessage("Welcome to Pixel Frog!", "success");
+                } else {
+                    // Update user info if Telegram provides newer data
+                    userData.username = tgUser.username || tgUser.first_name || userData.username;
+                    userData.firstName = tgUser.first_name || userData.firstName;
+                    userData.lastName = tgUser.last_name || userData.lastName;
+                    userData.photoUrl = tgUser.photo_url || userData.photoUrl;
+                    // If no referral code was generated on first sign up (e.g., if code generation logic was added later)
+                    if (!userData.referralCode) {
+                        userData.referralCode = generateReferralCode();
+                    }
+                    await userRef.update(userData); // Update potentially changed fields
+                }
+
+                updateUI(userData); // Update the UI with fetched data
+
+                // Load tasks after user data is ready
+                fetchTasks();
+
+                // Check for referral parameters in the URL
+                handleReferral();
+
+            } catch (error) {
+                console.error("Error fetching or setting user data:", error);
+                showMessage("Failed to load your profile. Please try again.", "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Function to handle referral logic
+        function handleReferral() {
+            const referrerCode = getQueryParam('ref');
+            if (referrerCode && referrerCode !== (tgUser.id.toString() || 'N/A')) { // Ensure not referring oneself
+                const userReferralCode = document.getElementById('profile-referral-code').textContent; // Get current user's code
+
+                // Prevent applying referral bonus if the referrer code is the same as the current user's code
+                // This is a safety check against self-referrals or broken logic.
+                if (referrerCode === userReferralCode) {
+                    console.log("Detected self-referral or invalid referrer code. Skipping referral bonus.");
                     return;
                 }
 
-                const minutes = Math.floor((timeRemaining / 1000) / 60);
-                const seconds = Math.floor((timeRemaining / 1000) % 60);
-                timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            };
-
-            updateTimer();
-            eventTimers[eventId] = setInterval(updateTimer, 1000);
-        }
-
-        function joinEvent(eventId) {
-            if (!currentUserId || !activeEvent) return;
-
-            // Check if event is active and not started yet
-            const now = Date.now();
-            const startTime = new Date(activeEvent.startTime).getTime();
-            const endTime = new Date(activeEvent.endTime).getTime();
-
-            if (now < startTime) {
-                // Event hasn't started, join it
-                const userRef = database.ref(`users/${currentUserId}`);
-                userRef.update({
-                    eventsJoined: { ...currentUserData.eventsJoined, [eventId]: true }
-                })
-                .then(() => {
-                    currentUserData.eventsJoined = { ...currentUserData.eventsJoined, [eventId]: true };
-                    alert("You have joined the event!");
-                    // Update button on the UI
-                    const eventItem = document.getElementById(`event_${eventId}`);
-                    if (eventItem) {
-                        eventItem.querySelector('.event-actions').innerHTML = '<button class="event-action-button claim-event-reward-button" onclick="claimEventReward(\'' + eventId + '\')">Claim Reward</button>';
-                        eventItem.querySelector('.event-status-message').textContent = 'Event is live!';
+                // Check if the referral has already been processed for this user
+                database.ref(`userReferrals/${currentUserId}`).once('value', snapshot => {
+                    if (snapshot.exists()) {
+                        console.log("Referral already processed for this user.");
+                        return;
                     }
-                })
-                .catch(error => console.error("Error joining event:", error));
-            } else {
-                alert("You can only join an event before it starts.");
+
+                    // Process the referral
+                    showLoader('Processing referral...');
+                    const referredBy = referrerCode; // The code of the person who referred
+
+                    // Find the referrer's ID (requires an extra lookup or storing referrer user ID in the referral link)
+                    // For simplicity, we'll assume we can find the referrer by their code.
+                    // In a more robust system, you might store the referrer's USER ID in the URL.
+                    database.ref('users').orderByChild('referralCode').equalTo(referredBy).once('value', referrerSnapshot => {
+                        if (referrerSnapshot.exists()) {
+                            let referrerUserId = null;
+                            let referrerRef = null;
+                            referrerSnapshot.forEach(child => {
+                                referrerUserId = child.key;
+                                referrerRef = child.ref;
+                                return true; // Stop after finding the first match
+                            });
+
+                            if (referrerUserId && referrerRef) {
+                                const referralReward = globalSettings.referralRewardPoints || 100;
+                                const referralPercentage = (globalSettings.referralPercentage || 10) / 100;
+
+                                // Update referrer's stats
+                                referrerRef.transaction(referrerData => {
+                                    if (referrerData) {
+                                        referrerData.referrals = (referrerData.referrals || 0) + 1;
+                                        // Calculate referral earnings based on the new user's first reward
+                                        // For simplicity, we'll give a fixed bonus per referral AND a percentage of future earnings
+                                        // Here, we'll add the fixed bonus
+                                        referrerData.coins = (referrerData.coins || 0) + referralReward;
+                                        // We'll log referral earnings when the referred user earns
+                                        // For now, just update referral count and fixed bonus
+                                    }
+                                    return referrerData;
+                                })
+                                .then(async () => {
+                                    // Log the fixed referral bonus for the referrer
+                                     await database.ref('earnings').push({
+                                        userId: referrerUserId,
+                                        type: 'referral_bonus',
+                                        amount: referralReward,
+                                        description: `Referral bonus for ${tgUser.username || tgUser.first_name}`,
+                                        referredUserId: currentUserId,
+                                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                                    });
+
+                                    // Update the current user's referral tracking
+                                    await database.ref(`userReferrals/${currentUserId}`).set({
+                                        referredByUserId: referrerUserId,
+                                        rewarded: true, // Mark as rewarded for the initial bonus
+                                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                                    });
+                                    // Also update the referred count on the current user's profile (though not strictly necessary for them to see)
+                                    await userRef.update({
+                                        referredBy: referrerUserId // Store who referred them
+                                    });
+
+                                    showMessage(`You were referred by ${referredBy}! You've received your first bonus.`, "success");
+                                    fetchUserData(); // Refresh UI to show bonus
+                                })
+                                .catch(error => {
+                                    console.error("Error processing referral:", error);
+                                    showMessage("Error processing referral. Please contact support.", "error");
+                                })
+                                .finally(() => {
+                                    hideLoader();
+                                });
+                            } else {
+                                console.log("Referrer not found by code:", referredBy);
+                                hideLoader();
+                            }
+                        } else {
+                            console.log("Referrer not found by code:", referredBy);
+                            hideLoader();
+                        }
+                    });
+                });
             }
         }
 
-        function claimEventReward(eventId) {
-            if (!currentUserId || !activeEvent || activeEvent.id !== eventId) return;
-
-            const userRef = database.ref(`users/${currentUserId}`);
-            const event = activeEvent; // Use the globally stored active event
-
-            const now = Date.now();
-            const startTime = new Date(event.startTime).getTime();
-            const endTime = new Date(event.endTime).getTime();
-
-            // Check if event has ended and user joined, and hasn't claimed
-            const userJoined = currentUserData.eventsJoined && currentUserData.eventsJoined[eventId];
-            const rewardClaimed = currentUserData.eventRewardsClaimed && currentUserData.eventRewardsClaimed[eventId];
-
-            if (!userJoined) {
-                alert("You must join the event first.");
-                return;
-            }
-            if (now < endTime) {
-                alert("The event has not ended yet!");
-                return;
-            }
-            if (rewardClaimed) {
-                alert("You have already claimed the reward for this event.");
-                return;
-            }
-
-            const rewardAmount = event.rewardPoints || 0;
-            userRef.update({
-                points: (currentUserData.points || 0) + rewardAmount,
-                eventRewardsClaimed: { ...currentUserData.eventRewardsClaimed, [eventId]: true } // Mark reward as claimed
-            })
-            .then(() => {
-                currentUserData.points += rewardAmount;
-                currentUserData.eventRewardsClaimed[eventId] = true;
-                document.getElementById('userBalance').textContent = `${currentUserData.points} PXF`;
-                alert(`You received ${rewardAmount} PXF for participating in the event!`);
-
-                // Update UI
-                const eventItem = document.getElementById(`event_${eventId}`);
-                if (eventItem) {
-                    eventItem.querySelector('.event-actions').innerHTML = '<button class="event-action-button disabled">Reward Claimed</button>';
+        // Function to load global settings
+        async function loadGlobalSettings() {
+            try {
+                const snapshot = await database.ref('settings').once('value');
+                if (snapshot.exists()) {
+                    globalSettings = snapshot.val();
+                    // Update any relevant parts of the UI that depend on settings
+                    // e.g., coin image, referral bonus text
+                    document.getElementById('profile-coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
+                    document.getElementById('coin-image').src = globalSettings.coinImageUrl || 'https://i.postimg.cc/Wzt5q2QQ/Leonardo-Phoenix-09-Adorable-pixelart-green-frog-with-big-spar-0-removebg-preview.png';
                 }
-            })
-            .catch(error => console.error("Error claiming event reward:", error));
+            } catch (error) {
+                console.error("Error loading global settings:", error);
+            }
         }
 
-
-        // --- General Popups ---
-        function closePopup(popupId) {
-            document.getElementById(popupId).classList.add('hidden');
-        }
-
-        // --- Initialisation ---
+        // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
-            tg.ready(); // Signal Telegram that the app is ready
-            initApp();
+            // Initialize Telegram Web App
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand(); // Expand the app to full height
+                tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+                if (tgUser) {
+                    currentUserId = tgUser.id;
+                    console.log("Telegram User:", tgUser);
+                    // Load settings first, then user data
+                    loadGlobalSettings().then(fetchUserData);
+                } else {
+                    console.error("Failed to initialize with Telegram user data.");
+                    document.querySelector('.header .user-info div').textContent = "Login failed.";
+                    document.getElementById('loader').querySelector('div:last-child').textContent = "Login Error!";
+                    document.getElementById('loader').classList.remove('loader-hidden'); // Show error message
+                    document.getElementById('loader').querySelector('.loader-spinner').style.display = 'none';
+                    return; // Stop execution if no user
+                }
+            } else {
+                console.error("Telegram Web App SDK not found. This app must be run within Telegram.");
+                // Optionally show an error message to the user
+                document.body.innerHTML = '<div style="color: red; text-align: center; padding: 50px;">Please open this app within Telegram.</div>';
+                return;
+            }
+
+            // Navigation links
+            document.getElementById('nav-home').addEventListener('click', (e) => { e.preventDefault(); navigateTo('home-section', 'nav-home'); });
+            document.getElementById('nav-tasks').addEventListener('click', (e) => { e.preventDefault(); navigateTo('tasks-section', 'nav-tasks'); fetchTasks(); }); // Re-fetch tasks on tab switch
+            document.getElementById('nav-refer').addEventListener('click', (e) => { e.preventDefault(); navigateTo('refer-section', 'nav-refer'); });
+            document.getElementById('nav-profile').addEventListener('click', (e) => { e.preventDefault(); navigateTo('profile-section', 'nav-profile'); });
+            document.getElementById('nav-daily-code').addEventListener('click', (e) => { e.preventDefault(); navigateTo('daily-code-section', 'nav-daily-code'); });
+
+            // Initial view
+            navigateTo('home-section', 'nav-home');
+
+            // Event delegation for task category filters
+            document.querySelector('.category-filter').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON' && e.target.hasAttribute('data-category')) {
+                    e.preventDefault();
+                    document.querySelectorAll('.category-filter button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    fetchTasks(e.target.getAttribute('data-category'));
+                }
+            });
+
         });
     </script>
 </body>
